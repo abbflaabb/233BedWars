@@ -1,0 +1,14 @@
+name: 233BedWars
+author: SerendipityR
+version: 1.0.0
+depend: [BedWars1058]
+softdepend: [PlaceholderAPI]
+main: cn.serendipityr._233bedwars._233BedWars
+permissions:
+  bw233.cmd:
+    default: true
+commands:
+  233bw:
+    permission: bw233.cmd
+  233bedwars:
+    permission: bw233.cmd

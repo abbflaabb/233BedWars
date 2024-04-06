@@ -1,0 +1,19 @@
+##############################
+# 233BedWars by SerendipityR #
+##############################
+
+# 基础插件: BedWars1058_23.12.2+
+
+serverID: "#BH001"
+
+# 玩法及拓展借鉴于 **Wdsj.Net/Mc233.CN**
+# 国内优质原创小游戏服务器，欢迎游玩！
+addons:
+  # 计分板编辑器
+  ScoreBoardEditor: true
+  # 队伍名称主题
+  TeamNameThemes: true
+  # 详细战斗指示
+  CombatDetails: true
+  # 快捷指令
+  FastCommands: true

@@ -1,0 +1,97 @@
+# 计分板编辑器
+
+# 使用BedWars1058自带的占位符API
+# [!] 若计分板存在显示错误(错位、缺漏等)，尝试关闭此项，并使用ProtocolStringReplacer等插件替换占位符
+# 所有额外占位符:
+# {mode} - 当前游戏组别
+# {modeName} - 当前游戏组别名称
+# {teamDesc} - 当前游戏队伍描述
+# {map} - 当前游戏地图名称
+# {author} - 当前游戏地图建筑师
+# {resMode} - 当前玩家资源模式
+# {sTime} - 当前服务器时间
+# {sId} - 当前服务器ID
+# {globalEvent} - 当前游戏内全域事件
+# {allTeams} - 当前游戏内所有团队信息
+# {tHeart} - 玩家团队动态提示
+# {tColor} - 玩家团队颜色
+# {tName} - 玩家团队名称
+# {tAlive} - 玩家团队存活人数
+# {tInfo_[团队名称]} - 当前游戏内格式化的团队信息
+# BedWars1058提供的占位符:
+# {on} - 当前玩家数
+# {max} - 最大玩家数
+# {nextEvent} - 下一游戏事件
+# {time} - 当前事件倒计时
+# {kills} - 玩家击杀数
+# {finalKills} - 玩家最终击杀数
+# {serverIp} - 服务器地址
+useNativePlaceholderProvider: true
+
+modeName:
+  xqc_4x8: "超级床の战争"
+
+teamDesc:
+  xqc_4x8: "4人 8队"
+
+defaultMapAuthor: "public"
+
+mapAuthor:
+  test: "test_author"
+
+teamNameFormat: "{tColor}{tName} {tHeart} &f| {tAlive}"
+
+waiting:
+  title:
+    - "&e&l{modeName}"
+  content:
+    - ""
+    - "&f地图: &a{map}"
+    - "&f队伍: &a{teamDesc}"
+    - "&f建筑师: &a{author}"
+    - ""
+    - "&f玩家: &a{on}/{max}"
+    - ""
+    - "&f等待中..."
+    - ""
+    - "&f你的类型: &a{resMode}"
+    - ""
+    - "&f服务器: &a{sId}"
+    - ""
+    - "&e游戏地址: {serverIp}"
+
+starting:
+  title:
+    - "&e&l{modeName}"
+  content:
+    - ""
+    - "&f地图: &a{map}"
+    - "&f队伍: &a{teamDesc}"
+    - "&f建筑师: &a{author}"
+    - ""
+    - "&f玩家: &a{on}/{max}"
+    - ""
+    - "&f即将在&a{time}&f后开始"
+    - ""
+    - "&f你的类型: &a{resMode}"
+    - ""
+    - "&f服务器: &a{sId}"
+    - ""
+    - "&e游戏地址: {serverIp}"
+
+in-game:
+  title:
+    - "&e&l{modeName}"
+  content:
+    - "&7{mode} {sTime} {sId}"
+    - ""
+    - "&f全域事件: &a{globalEvent}"
+    - "&f{nextEvent}: &a{time}"
+    - ""
+    - "{allTeams}"
+    - ""
+    - "&f我的信息:"
+    - "&f队伍: {tHeart} {tColor}{tName}  &f人数: &a{tAlive}"
+    - "&f杀敌: &a{kills}  &f最终击杀: &a{finalKills}"
+    - ""
+    - "&e游戏地址: {serverIp}"

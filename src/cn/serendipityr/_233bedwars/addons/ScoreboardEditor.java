@@ -1,0 +1,102 @@
+package cn.serendipityr._233bedwars.addons;
+
+import cn.serendipityr._233bedwars.utils.ScoreBoardUtil;
+import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.team.ITeam;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ScoreboardEditor {
+    public static String teamNameFormat;
+    public static boolean useNativePlaceHolder;
+    static List<String> waiting_title;
+    static List<String> waiting_lines;
+    static List<String> starting_title;
+    static List<String> starting_lines;
+    static List<String> in_game_title;
+    static List<String> in_game_lines;
+    public static Map<String, String> modeName = new HashMap<>();
+    public static Map<String, String> teamDesc = new HashMap<>();
+    public static Map<String, String> mapAuthor = new HashMap<>();
+    public static String defaultMapAuthor;
+
+    public static void loadConfig(YamlConfiguration cfg) {
+        useNativePlaceHolder = cfg.getBoolean("useNativePlaceholderProvider");
+        teamNameFormat = cfg.getString("teamNameFormat");
+        waiting_title = cfg.getStringList("waiting.title");
+        waiting_lines = cfg.getStringList("waiting.content");
+        starting_title = cfg.getStringList("starting.title");
+        starting_lines = cfg.getStringList("starting.content");
+        in_game_title = cfg.getStringList("in-game.title");
+        in_game_lines = cfg.getStringList("in-game.content");
+        waiting_title.replaceAll(s -> s.replace("&", "§"));
+        waiting_lines.replaceAll(s -> s.replace("&", "§"));
+        starting_title.replaceAll(s -> s.replace("&", "§"));
+        starting_lines.replaceAll(s -> s.replace("&", "§"));
+        in_game_title.replaceAll(s -> s.replace("&", "§"));
+        in_game_lines.replaceAll(s -> s.replace("&", "§"));
+        for (String mN : cfg.getConfigurationSection("modeName").getKeys(false)) {
+            modeName.put(mN, cfg.getString("modeName." + mN));
+        }
+        for (String tD : cfg.getConfigurationSection("teamDesc").getKeys(false)) {
+            teamDesc.put(tD, cfg.getString("teamDesc." + tD));
+        }
+        for (String mA : cfg.getConfigurationSection("mapAuthor").getKeys(false)) {
+            mapAuthor.put(mA, cfg.getString("mapAuthor." + mA));
+        }
+        defaultMapAuthor = cfg.getString("defaultMapAuthor");
+    }
+
+    public static void editScoreBoard(IArena arena, Player player) {
+        switch (arena.getStatus()) {
+            case waiting:
+                ScoreBoardUtil.setScoreBoardContent(player, waiting_title, waiting_lines, useNativePlaceHolder);
+                break;
+            case starting:
+                ScoreBoardUtil.setScoreBoardContent(player, starting_title, starting_lines, useNativePlaceHolder);
+                break;
+            case playing:
+                List<String> in_game_lines = new ArrayList<>(ScoreboardEditor.in_game_lines);
+                replaceElementWithElements(in_game_lines, "{allTeams}", getAllTeamsInfo(arena));
+                ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.in_game_title, in_game_lines, useNativePlaceHolder);
+                break;
+        }
+    }
+
+    private static void replaceElementWithElements(List<String> list, String elementToReplace, List<String> newElements) {
+        int index = list.indexOf(elementToReplace);
+        if (index != -1) {
+            // 移除找到的元素
+            list.remove(index);
+            // 在原位置插入新的元素列表
+            list.addAll(index, newElements);
+        }
+    }
+
+    private static List<String> getAllTeamsInfo(IArena arena) {
+        List<String> allTeamsInfo = new ArrayList<>();
+        List<ITeam> teams = arena.getTeams();
+
+        // 使用循环遍历所有队伍
+        for (int i = 0; i < teams.size(); i += 2) {
+            // 获取当前队伍的信息
+            String currentTeamInfo = "{tInfo_" + teams.get(i).getName() + "}";
+
+            // 检查是否有下一个队伍
+            if (i + 1 < teams.size()) {
+                // 如果有，将当前队伍和下一个队伍的信息组合起来
+                String nextTeamInfo = "{tInfo_" + teams.get(i + 1).getName() + "}";
+                allTeamsInfo.add(currentTeamInfo + "  " + nextTeamInfo);
+            } else {
+                // 如果没有，只添加当前队伍的信息
+                allTeamsInfo.add(currentTeamInfo);
+            }
+        }
+        return allTeamsInfo;
+    }
+}

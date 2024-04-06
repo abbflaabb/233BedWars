@@ -1,0 +1,49 @@
+# 快捷指令
+
+quick_reminding: "{tColor}{player} 说: &c注意，我们的床有危险！"
+
+quick_reminding_sound: "ORB_PICKUP:1:2"
+
+quick_reminding_delay: 10
+
+quick_reminding_count: 4
+
+quick_reminding_title_stay: 5
+
+error_bed_destroyed: "&c床都炸了，不能警报哦！"
+
+error_died: "&c死人不能警报哦！"
+
+Item:
+  17:
+    material: SLIME_BALL
+    name: "&e快捷指令"
+    lore:
+      - "&7执行一些操作(待完善)"
+      - ""
+      - "&f右键: &7打开菜单"
+    execute: "[gui_open] fastCommands"
+
+GUI:
+  size: 54
+  title: "&6233&eBed&bWars &2> &4快捷指令"
+  items:
+    10:
+      material: GOLD_SWORD
+      name: "&e保存物品位置"
+      lore:
+        - "&7保存当前物品类型排序,下次重生时将优先使用该位置"
+        - "&7装备、食物、方块等保存需要在设置菜单中启用才有效"
+      execute: "[command] 233bw keepitemposition"
+    28:
+      material: BED
+      name: "&f说: &b敌人来袭，坚守基地！"
+      execute: "[say] 敌人来袭，坚守基地！"
+    29:
+      material: DIAMOND_SWORD
+      name: "&f说: &b冲冲冲！"
+      execute: "[say] 冲冲冲！"
+    30:
+      material: BEDROCK
+      name: "&f说: &b我负责守家！"
+      execute: "[say] 我负责守家！"

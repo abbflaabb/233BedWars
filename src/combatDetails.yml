@@ -1,0 +1,36 @@
+# 详细战斗指示
+
+damageMsg: "&a对&e{victim}&a造成了{formatted_damage}&a伤害，他还剩{formatted_health}{resistance}{formatted_extra_health}{protection_max}{death}"
+
+damageInfo:
+  - "&f基准伤害: &7{base_damage}"
+  - "&f抵御伤害: &7{reduction}"
+  - "&6{unicode_heart}(伤害吸收)"
+  - "{formatted_resistance}"
+  - "{formatted_protection}"
+
+damageFormat: "&c{unicode_heart}&4&l[{final_damage}]"
+
+healthFormat: "&c{unicode_heart}&4&l[{health}]"
+
+extraHealthFormat: "&6{unicode_heart}&4&l[{extra_health}]"
+
+protectionFormat: "&b&l{unicode_square}(所有防具总保护等级{armor_level})"
+
+protectionMax: "&b&l{unicode_square}M"
+
+resistance: "&7&l{unicode_block}M"
+
+resistanceInfo: "&7&l{unicode_block}M(抗性提升{resistance_level})"
+
+death: "&a他没了"
+
+strengthEffectHint: "&e对方拥有 &6力量 {level} &e效果"
+
+killStreakMsg:
+  # 格式:
+  # 连杀数|提示语
+  - "2|&e{playerName} &6&n&l双杀 - Double Kill！"
+  - "3|&e{playerName} &6&n&l大杀特杀 - Killing Spree！"
+  - "4|&e{playerName} &6&n&l杀人如麻 - Mega Kill！"
+  - "5|&e{playerName} &6&n&l无人能挡 - Unstoppable！"

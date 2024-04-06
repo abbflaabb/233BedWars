@@ -1,0 +1,80 @@
+package cn.serendipityr._233bedwars.utils;
+
+import cn.serendipityr._233bedwars._233BedWars;
+import com.andrei1058.bedwars.api.sidebar.ISidebar;
+import com.andrei1058.bedwars.api.sidebar.ISidebarService;
+import com.andrei1058.bedwars.libs.sidebar.PlaceholderProvider;
+import com.andrei1058.bedwars.libs.sidebar.Sidebar;
+import com.andrei1058.bedwars.sidebar.BwSidebarLine;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+public class ScoreBoardUtil {
+    static ISidebarService sms;
+
+    public static void init() {
+        sms = ProviderUtil.bw.getScoreboardManager();
+    }
+
+    public static void setScoreBoardContent(Player player, List<String> titles, List<String> _lines, boolean useNativePlaceHolder) {
+        ISidebar sm = sms.getSidebar(player);
+        ArrayList<String> lines = new ArrayList<>(_lines);
+        Collections.reverse(lines);
+        if (sm != null) {
+            Sidebar handle = sm.getHandle();
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                int currentLineCount = handle.lineCount();
+                int desiredLineCount = lines.size();
+
+                for (int i = currentLineCount; i < desiredLineCount; i++) {
+                    handle.addLine(new BwSidebarLine("", null));
+                }
+
+                for (int i = currentLineCount - 1; i >= desiredLineCount; i--) {
+                    handle.removeLine(i);
+                }
+            }, 3L);
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                handle.setTitle(sm.normalizeTitle(titles));
+
+                if (useNativePlaceHolder) {
+                    PlaceholderUtil.addNativeScoreBoardPlaceHolders(player);
+                } else {
+                    PlaceholderUtil.addScoreBoardPlaceHolders(player, lines);
+                }
+
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    BwSidebarLine content = new BwSidebarLine(line, null);
+                    handle.setLine(content, i);
+                }
+            }, 5L);
+        }
+    }
+
+    public static void addPlaceHolder(Player player, String placeHolder, Callable<String> value) {
+        ISidebar sm = sms.getSidebar(player);
+        if (sm != null) {
+            Sidebar handle = sm.getHandle();
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                handle.addPlaceholder(new PlaceholderProvider(placeHolder, value));
+                handle.refreshPlaceholders();
+            }, 2L);
+        }
+    }
+
+    public static Collection<PlaceholderProvider> getNativePlaceHolders(Player player) {
+        ISidebar sm = sms.getSidebar(player);
+        if (sm != null) {
+            Sidebar handle = sm.getHandle();
+            return handle.getPlaceholders();
+        }
+        return new ArrayList<>();
+    }
+}
