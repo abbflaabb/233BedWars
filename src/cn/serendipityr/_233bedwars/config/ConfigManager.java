@@ -1,10 +1,7 @@
 package cn.serendipityr._233bedwars.config;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.CombatDetails;
-import cn.serendipityr._233bedwars.addons.FastCommands;
-import cn.serendipityr._233bedwars.addons.ScoreboardEditor;
-import cn.serendipityr._233bedwars.addons.TeamNameThemes;
+import cn.serendipityr._233bedwars.addons.*;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import org.bukkit.Material;
@@ -24,10 +21,10 @@ public class ConfigManager {
     public static Boolean addon_combatDetails;
     public static Boolean addon_fastCommands;
     public static Boolean addon_dalaoWarning;
+    public static Boolean addon_balancedAdjustments;
     public static Boolean addon_globalEvents;
     public static Boolean addon_advancedItems;
     public static Boolean addon_xpResourceMode;
-    public static Boolean addon_balancedOptions;
 
     public static void loadConfig() {
         cfg = YamlConfiguration.loadConfiguration(getCfgFile("config.yml"));
@@ -37,6 +34,8 @@ public class ConfigManager {
         addon_teamNameThemes = cfg.getBoolean("addons.TeamNameThemes");
         addon_combatDetails = cfg.getBoolean("addons.CombatDetails");
         addon_fastCommands = cfg.getBoolean("addons.FastCommands");
+        addon_dalaoWarning = cfg.getBoolean("addons.DalaoWarning");
+        addon_balancedAdjustments = cfg.getBoolean("addons.BalancedAdjustments");
         loadAddonsCfg();
     }
 
@@ -49,10 +48,12 @@ public class ConfigManager {
     }
 
     static void loadAddonsCfg() {
-        TeamNameThemes.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("teamNameThemes.yml")));
-        ScoreboardEditor.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("scoreboard.yml")));
-        CombatDetails.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("combatDetails.yml")));
-        FastCommands.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("fastCommands.yml")));
+        TeamNameThemes.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/teamNameThemes.yml")));
+        ScoreboardEditor.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/scoreboard.yml")));
+        CombatDetails.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/combatDetails.yml")));
+        FastCommands.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/fastCommands.yml")));
+        DalaoWarning.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/dalaoWarning.yml")));
+        BalancedAdjustments.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/balancedAdjustments.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {

@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="_233BedWars:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/_233BedWars_jar</output-path>
+    <root id="archive" name="_233BedWars.jar">
+      <element id="module-output" name="_233BedWars" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/plugin.yml" />
+    </root>
+  </artifact>
+</component>

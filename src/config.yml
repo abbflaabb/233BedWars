@@ -17,3 +17,7 @@ addons:
   CombatDetails: true
   # 快捷指令
   FastCommands: true
+  # 大佬警告
+  DalaoWarning: true
+  # 平衡性调整
+  BalancedAdjustments: true

@@ -1,10 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.CombatDetails;
-import cn.serendipityr._233bedwars.addons.FastCommands;
-import cn.serendipityr._233bedwars.addons.ScoreboardEditor;
-import cn.serendipityr._233bedwars.addons.TeamNameThemes;
+import cn.serendipityr._233bedwars.addons.*;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -31,6 +28,9 @@ public class GameEventHandler implements Listener {
                     }
                 }, 20L);
             }
+            if (ConfigManager.addon_dalaoWarning) {
+                DalaoWarning.initGame(arena);
+            }
         }
         if (ConfigManager.addon_scoreBoardEditor) {
             for (Player player : arena.getPlayers()) {
@@ -42,9 +42,7 @@ public class GameEventHandler implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerReSpawnEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-            FastCommands.giveItems(player);
-        }, 20L);
+        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> FastCommands.giveItems(player), 20L);
     }
 
     @EventHandler

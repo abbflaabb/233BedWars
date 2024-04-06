@@ -180,52 +180,52 @@ public class PlaceholderUtil {
         return fields;
     }
 
-    private static String getModeName(String mode) {
+    public static String getModeName(String mode) {
         return ScoreboardEditor.modeName.getOrDefault(mode, mode);
     }
 
-    private static String getTeamDesc(String mode) {
+    public static String getTeamDesc(String mode) {
         return ScoreboardEditor.teamDesc.getOrDefault(mode, mode);
     }
 
-    private static String getMapName(IArena arena) {
+    public static String getMapName(IArena arena) {
         return arena.getDisplayName();
     }
 
-    private static String getMapAuthor(String map) {
+    public static String getMapAuthor(String map) {
         return ScoreboardEditor.mapAuthor.getOrDefault(map, ScoreboardEditor.defaultMapAuthor);
     }
 
-    private static String getResMode(Player player) {
+    public static String getResMode(Player player) {
         return "开发中";
     }
 
-    private static String getGlobalEvent(IArena arena) {
+    public static String getGlobalEvent(IArena arena) {
         return "开发中";
     }
 
-    private static String getTeamName(ITeam team) {
+    public static String getTeamName(ITeam team) {
         IArena arena = team.getArena();
         return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(team.getName(), team.getName());
     }
 
-    private static String getTeamHeart(ITeam team) {
+    public static String getTeamHeart(ITeam team) {
         return team.isBedDestroyed() ? "&7❤" : "&c❤";
     }
 
-    private static Integer getTeamAlive(ITeam team) {
+    public static Integer getTeamAlive(ITeam team) {
         return team.getMembers().size();
     }
 
-    private static String getTeamColor(ITeam team) {
+    public static String getTeamColor(ITeam team) {
         return team.getColor().chat().toString();
     }
 
-    private static String getFormattedTeamInfo(ITeam team) {
+    public static String getFormattedTeamInfo(ITeam team) {
         return ScoreboardEditor.teamNameFormat.replace("{tColor}", getTeamColor(team)).replace("{tName}", getTeamName(team)).replace("{tHeart}", getTeamHeart(team)).replace("{tAlive}", String.valueOf(getTeamAlive(team)));
     }
 
-    private static String getCurrentFormattedTime() {
+    public static String getCurrentFormattedTime() {
         // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
         // 定义时间格式

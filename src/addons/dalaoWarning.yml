@@ -1,0 +1,15 @@
+# 大佬警告
+
+# 检测规则
+# average - 队伍平均等级差检测 (队伍平均等级远超其他队伍，判定为大佬队伍)
+# highLevel - 高等级玩家检测 (存在等级远大于常人的玩家，判定为大佬队伍)
+# both - 同时满足条件 (默认)
+flag: "both"
+
+averageLevelDifference: 20
+
+highLevelRange: 50
+
+warningMsg:
+  - "&c&l[DALAO-WARNING/大佬警告]"
+  - "&e本局游戏建议先打大佬队伍qwq: {tColor}{tName}"
