@@ -31,6 +31,8 @@ death: "&a他没了"
 
 strengthEffectHint: "&e对方拥有 &6力量 {level} &e效果"
 
+killStreakKeepTime: 45
+
 killStreakMsg:
   # 格式:
   # 连杀数|提示语

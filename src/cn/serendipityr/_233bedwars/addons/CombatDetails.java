@@ -34,6 +34,7 @@ public class CombatDetails {
     static String protectionMax;
     static String death;
     static String strengthEffectHint;
+    static Integer killStreakKeepTime;
     static HashMap<Player, Player> strengthEffectMap = new HashMap<>();
     static HashMap<Integer, String> killStreakMsg = new HashMap<>();
     static HashMap<Player, Integer> killStreak = new HashMap<>();
@@ -197,6 +198,11 @@ public class CombatDetails {
                     }
                 });
             }
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                if (killStreak.get(killer).equals(kills)) {
+                    killStreak.remove(killer);
+                }
+            }, killStreakKeepTime * 20L);
         }
     }
 
