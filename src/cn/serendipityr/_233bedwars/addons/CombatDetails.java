@@ -29,12 +29,15 @@ public class CombatDetails {
     static String protectionFormat;
     static String resistance;
     static String resistanceInfo;
+    static String regeneration;
+    static String regenerationInfo;
     static String protectionMax;
     static String death;
     static String strengthEffectHint;
     static HashMap<Player, Player> strengthEffectMap = new HashMap<>();
     static HashMap<Integer, String> killStreakMsg = new HashMap<>();
     static HashMap<Player, Integer> killStreak = new HashMap<>();
+    static HashMap<Player, Double> killDistance = new HashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
         damageMsg = cfg.getString("damageMsg");
@@ -46,6 +49,8 @@ public class CombatDetails {
         protectionFormat = cfg.getString("protectionFormat");
         resistance = cfg.getString("resistance");
         resistanceInfo = cfg.getString("resistanceInfo");
+        regeneration = cfg.getString("regeneration");
+        regenerationInfo = cfg.getString("regenerationInfo");
         death = cfg.getString("death");
         strengthEffectHint = cfg.getString("strengthEffectHint");
         for (String a : cfg.getStringList("killStreakMsg")) {
@@ -55,11 +60,11 @@ public class CombatDetails {
     }
 
     public static void sendDamageMsg(Player damager, Player victim, double damage, double finalDamage) {
-        double roundedDamage = roundDouble(damage);
-        double roundedFinalDamage = roundDouble(finalDamage);
-        double roundedReduction = roundDouble(damage - finalDamage);
-        double roundedExtraHealth = roundDouble(Math.max(0, getExtraHealth(victim) - damage));
-        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage));
+        double roundedDamage = roundDouble(damage, 1);
+        double roundedFinalDamage = roundDouble(finalDamage, 1);
+        double roundedReduction = roundDouble(damage - finalDamage, 1);
+        double roundedExtraHealth = roundDouble(Math.max(0, getExtraHealth(victim) - damage), 1);
+        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
 
         TextComponent msg = new TextComponent(damageMsg
                 .replace("{formatted_protection}", protectionFormat)
@@ -77,10 +82,14 @@ public class CombatDetails {
                 .replace("{armor_level}", String.valueOf(getProtectionLevel(victim) + 1))
                 .replace("{formatted_resistance}", resistanceInfo)
                 .replace("{resistance}", getResistance(victim))
-                .replace("{resistance_level}", String.valueOf(getResistanceLevel(victim)))
+                .replace("{resistance_level}", String.valueOf(getEffectLevel(victim, PotionEffectType.DAMAGE_RESISTANCE)))
+                .replace("{formatted_regeneration}", regenerationInfo)
+                .replace("{regeneration}", getRegeneration(victim))
+                .replace("{regeneration_level}", String.valueOf(getEffectLevel(victim, PotionEffectType.REGENERATION)))
                 .replace("{unicode_square}", "▊")
                 .replace("{unicode_heart}", "❤")
                 .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚")
                 .replace("&", "§"));
 
         // 构建悬浮消息列表
@@ -92,14 +101,17 @@ public class CombatDetails {
             if (m.equals("{formatted_extra_health}") && (getExtraHealth(victim) == 0)) {
                 continue;
             }
-            if (m.equals("{formatted_resistance}") && (getResistanceLevel(victim) == 0)) {
+            if (m.equals("{formatted_resistance}") && getEffectLevel(victim, PotionEffectType.DAMAGE_RESISTANCE) == 0) {
+                continue;
+            }
+            if (m.equals("{formatted_regeneration}") && getEffectLevel(victim, PotionEffectType.REGENERATION) == 0) {
                 continue;
             }
             String hoverMsg = m
-                    .replace("{formatted_protection}", (getProtectionLevel(victim) > 0) ? protectionFormat : "")
+                    .replace("{formatted_protection}", protectionFormat)
                     .replace("{formatted_damage}", damageFormat)
                     .replace("{formatted_health}", healthFormat)
-                    .replace("{formatted_extra_health}", extraHealthFormat)
+                    .replace("{formatted_extra_health}", (getExtraHealth(victim) > 0) ? extraHealthFormat : "")
                     .replace("{victim}", victim.getDisplayName())
                     .replace("{protection_max}", getProtectionMax(victim))
                     .replace("{death}", getDeath(roundedHealth))
@@ -111,10 +123,14 @@ public class CombatDetails {
                     .replace("{armor_level}", String.valueOf(getProtectionLevel(victim) + 1))
                     .replace("{formatted_resistance}", resistanceInfo)
                     .replace("{resistance}", getResistance(victim))
-                    .replace("{resistance_level}", String.valueOf(getResistanceLevel(victim)))
+                    .replace("{resistance_level}", String.valueOf(getEffectLevel(victim, PotionEffectType.DAMAGE_RESISTANCE)))
+                    .replace("{formatted_regeneration}", regenerationInfo)
+                    .replace("{regeneration}", getRegeneration(victim))
+                    .replace("{regeneration_level}", String.valueOf(getEffectLevel(victim, PotionEffectType.REGENERATION)))
                     .replace("{unicode_square}", "▊")
                     .replace("{unicode_heart}", "❤")
                     .replace("{unicode_block}", "☲")
+                    .replace("{unicode_cross}", "✚")
                     .replace("&", "§");
             hoverMessages.add(hoverMsg);
         }
@@ -135,8 +151,8 @@ public class CombatDetails {
         damager.sendMessage(msg);
     }
 
-    private static Double roundDouble(double num) {
-        double rounded = new BigDecimal(num).setScale(1, RoundingMode.HALF_UP).doubleValue();
+    private static Double roundDouble(double num, int scale) {
+        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
         if (num > 0 && rounded == 0) {
             return 0.1D;
         } else {
@@ -221,16 +237,24 @@ public class CombatDetails {
     }
 
     private static String getResistance(Player player) {
-        return (getResistanceLevel(player) > 0) ? resistance : "";
+        return (getEffectLevel(player, PotionEffectType.DAMAGE_RESISTANCE) > 0) ? resistance : "";
     }
 
-    private static int getResistanceLevel(Player player) {
+    private static String getRegeneration(Player player) {
+        return (getEffectLevel(player, PotionEffectType.REGENERATION) > 0) ? regeneration : "";
+    }
+
+    private static int getEffectLevel(Player player, PotionEffectType effect) {
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-            if (potionEffect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+            if (potionEffect.getType().equals(effect)) {
                 return potionEffect.getAmplifier() + 1;
             }
         }
         return 0;
+    }
+
+    public static void checkPlayerKillDistance(Player killer, Player victim) {
+        killDistance.put(victim, roundDouble(killer.getLocation().toVector().distance(victim.getLocation().toVector()), 2));
     }
 
     private static int getProtectionLevel(Player player) {

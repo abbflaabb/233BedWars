@@ -1,6 +1,6 @@
 # 详细战斗指示
 
-damageMsg: "&a对&e{victim}&a造成了{formatted_damage}&a伤害，他还剩{formatted_health}{resistance}{formatted_extra_health}{protection_max}{death}"
+damageMsg: "&a对&e{victim}&a造成了{formatted_damage}&a伤害，他还剩{formatted_health}{resistance}{regeneration}{formatted_extra_health}{protection_max}{death}"
 
 damageInfo:
   - "&f基准伤害: &7{base_damage}"
@@ -22,6 +22,10 @@ protectionMax: "&b&l{unicode_square}M"
 resistance: "&7&l{unicode_block}M"
 
 resistanceInfo: "&7&l{unicode_block}M(抗性提升{resistance_level})"
+
+regeneration: "&a&l{unicode_cross}M"
+
+regenerationInfo: "&a&l{unicode_cross}M(生命恢复{regeneration_level})"
 
 death: "&a他没了"
 
