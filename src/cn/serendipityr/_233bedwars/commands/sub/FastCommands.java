@@ -12,7 +12,7 @@ public class FastCommands {
             if (ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player) != null) {
                 cn.serendipityr._233bedwars.addons.FastCommands.openGUI(player);
             } else {
-                CommandManager.sendMsg(commandSender, "&9233BedWars &3&l > &c你只能在游戏中使用此命令。");
+                CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &c你只能在游戏中使用此命令。");
             }
         }
     }

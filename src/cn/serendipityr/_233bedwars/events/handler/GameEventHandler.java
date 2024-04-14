@@ -31,6 +31,10 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_dalaoWarning) {
                 DalaoWarning.initGame(arena);
             }
+            GeneratorEditor.test(arena);
+        }
+        if (state.equals(GameState.restarting)) {
+            GeneratorEditor.resetArena(arena);
         }
         if (ConfigManager.addon_scoreBoardEditor) {
             for (Player player : arena.getPlayers()) {
