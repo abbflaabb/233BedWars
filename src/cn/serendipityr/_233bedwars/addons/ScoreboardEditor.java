@@ -19,6 +19,8 @@ public class ScoreboardEditor {
     static List<String> starting_lines;
     static List<String> in_game_title;
     static List<String> in_game_lines;
+    static List<String> restarting_title;
+    static List<String> restarting_lines;
     public static Map<String, String> modeName = new HashMap<>();
     public static Map<String, String> teamDesc = new HashMap<>();
     public static Map<String, String> mapAuthor = new HashMap<>();
@@ -32,6 +34,8 @@ public class ScoreboardEditor {
         starting_lines = cfg.getStringList("starting.content");
         in_game_title = cfg.getStringList("in-game.title");
         in_game_lines = cfg.getStringList("in-game.content");
+        restarting_title = cfg.getStringList("restarting.title");
+        restarting_lines = cfg.getStringList("restarting.lines");
         waiting_title.replaceAll(s -> s.replace("&", "§"));
         waiting_lines.replaceAll(s -> s.replace("&", "§"));
         starting_title.replaceAll(s -> s.replace("&", "§"));
@@ -62,6 +66,11 @@ public class ScoreboardEditor {
                 List<String> in_game_lines = new ArrayList<>(ScoreboardEditor.in_game_lines);
                 replaceElementWithElements(in_game_lines, "{allTeams}", getAllTeamsInfo(arena));
                 ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.in_game_title, in_game_lines);
+                break;
+            case restarting:
+                List<String> restarting_lines = new ArrayList<>(ScoreboardEditor.restarting_lines);
+                replaceElementWithElements(restarting_lines, "{allTeams}", getAllTeamsInfo(arena));
+                ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.restarting_title, restarting_lines);
                 break;
         }
     }

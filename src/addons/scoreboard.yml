@@ -92,3 +92,20 @@ in-game:
     - "&f杀敌: &a{kills}  &f最终击杀: &a{finalKills}"
     - ""
     - "&e游戏地址: {serverIp}"
+
+restarting:
+  title:
+    - "&e&l{modeName}"
+  content:
+    - "&7{mode} {sTime} {sId}"
+    - ""
+    - "&f全域事件: &a{globalEvent}"
+    - "&f{nextEvent}: &a{time}"
+    - ""
+    - "{allTeams}"
+    - ""
+    - "&f我的信息:"
+    - "&f队伍: {tHeart} {tColor}{tName}  &f人数: &a{tAlive}"
+    - "&f杀敌: &a{kills}  &f最终击杀: &a{finalKills}"
+    - ""
+    - "&e游戏地址: {serverIp}"
