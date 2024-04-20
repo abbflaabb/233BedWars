@@ -22,7 +22,7 @@ public class ScoreBoardUtil {
         sms = ProviderUtil.bw.getScoreboardManager();
     }
 
-    public static void setScoreBoardContent(Player player, List<String> titles, List<String> _lines, boolean useNativePlaceHolder) {
+    public static void setScoreBoardContent(Player player, List<String> titles, List<String> _lines) {
         ISidebar sm = sms.getSidebar(player);
         ArrayList<String> lines = new ArrayList<>(_lines);
         Collections.reverse(lines);
@@ -43,11 +43,7 @@ public class ScoreBoardUtil {
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
                 handle.setTitle(sm.normalizeTitle(titles));
 
-                if (useNativePlaceHolder) {
-                    PlaceholderUtil.addNativeScoreBoardPlaceHolders(player);
-                } else {
-                    PlaceholderUtil.addScoreBoardPlaceHolders(player, lines);
-                }
+                PlaceholderUtil.addNativeScoreBoardPlaceHolders(player);
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);

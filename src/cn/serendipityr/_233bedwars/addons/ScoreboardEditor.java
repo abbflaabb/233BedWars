@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class ScoreboardEditor {
     public static String teamNameFormat;
-    public static boolean useNativePlaceHolder;
     static List<String> waiting_title;
     static List<String> waiting_lines;
     static List<String> starting_title;
@@ -26,7 +25,6 @@ public class ScoreboardEditor {
     public static String defaultMapAuthor;
 
     public static void loadConfig(YamlConfiguration cfg) {
-        useNativePlaceHolder = cfg.getBoolean("useNativePlaceholderProvider");
         teamNameFormat = cfg.getString("teamNameFormat");
         waiting_title = cfg.getStringList("waiting.title");
         waiting_lines = cfg.getStringList("waiting.content");
@@ -55,15 +53,15 @@ public class ScoreboardEditor {
     public static void editScoreBoard(IArena arena, Player player) {
         switch (arena.getStatus()) {
             case waiting:
-                ScoreBoardUtil.setScoreBoardContent(player, waiting_title, waiting_lines, useNativePlaceHolder);
+                ScoreBoardUtil.setScoreBoardContent(player, waiting_title, waiting_lines);
                 break;
             case starting:
-                ScoreBoardUtil.setScoreBoardContent(player, starting_title, starting_lines, useNativePlaceHolder);
+                ScoreBoardUtil.setScoreBoardContent(player, starting_title, starting_lines);
                 break;
             case playing:
                 List<String> in_game_lines = new ArrayList<>(ScoreboardEditor.in_game_lines);
                 replaceElementWithElements(in_game_lines, "{allTeams}", getAllTeamsInfo(arena));
-                ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.in_game_title, in_game_lines, useNativePlaceHolder);
+                ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.in_game_title, in_game_lines);
                 break;
         }
     }

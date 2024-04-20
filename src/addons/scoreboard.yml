@@ -1,7 +1,5 @@
 # 计分板编辑器
 
-# 使用BedWars1058自带的占位符API
-# [!] 若计分板存在显示错误(错位、缺漏等)，尝试关闭此项，并使用ProtocolStringReplacer等插件替换占位符
 # 所有额外占位符:
 # {mode} - 当前游戏组别
 # {modeName} - 当前游戏组别名称
@@ -18,7 +16,7 @@
 # {tName} - 玩家团队名称
 # {tAlive} - 玩家团队存活人数
 # {tInfo_[团队名称]} - 当前游戏内格式化的团队信息
-# BedWars1058提供的占位符:
+# 部分BedWars1058提供的占位符:
 # {on} - 当前玩家数
 # {max} - 最大玩家数
 # {nextEvent} - 下一游戏事件
@@ -26,7 +24,6 @@
 # {kills} - 玩家击杀数
 # {finalKills} - 玩家最终击杀数
 # {serverIp} - 服务器地址
-useNativePlaceholderProvider: true
 
 modeName:
   xqc_4x8: "超级床の战争"

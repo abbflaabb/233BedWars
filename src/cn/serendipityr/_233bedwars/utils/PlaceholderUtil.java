@@ -6,7 +6,6 @@ import cn.serendipityr._233bedwars.addons.TeamNameThemes;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
-import com.andrei1058.bedwars.libs.sidebar.PlaceholderProvider;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -15,13 +14,6 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PlaceholderUtil {
     static class placeholderAPISupport extends PlaceholderExpansion {
@@ -44,7 +36,7 @@ public class PlaceholderUtil {
         }
 
         @Override
-        public String onRequest(OfflinePlayer player, String params) {
+        public String onRequest(OfflinePlayer player, @Nonnull String params) {
             Player p = player.getPlayer();
             IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(p);
             ITeam team = arena.getTeam(p);
@@ -120,7 +112,6 @@ public class PlaceholderUtil {
             new placeholderAPISupport().register();
             LogUtil.consoleLog("&3 > &aHooked PlaceholderAPI.");
         } else {
-            ScoreboardEditor.useNativePlaceHolder = true;
             LogUtil.consoleLog("&3 > &c未找到PlaceholderAPI。");
         }
     }
@@ -146,39 +137,39 @@ public class PlaceholderUtil {
         }
     }
 
-    public static void addScoreBoardPlaceHolders(Player player, List<String> lines) {
-        Collection<PlaceholderProvider> nativePlaceHolders = ScoreBoardUtil.getNativePlaceHolders(player);
-        // 转换为Set提高查找效率
-        Set<String> nativePlaceHolderNames = nativePlaceHolders.stream()
-                .map(PlaceholderProvider::getPlaceholder)
-                .collect(Collectors.toSet());
-
-        // 直接在原始列表上操作，替换占位符
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            List<String> placeholders = extractFields(line);
-
-            for (String p : placeholders) {
-                // 如果占位符不在nativePlaceHolders中，则替换
-                if (!nativePlaceHolderNames.contains("{" + p + "}")) {
-                    line = line.replace("{" + p + "}", "%233bw_" + p + "%");
-                }
-            }
-            lines.set(i, line); // 更新行
-        }
-    }
-
-    public static List<String> extractFields(String input) {
-        List<String> fields = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\{([^}]*)}"); // 匹配 {xxx} 格式的正则表达式
-        Matcher matcher = pattern.matcher(input);
-
-        while (matcher.find()) {
-            fields.add(matcher.group(1)); // 添加匹配到的字段（不包含花括号）
-        }
-
-        return fields;
-    }
+//    public static void addScoreBoardPlaceHolders(Player player, List<String> lines) {
+//        Collection<PlaceholderProvider> nativePlaceHolders = ScoreBoardUtil.getNativePlaceHolders(player);
+//        // 转换为Set提高查找效率
+//        Set<String> nativePlaceHolderNames = nativePlaceHolders.stream()
+//                .map(PlaceholderProvider::getPlaceholder)
+//                .collect(Collectors.toSet());
+//
+//        // 直接在原始列表上操作，替换占位符
+//        for (int i = 0; i < lines.size(); i++) {
+//            String line = lines.get(i);
+//            List<String> placeholders = extractFields(line);
+//
+//            for (String p : placeholders) {
+//                // 如果占位符不在nativePlaceHolders中，则替换
+//                if (!nativePlaceHolderNames.contains("{" + p + "}")) {
+//                    line = line.replace("{" + p + "}", "%233bw_" + p + "%");
+//                }
+//            }
+//            lines.set(i, line); // 更新行
+//        }
+//    }
+//
+//    public static List<String> extractFields(String input) {
+//        List<String> fields = new ArrayList<>();
+//        Pattern pattern = Pattern.compile("\\{([^}]*)}"); // 匹配 {xxx} 格式的正则表达式
+//        Matcher matcher = pattern.matcher(input);
+//
+//        while (matcher.find()) {
+//            fields.add(matcher.group(1)); // 添加匹配到的字段（不包含花括号）
+//        }
+//
+//        return fields;
+//    }
 
     public static String getModeName(String mode) {
         return ScoreboardEditor.modeName.getOrDefault(mode, mode);

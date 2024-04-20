@@ -13,7 +13,6 @@ import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GeneratorEditor {
