@@ -1,0 +1,13 @@
+# 资源点全息图设置
+
+period: 120.0
+
+horizontal_speed: 2.5
+
+vertical_speed: 4.0
+
+vertical_amplitude: 0.50
+
+vertical_offset: 0.5
+
+text_holograms_offset: -2.0

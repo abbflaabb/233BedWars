@@ -4,7 +4,7 @@
 
 # 基础插件: BedWars1058_23.12.2+
 
-serverID: "#BH001"
+serverID: "#BH01"
 
 # 玩法及拓展借鉴于 **Wdsj.Net/Mc233.CN**
 # 国内优质原创小游戏服务器，欢迎游玩！
@@ -21,3 +21,5 @@ addons:
   DalaoWarning: true
   # 平衡性调整
   BalancedAdjustments: true
+  # 资源点全息图设置
+  GeneratorEditor: true

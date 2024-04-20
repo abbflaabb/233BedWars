@@ -22,6 +22,7 @@ public class ConfigManager {
     public static Boolean addon_fastCommands;
     public static Boolean addon_dalaoWarning;
     public static Boolean addon_balancedAdjustments;
+    public static Boolean addon_generatorEditor;
     public static Boolean addon_globalEvents;
     public static Boolean addon_advancedItems;
     public static Boolean addon_xpResourceMode;
@@ -36,6 +37,7 @@ public class ConfigManager {
         addon_fastCommands = cfg.getBoolean("addons.FastCommands");
         addon_dalaoWarning = cfg.getBoolean("addons.DalaoWarning");
         addon_balancedAdjustments = cfg.getBoolean("addons.BalancedAdjustments");
+        addon_generatorEditor = cfg.getBoolean("addons.GeneratorEditor");
         loadAddonsCfg();
     }
 
@@ -54,6 +56,7 @@ public class ConfigManager {
         FastCommands.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/fastCommands.yml")));
         DalaoWarning.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/dalaoWarning.yml")));
         BalancedAdjustments.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/balancedAdjustments.yml")));
+        GeneratorEditor.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/generatorEditor.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {
