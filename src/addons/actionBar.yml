@@ -1,1 +1,10 @@
 # 游戏内ActionBar设置
+
+refreshTicks: 20
+
+actionBar:
+  waiting: "&f&lSHIFT+右键 &a&l他人进行组队 或者使用全服组队命令 &f&l/zd"
+  playing: "{tDangerF}  {tColor}{tName}{tHeart}  &f存活: &a{tAlive}  &f距离: &a{tDistance}米  {tIndicator}"
+
+tips:
+  - "&a&l小贴士：&f烟花达到一定高度会触发爆炸，因此可以坐上后立马下来作为向上导弹。"

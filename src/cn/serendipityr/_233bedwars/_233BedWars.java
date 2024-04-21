@@ -28,6 +28,7 @@ public class _233BedWars extends JavaPlugin {
         LogUtil.consoleLog("&3 > &e正在注册事件...");
         EventManager.regEventHandlers();
         LogUtil.consoleLog("&3 > &e正在激活模块...");
+        ActionBarUtil.init();
         ScoreBoardUtil.init();
         TaskUtil.initOneTickTask();
         LogUtil.consoleLog("&3 > &a插件已启用！");

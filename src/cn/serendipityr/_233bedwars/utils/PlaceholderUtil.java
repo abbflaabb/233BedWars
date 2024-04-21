@@ -13,14 +13,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlaceholderUtil {
@@ -30,6 +30,7 @@ public class PlaceholderUtil {
     static String team_heart_normal;
     static String team_heart_destroyed;
     static String team_in_danger;
+    static String team_in_danger_full;
     static String teamNameFormat;
     static Map<String, String> modeName = new HashMap<>();
     static Map<String, String> teamDesc = new HashMap<>();
@@ -61,6 +62,11 @@ public class PlaceholderUtil {
                 .replace("{unicode_block}", "☲")
                 .replace("{unicode_cross}", "✚");
         team_in_danger = cfg.getString("team_in_danger")
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚");
+        team_in_danger_full = cfg.getString("team_in_danger_full")
                 .replace("{unicode_square}", "▊")
                 .replace("{unicode_heart}", "❤")
                 .replace("{unicode_block}", "☲")
@@ -154,6 +160,18 @@ public class PlaceholderUtil {
                     return getTeamDanger(team).replace("&", "§");
                 }
 
+                if (params.equalsIgnoreCase("tDangerF")) {
+                    return getTeamDangerFull(team).replace("&", "§");
+                }
+
+                if (params.equalsIgnoreCase("tDistance")) {
+                    return String.valueOf(getTeamDistance(team, p));
+                }
+
+                if (params.equalsIgnoreCase("tIndicator")) {
+                    return getTeamIndicator(team, p);
+                }
+
                 if (params.equalsIgnoreCase("tAlive")) {
                     return String.valueOf(getTeamAlive(team));
                 }
@@ -195,12 +213,37 @@ public class PlaceholderUtil {
         ScoreBoardUtil.addPlaceHolder(player, "{sId}", () -> ConfigManager.serverID);
         ScoreBoardUtil.addPlaceHolder(player, "{tHeart}", () -> getTeamHeart(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tDanger}", () -> getTeamDanger(team));
+        ScoreBoardUtil.addPlaceHolder(player, "{tDangerF}", () -> getTeamDangerFull(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tColor}", () -> getTeamColor(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tName}", () -> getTeamName(team));
+        ScoreBoardUtil.addPlaceHolder(player, "{tAlive}", () -> String.valueOf(getTeamAlive(team)));
+        ScoreBoardUtil.addPlaceHolder(player, "{tDistance}", () -> String.valueOf(getTeamDistance(team, player)));
+        ScoreBoardUtil.addPlaceHolder(player, "{tIndicator}", () -> getTeamIndicator(team, player));
         ScoreBoardUtil.addPlaceHolder(player, "{tAlive}", () -> String.valueOf(getTeamAlive(team)));
         for (ITeam _team : arena.getTeams()) {
             ScoreBoardUtil.addPlaceHolder(player, "{tInfo_" + _team.getName() + "}", () -> getFormattedTeamInfo(_team));
         }
+    }
+
+    public static String formatText(Player player, IArena arena, ITeam team, String text) {
+        text = text.replace("{modeName}", getModeName(arena.getGroup()))
+                .replace("{teamDesc}", arena.getGroup())
+                .replace("{map}", getMapName(arena))
+                .replace("{author}", getMapAuthor(arena.getArenaName()))
+                .replace("{resMode}", getResMode(player))
+                .replace("{globalEvent}", getGlobalEvent(arena))
+                .replace("{mode}", ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getGroup())
+                .replace("{sTime}", PlaceholderUtil.getCurrentFormattedTime())
+                .replace("{sId}", ConfigManager.serverID)
+                .replace("{tHeart}", getTeamHeart(team))
+                .replace("{tDanger}", getTeamDanger(team))
+                .replace("{tDangerF}", getTeamDangerFull(team))
+                .replace("{tColor}", getTeamColor(team))
+                .replace("{tName}", getTeamName(team))
+                .replace("{tDistance}", String.valueOf(getTeamDistance(team, player)))
+                .replace("{tIndicator}", getTeamIndicator(team, player))
+                .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
+        return text;
     }
 
     public static String getModeName(String mode) {
@@ -249,8 +292,41 @@ public class PlaceholderUtil {
         return team.getColor().chat().toString();
     }
 
+    public static Double getTeamDistance(ITeam team, Player player) {
+        return roundDouble(team.getSpawn().distance(player.getLocation()), 1);
+    }
+
+    public static String getTeamIndicator(ITeam team, Player player) {
+        // 获取玩家位置和朝向
+        Location playerLocation = player.getLocation();
+        org.bukkit.util.Vector toTarget = team.getSpawn().toVector().subtract(playerLocation.toVector()).normalize();
+        org.bukkit.util.Vector playerDir = playerLocation.getDirection().normalize();
+
+        // 计算方向差
+        double dot = playerDir.dot(toTarget);
+        Vector crossProduct = playerDir.crossProduct(toTarget);
+        double angle = Math.toDegrees(Math.acos(dot));
+
+        // 根据角度和叉积决定方向符号
+        String directionSymbol = "↑"; // 默认向前
+        if (angle > 157.5 || angle < 22.5) {
+            directionSymbol = angle > 157.5 ? "↓" : "↑";
+        } else if (angle > 67.5 && angle < 112.5) {
+            directionSymbol = crossProduct.getY() > 0 ? "←" : "→";
+        } else if (angle >= 22.5 && angle <= 67.5) {
+            directionSymbol = crossProduct.getY() > 0 ? "↖" : "↗";
+        } else if (angle >= 112.5) {
+            directionSymbol = crossProduct.getY() > 0 ? "↙" : "↘";
+        }
+        return directionSymbol;
+    }
+
     public static String getTeamDanger(ITeam team) {
         return riskyTeams.contains(team) ? team_in_danger : "";
+    }
+
+    public static String getTeamDangerFull(ITeam team) {
+        return riskyTeams.contains(team) ? team_in_danger_full : "";
     }
 
     public static String getFormattedTeamInfo(ITeam team) {
@@ -322,6 +398,15 @@ public class PlaceholderUtil {
     public static void resetArenaRiskyTeams(IArena arena) {
         for (ITeam team : arena.getTeams()) {
             riskyTeams.remove(team);
+        }
+    }
+
+    private static Double roundDouble(double num, int scale) {
+        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+        if (num > 0 && rounded == 0) {
+            return 0.1D;
+        } else {
+            return rounded;
         }
     }
 }

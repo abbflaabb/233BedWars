@@ -16,6 +16,9 @@
 # {tName} - 玩家团队名称
 # {tAlive} - 玩家团队存活人数
 # {tDanger} - 团队危险指示
+# {tDangerF} - 团队危险指示 (完整)
+# {tDistance} - 团队距离指示
+# {tIndicator} - 团队位置指示器
 # {tInfo_[团队名称]} - 当前游戏内格式化的团队信息
 # 部分BedWars1058提供的占位符:
 # {on} - 当前玩家数
@@ -38,6 +41,10 @@ mapAuthor:
   test: "test_author"
 
 teamNameFormat: "{tColor}{tName} {tHeart} &f| {tAlive}"
+
+team_in_danger: "[危险]"
+
+team_in_danger_full: "&4&l基地危险！"
 
 team_heart_animation_ticks: 20
 

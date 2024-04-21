@@ -43,6 +43,9 @@ public class GameEventHandler implements Listener {
                 ScoreboardEditor.editScoreBoard(arena, player);
             }
         }
+        if (ConfigManager.addon_actionBar) {
+            ActionBar.initGame(arena, false);
+        }
     }
 
     @EventHandler
@@ -57,6 +60,9 @@ public class GameEventHandler implements Listener {
         Player player = event.getPlayer();
         if (ConfigManager.addon_scoreBoardEditor) {
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
+        }
+        if (ConfigManager.addon_actionBar) {
+            ActionBar.initGame(arena, true);
         }
     }
 
