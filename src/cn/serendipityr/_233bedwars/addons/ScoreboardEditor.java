@@ -27,7 +27,7 @@ public class ScoreboardEditor {
         in_game_title = cfg.getStringList("in-game.title");
         in_game_lines = cfg.getStringList("in-game.content");
         restarting_title = cfg.getStringList("restarting.title");
-        restarting_lines = cfg.getStringList("restarting.lines");
+        restarting_lines = cfg.getStringList("restarting.content");
         waiting_title.replaceAll(s -> s.replace("&", "§"));
         waiting_lines.replaceAll(s -> s.replace("&", "§"));
         starting_title.replaceAll(s -> s.replace("&", "§"));

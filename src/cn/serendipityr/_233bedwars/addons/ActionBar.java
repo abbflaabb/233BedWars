@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -32,6 +33,7 @@ public class ActionBar {
             return;
         }
         switch (arena.getStatus()) {
+            case starting:
             case waiting:
             case playing:
                 arenas.put(arena, false);
@@ -49,12 +51,14 @@ public class ActionBar {
             actionBarTicks = 0;
             for (IArena arena : arenas.keySet()) {
                 if (!arenas.get(arena)) {
-                    sendActionBarToPlayers(arena, getRandomTip());
                     if (arena.getStatus() == GameState.playing) {
+                        sendActionBarToPlayers(arena, getRandomTip());
                         arenas.put(arena, true);
+                        continue;
                     }
+                    sendActionBarToPlayers(arena, actionBar_waiting);
                 } else {
-                    sendActionBarToPlayers(arena, arena.getStatus() == GameState.waiting ? actionBar_waiting : actionBar_playing);
+                    sendActionBarToPlayers(arena, actionBar_playing);
                 }
             }
         }
