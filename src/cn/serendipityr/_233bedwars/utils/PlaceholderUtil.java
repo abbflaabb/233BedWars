@@ -1,21 +1,82 @@
 package cn.serendipityr._233bedwars.utils;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.ScoreboardEditor;
 import cn.serendipityr._233bedwars.addons.TeamNameThemes;
 import cn.serendipityr._233bedwars.config.ConfigManager;
+import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlaceholderUtil {
+    static int team_heart_animation_ticks;
+    static List<String> team_heart_danger_animation = new ArrayList<>();
+    static double team_heart_danger_search_radius;
+    static String team_heart_normal;
+    static String team_heart_destroyed;
+    static String team_in_danger;
+    static String teamNameFormat;
+    static Map<String, String> modeName = new HashMap<>();
+    static Map<String, String> teamDesc = new HashMap<>();
+    static Map<String, String> mapAuthor = new HashMap<>();
+    static String defaultMapAuthor;
+
+    public static void loadConfig(YamlConfiguration cfg) {
+        team_heart_animation_ticks = cfg.getInt("team_heart_animation_ticks");
+        team_heart_danger_search_radius = cfg.getDouble("team_heart_danger_search_radius");
+        team_heart_danger_animation = cfg.getStringList("team_heart_danger_animation");
+        team_heart_danger_animation.replaceAll(s -> s
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚"));
+        team_heart_destroyed = cfg.getString("team_heart_destroyed")
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚");
+        team_heart_normal = cfg.getString("team_heart_normal")
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚");
+        teamNameFormat = cfg.getString("teamNameFormat")
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚");
+        team_in_danger = cfg.getString("team_in_danger")
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚");
+        for (String mN : cfg.getConfigurationSection("modeName").getKeys(false)) {
+            modeName.put(mN, cfg.getString("modeName." + mN));
+        }
+        for (String tD : cfg.getConfigurationSection("teamDesc").getKeys(false)) {
+            teamDesc.put(tD, cfg.getString("teamDesc." + tD));
+        }
+        for (String mA : cfg.getConfigurationSection("mapAuthor").getKeys(false)) {
+            mapAuthor.put(mA, cfg.getString("mapAuthor." + mA));
+        }
+        defaultMapAuthor = cfg.getString("defaultMapAuthor");
+    }
+
     static class placeholderAPISupport extends PlaceholderExpansion {
         @Override
         @Nonnull
@@ -89,6 +150,10 @@ public class PlaceholderUtil {
                     return getTeamName(team).replace("&", "§");
                 }
 
+                if (params.equalsIgnoreCase("tDanger")) {
+                    return getTeamDanger(team).replace("&", "§");
+                }
+
                 if (params.equalsIgnoreCase("tAlive")) {
                     return String.valueOf(getTeamAlive(team));
                 }
@@ -129,6 +194,7 @@ public class PlaceholderUtil {
         ScoreBoardUtil.addPlaceHolder(player, "{sTime}", PlaceholderUtil::getCurrentFormattedTime);
         ScoreBoardUtil.addPlaceHolder(player, "{sId}", () -> ConfigManager.serverID);
         ScoreBoardUtil.addPlaceHolder(player, "{tHeart}", () -> getTeamHeart(team));
+        ScoreBoardUtil.addPlaceHolder(player, "{tDanger}", () -> getTeamDanger(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tColor}", () -> getTeamColor(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tName}", () -> getTeamName(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tAlive}", () -> String.valueOf(getTeamAlive(team)));
@@ -137,46 +203,12 @@ public class PlaceholderUtil {
         }
     }
 
-//    public static void addScoreBoardPlaceHolders(Player player, List<String> lines) {
-//        Collection<PlaceholderProvider> nativePlaceHolders = ScoreBoardUtil.getNativePlaceHolders(player);
-//        // 转换为Set提高查找效率
-//        Set<String> nativePlaceHolderNames = nativePlaceHolders.stream()
-//                .map(PlaceholderProvider::getPlaceholder)
-//                .collect(Collectors.toSet());
-//
-//        // 直接在原始列表上操作，替换占位符
-//        for (int i = 0; i < lines.size(); i++) {
-//            String line = lines.get(i);
-//            List<String> placeholders = extractFields(line);
-//
-//            for (String p : placeholders) {
-//                // 如果占位符不在nativePlaceHolders中，则替换
-//                if (!nativePlaceHolderNames.contains("{" + p + "}")) {
-//                    line = line.replace("{" + p + "}", "%233bw_" + p + "%");
-//                }
-//            }
-//            lines.set(i, line); // 更新行
-//        }
-//    }
-//
-//    public static List<String> extractFields(String input) {
-//        List<String> fields = new ArrayList<>();
-//        Pattern pattern = Pattern.compile("\\{([^}]*)}"); // 匹配 {xxx} 格式的正则表达式
-//        Matcher matcher = pattern.matcher(input);
-//
-//        while (matcher.find()) {
-//            fields.add(matcher.group(1)); // 添加匹配到的字段（不包含花括号）
-//        }
-//
-//        return fields;
-//    }
-
     public static String getModeName(String mode) {
-        return ScoreboardEditor.modeName.getOrDefault(mode, mode);
+        return modeName.getOrDefault(mode, mode);
     }
 
     public static String getTeamDesc(String mode) {
-        return ScoreboardEditor.teamDesc.getOrDefault(mode, mode);
+        return teamDesc.getOrDefault(mode, mode);
     }
 
     public static String getMapName(IArena arena) {
@@ -184,7 +216,7 @@ public class PlaceholderUtil {
     }
 
     public static String getMapAuthor(String map) {
-        return ScoreboardEditor.mapAuthor.getOrDefault(map, ScoreboardEditor.defaultMapAuthor);
+        return mapAuthor.getOrDefault(map, defaultMapAuthor);
     }
 
     public static String getResMode(Player player) {
@@ -200,8 +232,13 @@ public class PlaceholderUtil {
         return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(team.getName(), team.getName());
     }
 
+    static List<ITeam> riskyTeams = new CopyOnWriteArrayList<>();
+
     public static String getTeamHeart(ITeam team) {
-        return team.isBedDestroyed() ? "&7❤" : "&c❤";
+        if (riskyTeams.contains(team)) {
+            return riskyTeamHeart;
+        }
+        return team.isBedDestroyed() ? team_heart_destroyed : team_heart_normal;
     }
 
     public static Integer getTeamAlive(ITeam team) {
@@ -212,8 +249,12 @@ public class PlaceholderUtil {
         return team.getColor().chat().toString();
     }
 
+    public static String getTeamDanger(ITeam team) {
+        return riskyTeams.contains(team) ? team_in_danger : "";
+    }
+
     public static String getFormattedTeamInfo(ITeam team) {
-        return ScoreboardEditor.teamNameFormat.replace("{tColor}", getTeamColor(team)).replace("{tName}", getTeamName(team)).replace("{tHeart}", getTeamHeart(team)).replace("{tAlive}", String.valueOf(getTeamAlive(team)));
+        return teamNameFormat.replace("{tColor}", getTeamColor(team)).replace("{tName}", getTeamName(team)).replace("{tHeart}", getTeamHeart(team)).replace("{tAlive}", String.valueOf(getTeamAlive(team)));
     }
 
     public static String getCurrentFormattedTime() {
@@ -223,5 +264,64 @@ public class PlaceholderUtil {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy HH:mm:ss");
         // 格式化当前时间
         return now.format(formatter);
+    }
+
+    static String riskyTeamHeart = "";
+    static int teamHeartTicks = 0;
+    static int currentIndex = 0;
+
+    public static void updateTeamHeart() {
+        teamHeartTicks++;
+        if (teamHeartTicks > team_heart_animation_ticks) {
+            teamHeartTicks = 0;
+            currentIndex++;
+            if (currentIndex >= team_heart_danger_animation.size()) {
+                currentIndex = 0;
+            }
+            checkRiskyTeams();
+            riskyTeamHeart = team_heart_danger_animation.get(currentIndex);
+        }
+    }
+
+    private static void checkRiskyTeams() {
+        for (IArena arena : ProviderUtil.bw.getArenaUtil().getArenas()) {
+            if (arena.getStatus() != GameState.playing) {
+                continue;
+            }
+            for (ITeam team : arena.getTeams()) {
+                if (riskyTeams.contains(team)) {
+                    if (team.isBedDestroyed()) {
+                        riskyTeams.remove(team);
+                        return;
+                    }
+                    if (!checkRiskyTeam(arena, team)) {
+                        riskyTeams.remove(team);
+                    }
+                } else if (checkRiskyTeam(arena, team)) {
+                    riskyTeams.add(team);
+                }
+            }
+        }
+    }
+
+    private static boolean checkRiskyTeam(IArena arena, ITeam team) {
+        Location bedLoc = team.getBed();
+        boolean risky = false;
+        for (Entity entity : arena.getWorld().getNearbyEntities(bedLoc, team_heart_danger_search_radius, team_heart_danger_search_radius, team_heart_danger_search_radius)) {
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
+                if (!arena.isSpectator(player) && !team.isMember(player) && !arena.isReSpawning(player)) {
+                    risky = true;
+                    break;
+                }
+            }
+        }
+        return risky;
+    }
+
+    public static void resetArenaRiskyTeams(IArena arena) {
+        for (ITeam team : arena.getTeams()) {
+            riskyTeams.remove(team);
+        }
     }
 }

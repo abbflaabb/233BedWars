@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.utils.LogUtil;
-import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.generator.GeneratorType;
 import com.andrei1058.bedwars.api.arena.generator.IGenHolo;
@@ -64,31 +63,29 @@ public class GeneratorEditor {
             String iso = lang.getIso();
             IGenHolo armorstands = generator.getLanguageHolograms().get(iso);
             try {
-                Class<?> cls = armorstands.getClass(); // 获取实例的类对象
-
-                // 获取字段对象
+                Class<?> cls = armorstands.getClass();
                 Field tierField = cls.getDeclaredField("tier");
                 Field timerField = cls.getDeclaredField("timer");
                 Field nameField = cls.getDeclaredField("name");
-
-                // 如果字段是私有的，确保这一行
                 tierField.setAccessible(true);
                 timerField.setAccessible(true);
                 nameField.setAccessible(true);
-
-                // 读取字段值
                 ArmorStand tier = (ArmorStand) tierField.get(armorstands);
                 ArmorStand timer = (ArmorStand) timerField.get(armorstands);
                 ArmorStand name = (ArmorStand) nameField.get(armorstands);
 
+                double baseY = generator.getLocation().getY() + text_holograms_offset;
+
                 Location tier_loc = tier.getLocation();
-                tier_loc.setY(generator.getLocation().getY() + 3.0 + text_holograms_offset);
-                Location timer_loc = timer.getLocation();
-                timer_loc.setY(generator.getLocation().getY() + 2.7 + text_holograms_offset);
-                Location name_loc = name.getLocation();
-                name_loc.setY(generator.getLocation().getY() + 2.4 + text_holograms_offset);
+                tier_loc.setY(baseY + 3.0);
                 tier.teleport(tier_loc);
+
+                Location timer_loc = timer.getLocation();
+                timer_loc.setY(baseY + 2.7);
                 timer.teleport(timer_loc);
+
+                Location name_loc = name.getLocation();
+                name_loc.setY(baseY + 2.4);
                 name.teleport(name_loc);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 LogUtil.consoleLog("&9233BedWars &3&l > &e[GeneratorEditor] &c发生致命错误！");
@@ -162,11 +159,9 @@ public class GeneratorEditor {
         }
     }
 
-    public static void initOneTickTask() {
-        Bukkit.getScheduler().runTaskTimer(_233BedWars.getInstance(), () -> {
-            for (ArmorStand item : rotations) {
-                rotate(item);
-            }
-        }, 120L, 1L);
+    public static void rotateGenerators() {
+        for (ArmorStand item : rotations) {
+            rotate(item);
+        }
     }
 }

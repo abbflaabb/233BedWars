@@ -1,0 +1,52 @@
+# 额外占位符设置
+
+# 所有额外占位符:
+# {mode} - 当前游戏组别
+# {modeName} - 当前游戏组别名称
+# {teamDesc} - 当前游戏队伍描述
+# {map} - 当前游戏地图名称
+# {author} - 当前游戏地图建筑师
+# {resMode} - 当前玩家资源模式
+# {sTime} - 当前服务器时间
+# {sId} - 当前服务器ID
+# {globalEvent} - 当前游戏内全域事件
+# {allTeams} - 当前游戏内所有团队信息
+# {tHeart} - 玩家团队动态提示
+# {tColor} - 玩家团队颜色
+# {tName} - 玩家团队名称
+# {tAlive} - 玩家团队存活人数
+# {tDanger} - 团队危险指示
+# {tInfo_[团队名称]} - 当前游戏内格式化的团队信息
+# 部分BedWars1058提供的占位符:
+# {on} - 当前玩家数
+# {max} - 最大玩家数
+# {nextEvent} - 下一游戏事件
+# {time} - 当前事件倒计时
+# {kills} - 玩家击杀数
+# {finalKills} - 玩家最终击杀数
+# {serverIp} - 服务器地址
+
+modeName:
+  xqc_4x8: "超级床の战争"
+
+teamDesc:
+  xqc_4x8: "4人 8队"
+
+defaultMapAuthor: "public"
+
+mapAuthor:
+  test: "test_author"
+
+teamNameFormat: "{tColor}{tName} {tHeart} &f| {tAlive}"
+
+team_heart_animation_ticks: 20
+
+team_heart_danger_search_radius: 5.0
+
+team_heart_danger_animation:
+  - "&c{unicode_heart}"
+  - "&4{unicode_heart}"
+
+team_heart_normal: "&c{unicode_heart}"
+
+team_heart_destroyed: "&7{unicode_heart}"

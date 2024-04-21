@@ -23,3 +23,5 @@ addons:
   BalancedAdjustments: true
   # 资源点全息图设置
   GeneratorEditor: true
+  # 游戏内ActionBar设置
+  ActionBar: true

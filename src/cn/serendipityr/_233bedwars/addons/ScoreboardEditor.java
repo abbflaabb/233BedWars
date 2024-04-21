@@ -7,12 +7,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ScoreboardEditor {
-    public static String teamNameFormat;
     static List<String> waiting_title;
     static List<String> waiting_lines;
     static List<String> starting_title;
@@ -21,13 +18,8 @@ public class ScoreboardEditor {
     static List<String> in_game_lines;
     static List<String> restarting_title;
     static List<String> restarting_lines;
-    public static Map<String, String> modeName = new HashMap<>();
-    public static Map<String, String> teamDesc = new HashMap<>();
-    public static Map<String, String> mapAuthor = new HashMap<>();
-    public static String defaultMapAuthor;
 
     public static void loadConfig(YamlConfiguration cfg) {
-        teamNameFormat = cfg.getString("teamNameFormat");
         waiting_title = cfg.getStringList("waiting.title");
         waiting_lines = cfg.getStringList("waiting.content");
         starting_title = cfg.getStringList("starting.title");
@@ -42,16 +34,6 @@ public class ScoreboardEditor {
         starting_lines.replaceAll(s -> s.replace("&", "§"));
         in_game_title.replaceAll(s -> s.replace("&", "§"));
         in_game_lines.replaceAll(s -> s.replace("&", "§"));
-        for (String mN : cfg.getConfigurationSection("modeName").getKeys(false)) {
-            modeName.put(mN, cfg.getString("modeName." + mN));
-        }
-        for (String tD : cfg.getConfigurationSection("teamDesc").getKeys(false)) {
-            teamDesc.put(tD, cfg.getString("teamDesc." + tD));
-        }
-        for (String mA : cfg.getConfigurationSection("mapAuthor").getKeys(false)) {
-            mapAuthor.put(mA, cfg.getString("mapAuthor." + mA));
-        }
-        defaultMapAuthor = cfg.getString("defaultMapAuthor");
     }
 
     public static void editScoreBoard(IArena arena, Player player) {

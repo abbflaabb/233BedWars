@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -63,14 +62,5 @@ public class ScoreBoardUtil {
                 handle.refreshPlaceholders();
             }, 2L);
         }
-    }
-
-    public static Collection<PlaceholderProvider> getNativePlaceHolders(Player player) {
-        ISidebar sm = sms.getSidebar(player);
-        if (sm != null) {
-            Sidebar handle = sm.getHandle();
-            return handle.getPlaceholders();
-        }
-        return new ArrayList<>();
     }
 }

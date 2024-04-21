@@ -1,43 +1,5 @@
 # 计分板编辑器
 
-# 所有额外占位符:
-# {mode} - 当前游戏组别
-# {modeName} - 当前游戏组别名称
-# {teamDesc} - 当前游戏队伍描述
-# {map} - 当前游戏地图名称
-# {author} - 当前游戏地图建筑师
-# {resMode} - 当前玩家资源模式
-# {sTime} - 当前服务器时间
-# {sId} - 当前服务器ID
-# {globalEvent} - 当前游戏内全域事件
-# {allTeams} - 当前游戏内所有团队信息
-# {tHeart} - 玩家团队动态提示
-# {tColor} - 玩家团队颜色
-# {tName} - 玩家团队名称
-# {tAlive} - 玩家团队存活人数
-# {tInfo_[团队名称]} - 当前游戏内格式化的团队信息
-# 部分BedWars1058提供的占位符:
-# {on} - 当前玩家数
-# {max} - 最大玩家数
-# {nextEvent} - 下一游戏事件
-# {time} - 当前事件倒计时
-# {kills} - 玩家击杀数
-# {finalKills} - 玩家最终击杀数
-# {serverIp} - 服务器地址
-
-modeName:
-  xqc_4x8: "超级床の战争"
-
-teamDesc:
-  xqc_4x8: "4人 8队"
-
-defaultMapAuthor: "public"
-
-mapAuthor:
-  test: "test_author"
-
-teamNameFormat: "{tColor}{tName} {tHeart} &f| {tAlive}"
-
 waiting:
   title:
     - "&e&l{modeName}"
@@ -88,7 +50,7 @@ in-game:
     - "{allTeams}"
     - ""
     - "&f我的信息:"
-    - "&f队伍: {tHeart} {tColor}{tName}  &f人数: &a{tAlive}"
+    - "&f队伍: {tHeart} {tColor}{tName} {tDanger} &f人数: &a{tAlive}"
     - "&f杀敌: &a{kills}  &f最终击杀: &a{finalKills}"
     - ""
     - "&e游戏地址: {serverIp}"
@@ -105,7 +67,7 @@ restarting:
     - "{allTeams}"
     - ""
     - "&f我的信息:"
-    - "&f队伍: {tHeart} {tColor}{tName}  &f人数: &a{tAlive}"
+    - "&f队伍: {tHeart} {tColor}{tName} {tDanger} &f人数: &a{tAlive}"
     - "&f杀敌: &a{kills}  &f最终击杀: &a{finalKills}"
     - ""
     - "&e游戏地址: {serverIp}"

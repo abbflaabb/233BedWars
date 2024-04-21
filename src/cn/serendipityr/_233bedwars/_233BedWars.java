@@ -4,10 +4,7 @@ import cn.serendipityr._233bedwars.addons.GeneratorEditor;
 import cn.serendipityr._233bedwars.commands.CommandManager;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.EventManager;
-import cn.serendipityr._233bedwars.utils.LogUtil;
-import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
-import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import cn.serendipityr._233bedwars.utils.ScoreBoardUtil;
+import cn.serendipityr._233bedwars.utils.*;
 import com.andrei1058.bedwars.api.BedWars;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,7 +29,7 @@ public class _233BedWars extends JavaPlugin {
         EventManager.regEventHandlers();
         LogUtil.consoleLog("&3 > &e正在激活模块...");
         ScoreBoardUtil.init();
-        GeneratorEditor.initOneTickTask();
+        TaskUtil.initOneTickTask();
         LogUtil.consoleLog("&3 > &a插件已启用！");
         LogUtil.consoleLog("&3&l&m--------------------------------------------");
     }

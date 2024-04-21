@@ -4,6 +4,7 @@ import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.*;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -57,6 +58,7 @@ public class ConfigManager {
         DalaoWarning.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/dalaoWarning.yml")));
         BalancedAdjustments.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/balancedAdjustments.yml")));
         GeneratorEditor.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/generatorEditor.yml")));
+        PlaceholderUtil.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/extraPlaceHolder.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {
