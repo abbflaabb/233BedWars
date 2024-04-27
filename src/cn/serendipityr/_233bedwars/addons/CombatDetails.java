@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -189,13 +190,17 @@ public class CombatDetails {
             killStreak.put(killer, kills);
             if (killStreakMsg.containsKey(kills)) {
                 for (Player p : arena.getPlayers()) {
-                    p.sendMessage(killStreakMsg.get(kills).replace("{playerName}", killer.getDisplayName()).replace("&", "§"));
+                    String msg = killStreakMsg.get(kills).replace("{playerName}", killer.getDisplayName()).replace("&", "§");
+                    p.sendMessage();
+                    ActionBarUtil.send(p, msg);
                 }
             } else {
                 Optional<Integer> maxKey = killStreakMsg.keySet().stream().max(Integer::compare);
                 maxKey.ifPresent(key -> {
                     for (Player p : arena.getPlayers()) {
-                        p.sendMessage(killStreakMsg.get(key).replace("{playerName}", killer.getDisplayName()).replace("&", "§"));
+                        String msg = killStreakMsg.get(key).replace("{playerName}", killer.getDisplayName()).replace("&", "§");
+                        p.sendMessage();
+                        ActionBarUtil.send(p, msg);
                     }
                 });
             }

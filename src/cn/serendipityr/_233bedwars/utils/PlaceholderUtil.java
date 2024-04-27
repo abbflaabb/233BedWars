@@ -234,8 +234,7 @@ public class PlaceholderUtil {
                 .replace("{globalEvent}", getGlobalEvent(arena))
                 .replace("{mode}", ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getGroup())
                 .replace("{sTime}", PlaceholderUtil.getCurrentFormattedTime())
-                .replace("{sId}", ConfigManager.serverID)
-                .replace("&", "§");
+                .replace("{sId}", ConfigManager.serverID);
         if (team != null) {
             text = text.replace("{tHeart}", getTeamHeart(team))
                     .replace("{tDanger}", getTeamDanger(team))
@@ -246,7 +245,7 @@ public class PlaceholderUtil {
                     .replace("{tIndicator}", getTeamIndicator(team, player))
                     .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
         }
-        return text;
+        return text.replace("&", "§");
     }
 
     public static String getModeName(String mode) {
