@@ -40,7 +40,7 @@ defaultMapAuthor: "public"
 mapAuthor:
   test: "test_author"
 
-teamNameFormat: "{tColor}{tName} {tHeart} &f| {tAlive}"
+teamNameFormat: "{tColor}{tName} {tHeart} | {tAlive}"
 
 team_in_danger: "[危险]"
 

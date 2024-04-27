@@ -235,14 +235,17 @@ public class PlaceholderUtil {
                 .replace("{mode}", ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getGroup())
                 .replace("{sTime}", PlaceholderUtil.getCurrentFormattedTime())
                 .replace("{sId}", ConfigManager.serverID)
-                .replace("{tHeart}", getTeamHeart(team))
-                .replace("{tDanger}", getTeamDanger(team))
-                .replace("{tDangerF}", getTeamDangerFull(team))
-                .replace("{tColor}", getTeamColor(team))
-                .replace("{tName}", getTeamName(team))
-                .replace("{tDistance}", String.valueOf(getTeamDistance(team, player)))
-                .replace("{tIndicator}", getTeamIndicator(team, player))
-                .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
+                .replace("&", "§");
+        if (team != null) {
+            text = text.replace("{tHeart}", getTeamHeart(team))
+                    .replace("{tDanger}", getTeamDanger(team))
+                    .replace("{tDangerF}", getTeamDangerFull(team))
+                    .replace("{tColor}", getTeamColor(team))
+                    .replace("{tName}", getTeamName(team))
+                    .replace("{tDistance}", String.valueOf(getTeamDistance(team, player)))
+                    .replace("{tIndicator}", getTeamIndicator(team, player))
+                    .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
+        }
         return text;
     }
 

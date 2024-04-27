@@ -1,7 +1,6 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
-import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -52,23 +51,31 @@ public class ActionBar {
             for (IArena arena : arenas.keySet()) {
                 if (!arenas.get(arena)) {
                     if (arena.getStatus() == GameState.playing) {
-                        sendActionBarToPlayers(arena, getRandomTip());
+                        sendActionBarToPlayers(arena, getRandomTip(), false);
                         arenas.put(arena, true);
                         continue;
                     }
-                    sendActionBarToPlayers(arena, actionBar_waiting);
+                    sendActionBarToPlayers(arena, actionBar_waiting, true);
                 } else {
-                    sendActionBarToPlayers(arena, actionBar_playing);
+                    sendActionBarToPlayers(arena, actionBar_playing, false);
                 }
             }
         }
     }
 
-    public static void sendActionBarToPlayers(IArena arena, String msg) {
-        for (ITeam team : arena.getTeams()) {
-            for (Player player : team.getMembers()) {
+    public static void sendActionBarToPlayers(IArena arena, String msg, boolean waiting) {
+        if (waiting) {
+            for (Player player : arena.getPlayers()) {
                 if (!arena.isReSpawning(player) && !arena.isSpectator(player)) {
-                    ActionBarUtil.send(player, PlaceholderUtil.formatText(player, arena, team, msg));
+                    ActionBarUtil.send(player, PlaceholderUtil.formatText(player, arena, null, msg));
+                }
+            }
+        } else {
+            for (ITeam team : arena.getTeams()) {
+                for (Player player : team.getMembers()) {
+                    if (!arena.isReSpawning(player) && !arena.isSpectator(player)) {
+                        ActionBarUtil.send(player, PlaceholderUtil.formatText(player, arena, team, msg));
+                    }
                 }
             }
         }
