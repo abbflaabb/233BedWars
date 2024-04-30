@@ -1,0 +1,33 @@
+# 商店物品拓展
+
+shop_layout:
+  - "0:armor-category"
+  - "1:melee-category"
+  - "2:blocks-category"
+  - "3:tools-category"
+  - "4:ranged-category"
+  - "5:potions-category"
+  - "6:utility-category"
+  - "7:mounts-category"
+  - "8:quick-buy-category"
+
+item_lores:
+  - "{description}"
+  - ""
+  - "&1物品:"
+  - "{items}"
+  - ""
+  - "&7花费: &3{cost}"
+  - ""
+  - "{affordable}"
+
+items:
+  recoverBed:
+    material: BED
+    cost: "GOLD_INGOT:12"
+    name: "回春床"
+    description:
+      - "test"
+      - ""
+    items:
+      - "BED:回春床:1:Test Lore\nTestLore"

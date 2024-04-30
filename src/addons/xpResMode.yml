@@ -1,0 +1,50 @@
+# 经验模式
+
+resRatio:
+  IRON: 1.0
+  GOLD: 5.0
+  DIAMOND: 50.0
+  EMERALD: 100.0
+
+selected: "&e点击选择！"
+
+unselected: "&e已选择！"
+
+choose_normal: "&e你选择了 &a&l普通模式"
+
+choose_exp: "&e你选择了 &b&l经验模式"
+
+error_unaffordable: "&c购买失败，你缺少{need}级。"
+
+pick_up_sound: "ORB_PICKUP:1:2"
+
+Item:
+  1:
+    material: PAPER
+    name: "&a资源类型选择 &7(右键打开)"
+    lore:
+      - ""
+    execute: "[gui_open] resModeChange"
+
+GUI:
+  size: 27
+  title: "&7资源类型选择"
+  items:
+    11:
+      material: BED
+      name: "&a普通物资"
+      lore:
+        - "&7拥有铁、金、钻石、绿宝石货币资源的正常起床战争模式"
+        - "&7不受部分价格调整影响，且物资可以丢给他人"
+        - ""
+        - "{choose_normal}"
+      execute: "[changeResMode] normal"
+    15:
+      material: EXP_BOTTLE
+      name: "&a经验物资"
+      lore:
+        - "&7货币统一为经验等级，按比例分配的起床战争模式"
+        - "&c注意: 物品价格略贵于普通模式"
+        - ""
+        - "{choose_exp}"
+      execute: "[changeResMode] exp"

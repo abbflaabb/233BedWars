@@ -191,7 +191,7 @@ public class CombatDetails {
             if (killStreakMsg.containsKey(kills)) {
                 for (Player p : arena.getPlayers()) {
                     String msg = killStreakMsg.get(kills).replace("{playerName}", killer.getDisplayName()).replace("&", "§");
-                    p.sendMessage();
+                    p.sendMessage(msg);
                     ActionBarUtil.send(p, msg);
                 }
             } else {
@@ -199,7 +199,7 @@ public class CombatDetails {
                 maxKey.ifPresent(key -> {
                     for (Player p : arena.getPlayers()) {
                         String msg = killStreakMsg.get(key).replace("{playerName}", killer.getDisplayName()).replace("&", "§");
-                        p.sendMessage();
+                        p.sendMessage(msg);
                         ActionBarUtil.send(p, msg);
                     }
                 });

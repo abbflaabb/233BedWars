@@ -1,15 +1,20 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.FastCommands;
+import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import com.andrei1058.bedwars.api.arena.GameState;
+import com.andrei1058.bedwars.shop.main.ShopCategory;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,14 +27,6 @@ public class InteractEventHandler implements Listener {
     public static HashMap<ItemStack, String> executes = new HashMap<>();
 
     @EventHandler
-    public void onPlayerOpenInventory(InventoryOpenEvent event) {
-        if (event.getPlayer() instanceof Player) {
-            Player player = (Player) event.getPlayer();
-
-        }
-    }
-
-    @EventHandler
     public void onPlayerClickItem(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
@@ -40,9 +37,31 @@ public class InteractEventHandler implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDropItems(PlayerDropItemEvent event) {
-        if (preventDrops.contains(event.getItemDrop().getItemStack())) {
+    public void onPlayerInteractItem(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (handleClick(player, item)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPickUpItems(PlayerPickupItemEvent event) {
+        Player player = event.getPlayer();
+        Item item = event.getItem();
+        if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            if (ConfigManager.addon_xpResMode && XpResMode.handlePickUp(player, item)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItems(PlayerDropItemEvent event) {
+        for (ItemStack itemStack : preventDrops) {
+            if (isSimilar(itemStack, event.getItemDrop().getItemStack())) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -50,7 +69,7 @@ public class InteractEventHandler implements Listener {
     public void onPlayerToggleShift(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (event.isSneaking()) {
-            if (ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player) != null && ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getStatus() == GameState.playing) {
+            if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
                 if (ConfigManager.addon_fastCommands) {
                     FastCommands.handleShiftToggle(player);
                 }
@@ -59,29 +78,53 @@ public class InteractEventHandler implements Listener {
     }
 
     public static boolean handleClick(Player player, ItemStack item) {
-        if (executes.containsKey(item)) {
-            String[] execute = parseExecute(executes.get(item));
-            if (execute.length != 2) {
-                return false;
-            }
-            if ("command".equals(execute[0])) {
-                player.performCommand(execute[1]);
-                return true;
-            }
-            if ("say".equals(execute[0])) {
-                player.chat(execute[1]);
-                return true;
-            }
-            if ("gui_open".equals(execute[0])) {
-                if ("fastCommands".equals(execute[1])) {
-                    if (ConfigManager.addon_fastCommands) {
-                        FastCommands.openGUI(player);
-                        return true;
+        for (ItemStack _item : executes.keySet()) {
+            if (isSimilar(_item, item)) {
+                String[] execute = parseExecute(executes.get(_item));
+                if (execute.length != 2) {
+                    return false;
+                }
+                if ("command".equals(execute[0])) {
+                    player.performCommand(execute[1]);
+                    return true;
+                }
+                if ("say".equals(execute[0])) {
+                    player.chat(execute[1]);
+                    return true;
+                }
+                if ("gui_open".equals(execute[0])) {
+                    if ("fastCommands".equals(execute[1])) {
+                        if (ConfigManager.addon_fastCommands) {
+                            FastCommands.openGUI(player);
+                            return true;
+                        }
+                    }
+                    if ("resModeChange".equals(execute[1])) {
+                        if (ConfigManager.addon_xpResMode) {
+                            XpResMode.openGUI(player);
+                            return true;
+                        }
                     }
                 }
+                if ("changeResMode".equals(execute[0])) {
+                    XpResMode.setResMode(player, execute[1]);
+                    return true;
+                }
+                break;
             }
         }
         return false;
+    }
+
+    private static boolean isSimilar(ItemStack origin, ItemStack check) {
+        if (check == null) {
+            return false;
+        }
+        if (!check.hasItemMeta()) {
+            return origin.isSimilar(check);
+        } else {
+            return origin.hasItemMeta() && check.getItemMeta().getDisplayName().equals(origin.getItemMeta().getDisplayName());
+        }
     }
 
     private static String[] parseExecute(String input) {

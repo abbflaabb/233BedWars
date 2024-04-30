@@ -1,5 +1,7 @@
 package cn.serendipityr._233bedwars;
 
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.commands.CommandManager;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.EventManager;
@@ -37,6 +39,8 @@ public class _233BedWars extends JavaPlugin {
         LogUtil.consoleLog("&3 > &e正在激活模块...");
         ScoreBoardUtil.init();
         TaskUtil.initOneTickTask();
+        XpResMode.init();
+        ShopItemAddon.init(false);
         LogUtil.consoleLog("&3 > &a插件已启用！");
         LogUtil.consoleLog("&3&l&m--------------------------------------------");
     }

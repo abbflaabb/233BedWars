@@ -57,3 +57,7 @@ team_heart_danger_animation:
 team_heart_normal: "&c{unicode_heart}"
 
 team_heart_destroyed: "&7{unicode_heart}"
+
+resMode_normal: "普通模式"
+
+resMode_exp: "经验模式"

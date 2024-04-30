@@ -6,6 +6,7 @@ import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -25,9 +26,10 @@ public class ConfigManager {
     public static Boolean addon_balancedAdjustments;
     public static Boolean addon_generatorEditor;
     public static Boolean addon_actionBar;
+    public static Boolean addon_shopItemAddon;
     public static Boolean addon_globalEvents;
     public static Boolean addon_advancedItems;
-    public static Boolean addon_xpResourceMode;
+    public static Boolean addon_xpResMode;
 
     public static void loadConfig() {
         cfg = YamlConfiguration.loadConfiguration(getCfgFile("config.yml"));
@@ -41,6 +43,8 @@ public class ConfigManager {
         addon_balancedAdjustments = cfg.getBoolean("addons.BalancedAdjustments");
         addon_generatorEditor = cfg.getBoolean("addons.GeneratorEditor");
         addon_actionBar = cfg.getBoolean("addons.ActionBar");
+        addon_shopItemAddon = cfg.getBoolean("addons.ShopItemAddon");
+        addon_xpResMode = cfg.getBoolean("addons.XpResMode");
         loadAddonsCfg();
     }
 
@@ -62,6 +66,8 @@ public class ConfigManager {
         GeneratorEditor.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/generatorEditor.yml")));
         PlaceholderUtil.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/extraPlaceHolder.yml")));
         ActionBar.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/actionBar.yml")));
+        ShopItemAddon.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/shopItemAddon.yml")));
+        XpResMode.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/xpResMode.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {

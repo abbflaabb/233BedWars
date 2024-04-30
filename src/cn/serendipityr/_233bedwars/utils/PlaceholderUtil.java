@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.utils;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.TeamNameThemes;
+import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -32,6 +33,8 @@ public class PlaceholderUtil {
     static String team_in_danger;
     static String team_in_danger_full;
     static String teamNameFormat;
+    static String resMode_normal;
+    static String resMode_exp;
     static Map<String, String> modeName = new HashMap<>();
     static Map<String, String> teamDesc = new HashMap<>();
     static Map<String, String> mapAuthor = new HashMap<>();
@@ -81,6 +84,8 @@ public class PlaceholderUtil {
             mapAuthor.put(mA, cfg.getString("mapAuthor." + mA));
         }
         defaultMapAuthor = cfg.getString("defaultMapAuthor");
+        resMode_normal = cfg.getString("resMode_normal");
+        resMode_exp = cfg.getString("resMode_exp");
     }
 
     static class placeholderAPISupport extends PlaceholderExpansion {
@@ -265,7 +270,7 @@ public class PlaceholderUtil {
     }
 
     public static String getResMode(Player player) {
-        return "开发中";
+        return XpResMode.isExpMode(player) ? resMode_exp : resMode_normal;
     }
 
     public static String getGlobalEvent(IArena arena) {

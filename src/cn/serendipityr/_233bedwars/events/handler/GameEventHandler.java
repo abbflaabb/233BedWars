@@ -10,6 +10,7 @@ import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerJoinArenaEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerKillEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerReSpawnEvent;
+import com.andrei1058.bedwars.api.events.shop.ShopOpenEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,7 @@ public class GameEventHandler implements Listener {
     public void onGameStateChange(GameStateChangeEvent event) {
         GameState state = event.getNewState();
         IArena arena = event.getArena();
+        // 游戏开局时
         if (state.equals(GameState.playing)) {
             if (ConfigManager.addon_teamNameThemes) {
                 TeamNameThemes.initGame(arena);
@@ -32,12 +34,21 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_dalaoWarning) {
                 DalaoWarning.initGame(arena);
             }
-            GeneratorEditor.initGame(arena);
+            if (ConfigManager.addon_generatorEditor) {
+                GeneratorEditor.initGame(arena);
+            }
         }
+        // 游戏结束时
         if (state.equals(GameState.restarting)) {
-            GeneratorEditor.resetArena(arena);
+            if (ConfigManager.addon_generatorEditor) {
+                GeneratorEditor.resetArena(arena);
+            }
             PlaceholderUtil.resetArenaRiskyTeams(arena);
+            if (ConfigManager.addon_xpResMode) {
+                XpResMode.resetPlayers(arena);
+            }
         }
+        // 每当游戏状态改变时
         if (ConfigManager.addon_scoreBoardEditor) {
             for (Player player : arena.getPlayers()) {
                 ScoreboardEditor.editScoreBoard(arena, player);
@@ -64,6 +75,10 @@ public class GameEventHandler implements Listener {
         if (ConfigManager.addon_actionBar) {
             ActionBar.initGame(arena, true);
         }
+        if (ConfigManager.addon_xpResMode) {
+            XpResMode.giveItems(player);
+            XpResMode.initPlayer(player);
+        }
     }
 
     @EventHandler
@@ -76,6 +91,15 @@ public class GameEventHandler implements Listener {
                 CombatDetails.checkPlayerKillDistance(killer, victim);
                 CombatDetails.calcKillStreak(arena, killer, victim);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerOpenShop(ShopOpenEvent event) {
+        Player player = event.getPlayer();
+        if (ConfigManager.addon_xpResMode) {
+            event.setCancelled(true);
+            XpResMode.handleShopOpen(player);
         }
     }
 }

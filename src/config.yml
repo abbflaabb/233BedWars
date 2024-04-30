@@ -25,3 +25,7 @@ addons:
   GeneratorEditor: true
   # 游戏内ActionBar设置
   ActionBar: true
+  # 商店物品拓展
+  ShopItemAddon: true
+  # 经验模式
+  XpResMode: true
