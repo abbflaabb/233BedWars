@@ -3,20 +3,22 @@ package cn.serendipityr._233bedwars.events.handler;
 import cn.serendipityr._233bedwars.addons.FastCommands;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
+import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import com.andrei1058.bedwars.shop.main.ShopCategory;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +28,19 @@ public class InteractEventHandler implements Listener {
     public static List<ItemStack> preventDrops = new ArrayList<>();
     public static HashMap<ItemStack, String> executes = new HashMap<>();
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerClickItem(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
+            Inventory inventory = event.getClickedInventory();
+            if (inventory == null) {
+                return;
+            }
+            int slot = event.getSlot();
             if (handleClick(player, event.getCurrentItem())) {
+                event.setCancelled(true);
+            }
+            if (BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
                 event.setCancelled(true);
             }
         }
@@ -74,6 +84,15 @@ public class InteractEventHandler implements Listener {
                     FastCommands.handleShiftToggle(player);
                 }
             }
+        }
+    }
+
+    @EventHandler()
+    public void onPlayerOpenInventory(InventoryOpenEvent event) {
+        Player player = (Player) event.getPlayer();
+        Inventory inventory = event.getInventory();
+        if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            BedWarsShopUtil.handleShopOpen(player, inventory);
         }
     }
 
@@ -123,7 +142,11 @@ public class InteractEventHandler implements Listener {
         if (!check.hasItemMeta()) {
             return origin.isSimilar(check);
         } else {
-            return origin.hasItemMeta() && check.getItemMeta().getDisplayName().equals(origin.getItemMeta().getDisplayName());
+            ItemMeta im = check.getItemMeta();
+            if (im.getDisplayName() == null) {
+                return false;
+            }
+            return origin.hasItemMeta() && im.getDisplayName().equals(origin.getItemMeta().getDisplayName());
         }
     }
 

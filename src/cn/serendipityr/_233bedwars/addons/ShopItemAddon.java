@@ -42,21 +42,11 @@ public class ShopItemAddon {
             categories.put(slot, category);
             if ("quick-buy-category".equals(category)) {
                 setQuickButtonSlot(ShopManager.getShop(), slot);
-                if (XpResMode.xpShop != null) {
-                    setQuickButtonSlot(XpResMode.xpShop, slot);
-                }
                 continue;
             }
             for (ShopCategory shopCategory : ShopManager.getShop().getCategoryList()) {
                 if (shopCategory.getName().equals(category)) {
                     setShopCategorySlot(shopCategory, slot);
-                }
-            }
-            if (XpResMode.xpShop != null) {
-                for (ShopCategory shopCategory : XpResMode.xpShop.getCategoryList()) {
-                    if (shopCategory.getName().equals(category)) {
-                        setShopCategorySlot(shopCategory, slot);
-                    }
                 }
             }
         }

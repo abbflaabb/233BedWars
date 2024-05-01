@@ -1,7 +1,6 @@
 package cn.serendipityr._233bedwars;
 
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.commands.CommandManager;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.EventManager;
@@ -22,14 +21,6 @@ public class _233BedWars extends JavaPlugin {
         ConfigManager.loadConfig();
         LogUtil.consoleLog("&3 > &eHooking BedWars1058...");
         ProviderUtil.bw = (BedWars) ProviderUtil.hookPlugin("BedWars1058", BedWars.class);
-        LogUtil.consoleLog("&3 > &eHooking TheAPI...");
-        if (!ProviderUtil.getAPIProvider()) {
-            LogUtil.consoleLog("&3 > &cFailed to hook TheAPI! CraftBukkit Ver: " + Bukkit.getBukkitVersion());
-            LogUtil.consoleLog("&3 > &c请检查前置插件 [TheAPI] 是否存在，若已安装请尝试获取更新。");
-            LogUtil.consoleLog("&3 > &c从此链接下载前置插件: https://www.spigotmc.org/resources/theapi.72679/");
-            disablePlugin();
-            return;
-        }
         LogUtil.consoleLog("&3 > &eHooking PlaceholderAPI...");
         PlaceholderUtil.hookPlaceHolderAPI();
         LogUtil.consoleLog("&3 > &e正在注册命令...");
@@ -39,7 +30,7 @@ public class _233BedWars extends JavaPlugin {
         LogUtil.consoleLog("&3 > &e正在激活模块...");
         ScoreBoardUtil.init();
         TaskUtil.initOneTickTask();
-        XpResMode.init();
+        BedWarsShopUtil.init();
         ShopItemAddon.init(false);
         LogUtil.consoleLog("&3 > &a插件已启用！");
         LogUtil.consoleLog("&3&l&m--------------------------------------------");

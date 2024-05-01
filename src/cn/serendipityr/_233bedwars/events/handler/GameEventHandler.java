@@ -10,7 +10,6 @@ import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerJoinArenaEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerKillEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerReSpawnEvent;
-import com.andrei1058.bedwars.api.events.shop.ShopOpenEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -91,15 +90,6 @@ public class GameEventHandler implements Listener {
                 CombatDetails.checkPlayerKillDistance(killer, victim);
                 CombatDetails.calcKillStreak(arena, killer, victim);
             }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerOpenShop(ShopOpenEvent event) {
-        Player player = event.getPlayer();
-        if (ConfigManager.addon_xpResMode) {
-            event.setCancelled(true);
-            XpResMode.handleShopOpen(player);
         }
     }
 }

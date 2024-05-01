@@ -6,6 +6,10 @@ resRatio:
   DIAMOND: 50.0
   EMERALD: 100.0
 
+currency: "等级"
+
+currency_color: "&a"
+
 selected: "&e点击选择！"
 
 unselected: "&e已选择！"
@@ -13,8 +17,6 @@ unselected: "&e已选择！"
 choose_normal: "&e你选择了 &a&l普通模式"
 
 choose_exp: "&e你选择了 &b&l经验模式"
-
-error_unaffordable: "&c购买失败，你缺少{need}级。"
 
 pick_up_sound: "ORB_PICKUP:1:2"
 
