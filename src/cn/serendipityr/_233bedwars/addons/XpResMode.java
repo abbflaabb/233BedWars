@@ -112,8 +112,8 @@ public class XpResMode {
                 item.remove();
                 player.setLevel(player.getLevel() + giveLevels);
                 player.playSound(player.getLocation(), Sound.valueOf(pick_up_sound[0]), Float.parseFloat(pick_up_sound[1]), Float.parseFloat(pick_up_sound[2]));
+                return true;
             }
-            return true;
         }
         return false;
     }
