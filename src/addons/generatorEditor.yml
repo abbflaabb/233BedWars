@@ -1,10 +1,10 @@
 # 资源点全息图设置
 
-period: 120.0
+period: 60.0
 
-horizontal_speed: 2.5
+horizontal_speed: 1
 
-vertical_speed: 4.0
+vertical_speed: 1
 
 vertical_amplitude: 0.50
 
