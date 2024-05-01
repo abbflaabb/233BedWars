@@ -2,14 +2,19 @@ package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.*;
+import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
+import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent;
+import com.andrei1058.bedwars.api.events.player.PlayerBedBreakEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerJoinArenaEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerKillEvent;
 import com.andrei1058.bedwars.api.events.player.PlayerReSpawnEvent;
+import com.andrei1058.bedwars.api.events.shop.ShopBuyEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +41,11 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_generatorEditor) {
                 GeneratorEditor.initGame(arena);
             }
+            if (RecoverBed.settings_recover_bed_enable) {
+                for (Player player : arena.getPlayers()) {
+                    RecoverBed.initPlayer(player);
+                }
+            }
         }
         // 游戏结束时
         if (state.equals(GameState.restarting)) {
@@ -43,9 +53,6 @@ public class GameEventHandler implements Listener {
                 GeneratorEditor.resetArena(arena);
             }
             PlaceholderUtil.resetArenaRiskyTeams(arena);
-            if (ConfigManager.addon_xpResMode) {
-                XpResMode.resetPlayers(arena);
-            }
         }
         // 每当游戏状态改变时
         if (ConfigManager.addon_scoreBoardEditor) {
@@ -91,5 +98,22 @@ public class GameEventHandler implements Listener {
                 CombatDetails.calcKillStreak(arena, killer, victim);
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerBuyItem(ShopBuyEvent event) {
+        Player player = event.getBuyer();
+        IArena arena = event.getArena();
+        ICategoryContent content = event.getCategoryContent();
+        if (ShopItemAddon.handleShopBuy(player, arena, content)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBedDestroy(PlayerBedBreakEvent event) {
+        IArena arena = event.getArena();
+        ITeam victim = event.getVictimTeam();
+        ShopItemAddon.handleBedDestroy(arena, victim);
     }
 }

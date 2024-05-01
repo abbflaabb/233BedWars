@@ -3,7 +3,6 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
-import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -43,16 +42,16 @@ public class XpResMode {
         ratio_gold = cfg.getDouble("resRatio.GOLD");
         ratio_diamond = cfg.getDouble("resRatio.DIAMOND");
         ratio_emerald = cfg.getDouble("resRatio.EMERALD");
-        currency = cfg.getString("currency");
+        currency = cfg.getString("currency").replace("&", "§");
         currency_color = cfg.getString("currency_color").replace("&", "§");
-        selected = cfg.getString("selected");
-        unselected = cfg.getString("unselected");
-        error_unaffordable = cfg.getString("error_unaffordable");
-        choose_normal = cfg.getString("choose_normal");
-        choose_exp = cfg.getString("choose_exp");
+        selected = cfg.getString("selected").replace("&", "§");
+        unselected = cfg.getString("unselected").replace("&", "§");
+        error_unaffordable = cfg.getString("error_unaffordable").replace("&", "§");
+        choose_normal = cfg.getString("choose_normal").replace("&", "§");
+        choose_exp = cfg.getString("choose_exp").replace("&", "§");
         pick_up_sound = cfg.getString("pick_up_sound").split(":");
         gui_size = cfg.getInt("GUI.size");
-        gui_title = cfg.getString("GUI.title");
+        gui_title = cfg.getString("GUI.title").replace("&", "§");
         items.clear();
         gui_items.clear();
         for (String item : cfg.getConfigurationSection("Item").getKeys(false)) {
@@ -69,21 +68,15 @@ public class XpResMode {
         playerResType.put(player, true);
     }
 
-    public static void resetPlayers(IArena arena) {
-        for (Player player : arena.getPlayers()) {
-            playerResType.remove(player);
-        }
-    }
-
     public static void openGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(player, gui_size, gui_title.replace("&", "§"));
+        Inventory gui = Bukkit.createInventory(player, gui_size, gui_title);
         for (Integer slot : gui_items.keySet()) {
             ItemStack item = gui_items.get(slot).clone();
             ItemMeta im = item.getItemMeta();
             if (im != null) {
                 List<String> lores = new ArrayList<>();
                 for (String lore : im.getLore()) {
-                    lores.add(lore.replace("{choose_exp}", isExpMode(player) ? unselected : selected).replace("{choose_normal}", isExpMode(player) ? selected : unselected).replace("&", "§"));
+                    lores.add(lore.replace("{choose_exp}", isExpMode(player) ? unselected : selected).replace("{choose_normal}", isExpMode(player) ? selected : unselected));
                 }
                 im.setLore(lores);
             }
@@ -122,11 +115,11 @@ public class XpResMode {
         if ("exp".equals(mode)) {
             playerResType.put(player, true);
             player.closeInventory();
-            player.sendMessage(choose_exp.replace("&", "§"));
+            player.sendMessage(choose_exp);
         } else {
             playerResType.put(player, false);
             player.closeInventory();
-            player.sendMessage(choose_normal.replace("&", "§"));
+            player.sendMessage(choose_normal);
         }
     }
 

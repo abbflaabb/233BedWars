@@ -32,15 +32,15 @@ public class FastCommands {
     static List<Player> remindingPlayers = new CopyOnWriteArrayList<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
-        quick_reminding = cfg.getString("quick_reminding");
+        quick_reminding = cfg.getString("quick_reminding").replace("&", "§");
         quick_reminding_sound = cfg.getString("quick_reminding_sound").split(":");
         quick_reminding_delay = cfg.getInt("quick_reminding_delay");
         quick_reminding_count = cfg.getInt("quick_reminding_count");
         quick_reminding_title_stay = cfg.getInt("quick_reminding_title_stay");
-        error_bed_destroyed = cfg.getString("error_bed_destroyed");
-        error_died = cfg.getString("error_died");
+        error_bed_destroyed = cfg.getString("error_bed_destroyed").replace("&", "§");
+        error_died = cfg.getString("error_died").replace("&", "§");
         gui_size = cfg.getInt("GUI.size");
-        gui_title = cfg.getString("GUI.title");
+        gui_title = cfg.getString("GUI.title").replace("&", "§");
         items.clear();
         gui_items.clear();
         for (String item : cfg.getConfigurationSection("Item").getKeys(false)) {
@@ -66,11 +66,11 @@ public class FastCommands {
             if (!remindingPlayers.contains(player)) {
                 ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
                 if (team == null) {
-                    player.sendMessage(error_died.replace("&", "§"));
+                    player.sendMessage(error_died);
                     return;
                 }
                 if (team.isBedDestroyed()) {
-                    player.sendMessage(error_bed_destroyed.replace("&", "§"));
+                    player.sendMessage(error_bed_destroyed);
                     return;
                 }
                 remindingPlayers.add(player);
@@ -78,7 +78,7 @@ public class FastCommands {
                     for (int i = 0; i < quick_reminding_count; i++) {
                         int finalI = i;
                         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                            p.sendTitle(new Title("", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()).replace("&", "§"), 0, quick_reminding_title_stay, 0));
+                            p.sendTitle(new Title("", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0));
                             p.playSound(p.getLocation(), Sound.valueOf(quick_reminding_sound[0]), Float.parseFloat(quick_reminding_sound[1]), Float.parseFloat(quick_reminding_sound[2]));
                             if (finalI == quick_reminding_count - 1) {
                                 remindingPlayers.remove(player);
@@ -91,7 +91,7 @@ public class FastCommands {
     }
 
     public static void openGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(player, gui_size, gui_title.replace("&", "§"));
+        Inventory gui = Bukkit.createInventory(player, gui_size, gui_title);
 
         for (Integer slot : gui_items.keySet()) {
             gui.setItem(slot, gui_items.get(slot));

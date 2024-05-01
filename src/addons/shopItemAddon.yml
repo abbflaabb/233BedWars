@@ -11,23 +11,32 @@ shop_layout:
   - "7:mounts-category"
   - "8:quick-buy-category"
 
-item_lores:
-  - "{description}"
-  - ""
-  - "&1物品:"
-  - "{items}"
-  - ""
-  - "&7花费: &3{cost}"
-  - ""
-  - "{affordable}"
+settings:
+  recover_bed:
+    enable: true
+    recover_sound: "LEVEL_UP:1:2"
+    valid_minutes: 10
+    use_count_limit: 1
+    title_stay: 3
+
+messages:
+  recover_bed_destroy_tips: "&a目前处于游戏10分钟内，即使无床，苟依然有机会购买回春床恢复！"
+  recover_bed_success_title: "&a&l床已恢复"
+  recover_bed_success_subtitle: "&3{player}恢复了床，现在死亡可以重生！"
+  recover_bed_success_msg: "&e你的队伍的床现在已经恢复！"
+  recover_bed_success_broadcast:
+    - "&7▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃"
+    - ""
+    - "&l{tColor}{tName} &r&a的床已被 {player} &r&a恢复！"
+    - ""
+    - "&7▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃"
+  recover_bed_cant_buy_invalid: "&c开局时间已过10分钟，不能买这个物品！"
+  recover_bed_cant_buy_alive: "&c你的床还在，不能买这个物品！"
+  recover_bed_failed: "&c开局时间已过10分钟，你的床无法再恢复！"
 
 items:
-  recoverBed:
+  recover-bed:
+    category: "utility-category"
+    slot: 31
     material: BED
-    cost: "GOLD_INGOT:12"
-    name: "回春床"
-    description:
-      - "test"
-      - ""
-    items:
-      - "BED:回春床:1:Test Lore\nTestLore"
+    cost: "gold:12"

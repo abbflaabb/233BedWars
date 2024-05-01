@@ -389,6 +389,9 @@ public class PlaceholderUtil {
 
     private static boolean checkRiskyTeam(IArena arena, ITeam team) {
         Location bedLoc = team.getBed();
+        if (team.isBedDestroyed()) {
+            return false;
+        }
         boolean risky = false;
         for (Entity entity : arena.getWorld().getNearbyEntities(bedLoc, team_heart_danger_search_radius, team_heart_danger_search_radius, team_heart_danger_search_radius)) {
             if (entity instanceof Player) {

@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.FastCommands;
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
@@ -50,7 +51,13 @@ public class InteractEventHandler implements Listener {
     public void onPlayerInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        if (item == null) {
+            return;
+        }
         if (handleClick(player, item)) {
+            event.setCancelled(true);
+        }
+        if (ShopItemAddon.handleItemInteract(player, item)) {
             event.setCancelled(true);
         }
     }
