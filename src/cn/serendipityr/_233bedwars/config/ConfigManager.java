@@ -6,7 +6,6 @@ import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,6 @@ public class ConfigManager {
     public static Boolean addon_actionBar;
     public static Boolean addon_shopItemAddon;
     public static Boolean addon_globalEvents;
-    public static Boolean addon_advancedItems;
     public static Boolean addon_xpResMode;
 
     public static void loadConfig() {

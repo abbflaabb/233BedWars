@@ -21,11 +21,11 @@ public class CommandManager implements CommandExecutor {
             return true;
         } else {
             if ("reload".equals(strings[0])) {
-                Reload.processCmd(commandSender, strings);
+                Reload.processCmd(commandSender);
                 return true;
             }
             if ("fastcommands".equals(strings[0])) {
-                FastCommands.processCmd(commandSender, strings);
+                FastCommands.processCmd(commandSender);
                 return true;
             }
         }

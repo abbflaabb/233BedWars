@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.addons;
 
+import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
@@ -14,7 +15,9 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.QuickBuyButton;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.main.ShopIndex;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -44,6 +47,30 @@ public class ShopItemAddon {
         }
     }
 
+    public static void initGame(IArena arena) {
+        if (RecoverBed.settings_recover_bed_enable) {
+            RecoverBed.initArena(arena);
+        }
+    }
+
+    public static void resetGame(IArena arena) {
+        if (RecoverBed.settings_recover_bed_enable) {
+            RecoverBed.resetArena(arena);
+        }
+    }
+
+    public static boolean handleBlockPlace(Player player, Block block) {
+        if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            return false;
+        }
+
+        if (RecoverBed.handleBlockPlace(block)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void handleBedDestroy(IArena arena, ITeam team) {
         if (RecoverBed.settings_recover_bed_enable) {
             RecoverBed.handleBedDestroy(arena, team);
@@ -51,8 +78,8 @@ public class ShopItemAddon {
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
-        if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
-            return true;
+        if (RecoverBed.settings_recover_bed_enable) {
+            return RecoverBed.handleShopBuy(player, arena, content);
         }
         return false;
     }
@@ -102,7 +129,7 @@ public class ShopItemAddon {
 
     public static boolean compareAddonItem(Player player, ItemStack itemStack, String section) {
         if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
-            return Language.getMsg(player, "shop-items-messages." + section + "-name").equals(itemStack.getItemMeta().getDisplayName());
+            return Language.getMsg(player, section + "-name").equals(itemStack.getItemMeta().getDisplayName());
         }
         return false;
     }

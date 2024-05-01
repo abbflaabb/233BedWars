@@ -27,11 +27,13 @@ messages:
   recover_bed_success_broadcast:
     - "&7▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃"
     - ""
-    - "&l{tColor}{tName} &r&a的床已被 {player} &r&a恢复！"
+    - "&l{tColor}{tName} &r&a的床已被 {tColor}{player} &r&a恢复！"
     - ""
     - "&7▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃"
   recover_bed_cant_buy_invalid: "&c开局时间已过10分钟，不能买这个物品！"
   recover_bed_cant_buy_alive: "&c你的床还在，不能买这个物品！"
+  recover_bed_invalid: "&c你的床已被摧毁，死亡后无法重生！"
+  recover_bed_limited: "&c每局只能使用一次，你的床无法再恢复！"
   recover_bed_failed: "&c开局时间已过10分钟，你的床无法再恢复！"
 
 items:

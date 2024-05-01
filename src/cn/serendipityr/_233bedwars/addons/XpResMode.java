@@ -3,10 +3,13 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,11 +27,11 @@ public class XpResMode {
     static double ratio_gold;
     static double ratio_diamond;
     static double ratio_emerald;
+    static Boolean enable_gen_split;
     public static String currency;
     public static String currency_color;
     static String selected;
     static String unselected;
-    static String error_unaffordable;
     static String choose_normal;
     static String choose_exp;
     static String[] pick_up_sound;
@@ -42,11 +46,11 @@ public class XpResMode {
         ratio_gold = cfg.getDouble("resRatio.GOLD");
         ratio_diamond = cfg.getDouble("resRatio.DIAMOND");
         ratio_emerald = cfg.getDouble("resRatio.EMERALD");
+        enable_gen_split = cfg.getBoolean("enable_gen_split");
         currency = cfg.getString("currency").replace("&", "§");
         currency_color = cfg.getString("currency_color").replace("&", "§");
         selected = cfg.getString("selected").replace("&", "§");
         unselected = cfg.getString("unselected").replace("&", "§");
-        error_unaffordable = cfg.getString("error_unaffordable").replace("&", "§");
         choose_normal = cfg.getString("choose_normal").replace("&", "§");
         choose_exp = cfg.getString("choose_exp").replace("&", "§");
         pick_up_sound = cfg.getString("pick_up_sound").split(":");
@@ -99,8 +103,35 @@ public class XpResMode {
 
     public static boolean handlePickUp(Player player, Item item) {
         ItemStack itemStack = item.getItemStack();
+        int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount());
+        // Gen Split
+        if (enable_gen_split) {
+            IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+            if (arena == null) {
+                return false;
+            }
+            Collection<Entity> nearby;
+            Material type = itemStack.getType();
+            if (type == Material.IRON_INGOT || type == Material.GOLD_INGOT) {
+                nearby = player.getWorld().getNearbyEntities(player.getLocation(), 2, 2, 2);
+            } else {
+                nearby = player.getWorld().getNearbyEntities(player.getLocation(), 1, 1, 1);
+            }
+            for (Entity entity : nearby) {
+                if (entity instanceof Player && arena.isPlayer(player) && entity != player) {
+                    Player _player = (Player) entity;
+                    if (isExpMode(_player)) {
+                        _player.setLevel(_player.getLevel() + giveLevels);
+                        _player.playSound(_player.getLocation(), Sound.valueOf(pick_up_sound[0]), Float.parseFloat(pick_up_sound[1]), Float.parseFloat(pick_up_sound[2]));
+                    } else {
+                        _player.getInventory().addItem(itemStack);
+                        _player.playSound(_player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
+                    }
+                }
+            }
+        }
+
         if (playerResType.get(player)) {
-            int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount());
             if (giveLevels != -1) {
                 item.remove();
                 player.setLevel(player.getLevel() + giveLevels);

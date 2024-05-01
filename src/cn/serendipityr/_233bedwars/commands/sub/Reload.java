@@ -5,7 +5,7 @@ import cn.serendipityr._233bedwars.config.ConfigManager;
 import org.bukkit.command.CommandSender;
 
 public class Reload {
-    public static void processCmd(CommandSender commandSender, String[] strings) {
+    public static void processCmd(CommandSender commandSender) {
         if (commandSender.hasPermission("bw233.admin")) {
             CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &e插件重载中...");
             ConfigManager.loadConfig();

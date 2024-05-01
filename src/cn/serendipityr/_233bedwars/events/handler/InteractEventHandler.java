@@ -6,11 +6,14 @@ import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.api.events.player.PlayerGeneratorCollectEvent;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -44,6 +47,15 @@ public class InteractEventHandler implements Listener {
             if (BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPlaceBlock(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlockPlaced();
+        if (ShopItemAddon.handleBlockPlace(player, block)) {
+            event.setCancelled(true);
         }
     }
 

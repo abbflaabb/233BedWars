@@ -41,10 +41,8 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_generatorEditor) {
                 GeneratorEditor.initGame(arena);
             }
-            if (RecoverBed.settings_recover_bed_enable) {
-                for (Player player : arena.getPlayers()) {
-                    RecoverBed.initPlayer(player);
-                }
+            if (ConfigManager.addon_shopItemAddon) {
+                ShopItemAddon.initGame(arena);
             }
         }
         // 游戏结束时
@@ -53,6 +51,9 @@ public class GameEventHandler implements Listener {
                 GeneratorEditor.resetArena(arena);
             }
             PlaceholderUtil.resetArenaRiskyTeams(arena);
+            if (ConfigManager.addon_shopItemAddon) {
+                ShopItemAddon.resetGame(arena);
+            }
         }
         // 每当游戏状态改变时
         if (ConfigManager.addon_scoreBoardEditor) {

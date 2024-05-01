@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class FastCommands {
-    public static void processCmd(CommandSender commandSender, String[] strings) {
+    public static void processCmd(CommandSender commandSender) {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
             if (ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player) != null) {
