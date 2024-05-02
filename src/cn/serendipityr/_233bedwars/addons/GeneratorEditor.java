@@ -1,28 +1,41 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.generator.GeneratorType;
 import com.andrei1058.bedwars.api.arena.generator.IGenHolo;
 import com.andrei1058.bedwars.api.arena.generator.IGenerator;
+import com.andrei1058.bedwars.api.configuration.ConfigPath;
 import com.andrei1058.bedwars.api.language.Language;
 import com.andrei1058.bedwars.arena.OreGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.EulerAngle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GeneratorEditor {
     public static CopyOnWriteArrayList<ArmorStand> rotations = new CopyOnWriteArrayList<>();
     public static CopyOnWriteArrayList<IGenerator> oreGenerators = new CopyOnWriteArrayList<>();
+    static Boolean gen_split;
+    static Boolean gen_split_backup;
     static double period;
     static double horizontal_speed;
     static double vertical_speed;
@@ -31,21 +44,42 @@ public class GeneratorEditor {
     static double text_holograms_offset;
 
     public static void loadConfig(YamlConfiguration cfg) {
+        gen_split = cfg.getBoolean("gen_split");
         period = cfg.getDouble("period");
         horizontal_speed = cfg.getDouble("horizontal_speed");
         vertical_speed = cfg.getDouble("vertical_speed");
         vertical_amplitude = cfg.getDouble("vertical_amplitude");
         vertical_offset = cfg.getDouble("vertical_offset");
         text_holograms_offset = cfg.getDouble("text_holograms_offset");
+        if (gen_split_backup != null) {
+            if (gen_split) {
+                ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, false);
+            } else {
+                ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, gen_split_backup);
+            }
+        }
         for (IGenerator generator : oreGenerators) {
+            if (gen_split) {
+                generator.setStack(false);
+            } else {
+                generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
+            }
             setTextHologramsOffset(generator);
         }
     }
 
     public static void initGame(IArena arena) {
+        if (gen_split_backup == null) {
+            gen_split_backup = ProviderUtil.bw.getConfigs().getMainConfig().getYml().getBoolean(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT);
+        }
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
             List<IGenerator> generators = new ArrayList<>(arena.getOreGenerators());
             for (IGenerator generator : generators) {
+                if (gen_split) {
+                    generator.setStack(false);
+                } else {
+                    generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
+                }
                 if (!generator.getType().equals(GeneratorType.IRON) && !generator.getType().equals(GeneratorType.GOLD)) {
                     OreGenerator.getRotation().remove((OreGenerator) generator);
                     ArmorStand item = generator.getHologramHolder();
@@ -162,6 +196,50 @@ public class GeneratorEditor {
     public static void rotateGenerators() {
         for (ArmorStand item : rotations) {
             rotate(item);
+        }
+    }
+
+    public static void markThrownItem(Player player, Item item) {
+        if (gen_split) {
+            IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+            if (arena == null) {
+                return;
+            }
+            item.setMetadata("thrown_item", new FixedMetadataValue(_233BedWars.getInstance(), true));
+        }
+    }
+
+    public static void handlePickUp(Player player, Item item) {
+        ItemStack itemStack = item.getItemStack();
+        // Gen Split
+        if (gen_split) {
+            if (item.hasMetadata("thrown_item")) {
+                return;
+            }
+            int giveLevels = XpResMode.calcExpLevel(itemStack.getType(), itemStack.getAmount());
+            IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+            if (arena == null) {
+                return;
+            }
+            Collection<Entity> nearby;
+            Material type = itemStack.getType();
+            if (type == Material.IRON_INGOT || type == Material.GOLD_INGOT) {
+                nearby = player.getWorld().getNearbyEntities(player.getLocation(), 2, 2, 2);
+            } else {
+                nearby = player.getWorld().getNearbyEntities(player.getLocation(), 1, 1, 1);
+            }
+            for (Entity entity : nearby) {
+                if (entity instanceof Player && arena.isPlayer(player) && entity != player) {
+                    Player _player = (Player) entity;
+                    if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(_player)) {
+                        _player.setLevel(_player.getLevel() + giveLevels);
+                        _player.playSound(_player.getLocation(), Sound.valueOf(XpResMode.pick_up_sound[0]), Float.parseFloat(XpResMode.pick_up_sound[1]), Float.parseFloat(XpResMode.pick_up_sound[2]));
+                    } else {
+                        _player.getInventory().addItem(itemStack);
+                        _player.playSound(player.getLocation(), Sound.valueOf(BedWars.getForCurrentVersion("ITEM_PICKUP", "ENTITY_ITEM_PICKUP", "ENTITY_ITEM_PICKUP")), 0.6f, 1.3f);
+                    }
+                }
+            }
         }
     }
 }

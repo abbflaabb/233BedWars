@@ -1,5 +1,7 @@
 # 资源点全息图设置
 
+gen_split: true
+
 period: 60.0
 
 horizontal_speed: 1

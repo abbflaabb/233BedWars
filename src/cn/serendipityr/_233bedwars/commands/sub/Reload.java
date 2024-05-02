@@ -9,7 +9,7 @@ public class Reload {
         if (commandSender.hasPermission("bw233.admin")) {
             CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &e插件重载中...");
             ConfigManager.loadConfig();
-            CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &a插件重载完成。");
+            CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &a插件重载完成。&7(部分配置需重启服务器才能生效)");
         } else {
             CommandManager.sendMsg(commandSender, "&9233BedWars &3&l> &c你没有权限。");
         }

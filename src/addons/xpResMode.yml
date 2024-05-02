@@ -6,8 +6,6 @@ resRatio:
   DIAMOND: 50.0
   EMERALD: 100.0
 
-enable_gen_split: true
-
 currency: "等级"
 
 currency_color: "&a"

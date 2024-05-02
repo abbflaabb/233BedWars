@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.FastCommands;
+import cn.serendipityr._233bedwars.addons.GeneratorEditor;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
@@ -69,7 +70,7 @@ public class InteractEventHandler implements Listener {
         if (handleClick(player, item)) {
             event.setCancelled(true);
         }
-        if (ShopItemAddon.handleItemInteract(player, item)) {
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleItemInteract(player, item)) {
             event.setCancelled(true);
         }
     }
@@ -82,16 +83,25 @@ public class InteractEventHandler implements Listener {
             if (ConfigManager.addon_xpResMode && XpResMode.handlePickUp(player, item)) {
                 event.setCancelled(true);
             }
+
+            if (ConfigManager.addon_generatorEditor) {
+                GeneratorEditor.handlePickUp(player, item);
+            }
         }
     }
 
     @EventHandler
     public void onPlayerDropItems(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        Item item = event.getItemDrop();
+
         for (ItemStack itemStack : preventDrops) {
-            if (isSimilar(itemStack, event.getItemDrop().getItemStack())) {
+            if (isSimilar(itemStack, item.getItemStack())) {
                 event.setCancelled(true);
             }
         }
+
+        GeneratorEditor.markThrownItem(player, item);
     }
 
     @EventHandler
