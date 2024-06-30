@@ -65,7 +65,11 @@ public class ShopItemAddon {
             return false;
         }
 
-        return RecoverBed.handleBlockPlace(block);
+        if (RecoverBed.handleBlockPlace(block)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static void handleBedDestroy(IArena arena, ITeam team) {
@@ -82,7 +86,7 @@ public class ShopItemAddon {
         if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleShopBuy(player, arena, content)) {
             return true;
         }
-        
+
         return false;
     }
 
