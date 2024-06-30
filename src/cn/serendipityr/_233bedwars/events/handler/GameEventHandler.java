@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.*;
-import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;

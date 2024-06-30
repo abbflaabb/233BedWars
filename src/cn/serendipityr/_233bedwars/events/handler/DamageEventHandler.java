@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.CombatDetails;
+import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
@@ -25,6 +26,12 @@ public class DamageEventHandler implements Listener {
                     if (ConfigManager.addon_combatDetails) {
                         CombatDetails.sendDamageMsg(damager, victim, event.getDamage(), event.getFinalDamage());
                         CombatDetails.checkStrengthEffect(damager, victim);
+                    }
+
+                    if (ConfigManager.addon_shopItemAddon) {
+                        if (SuicideBomber.settings_suicide_bomber_enable) {
+                            SuicideBomber.handlePlayerDamage(victim);
+                        }
                     }
                 }
             }

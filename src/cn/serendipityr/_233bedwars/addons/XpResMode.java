@@ -3,23 +3,17 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
-import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import com.andrei1058.bedwars.BedWars;
-import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +54,7 @@ public class XpResMode {
         gui_items.clear();
         for (String item : cfg.getConfigurationSection("Item").getKeys(false)) {
             ItemStack _item = ConfigManager.parseItem(cfg.getConfigurationSection("Item." + item));
-            InteractEventHandler.preventDrops.add(_item);
+            InteractEventHandler.addPreventDrop(_item);
             items.put(Integer.parseInt(item), _item);
         }
         for (String item : cfg.getConfigurationSection("GUI.items").getKeys(false)) {

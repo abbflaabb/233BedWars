@@ -1,7 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
-import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
+import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -15,7 +15,7 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.QuickBuyButton;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.main.ShopIndex;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,6 +38,7 @@ public class ShopItemAddon {
         shopItems.addAll(cfg.getConfigurationSection("items").getKeys(false));
         shopItemsYml = cfg;
         RecoverBed.loadConfig(cfg);
+        SuicideBomber.loadConfig(cfg);
     }
 
     public static void init() {
@@ -64,11 +65,7 @@ public class ShopItemAddon {
             return false;
         }
 
-        if (RecoverBed.handleBlockPlace(block)) {
-            return true;
-        }
-
-        return false;
+        return RecoverBed.handleBlockPlace(block);
     }
 
     public static void handleBedDestroy(IArena arena, ITeam team) {
@@ -78,9 +75,14 @@ public class ShopItemAddon {
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
-        if (RecoverBed.settings_recover_bed_enable) {
-            return RecoverBed.handleShopBuy(player, arena, content);
+        if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
+            return true;
         }
+
+        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleShopBuy(player, arena, content)) {
+            return true;
+        }
+        
         return false;
     }
 
@@ -93,6 +95,10 @@ public class ShopItemAddon {
         ITeam team = arena.getTeam(player);
 
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleItemInteract(player, item, arena, team)) {
+            return true;
+        }
+
+        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -132,6 +138,15 @@ public class ShopItemAddon {
             return Language.getMsg(player, section + "-name").equals(itemStack.getItemMeta().getDisplayName());
         }
         return false;
+    }
+
+    public static void consumeItem(Player player, ItemStack item, int count) {
+        if (item.getAmount() - count <= 0) {
+            player.setItemInHand(new ItemStack(Material.AIR));
+        } else {
+            player.getItemInHand().setAmount(player.getItemInHand().getAmount() - count);
+        }
+        player.updateInventory();
     }
 
     public static void editShop() {
@@ -177,6 +192,7 @@ public class ShopItemAddon {
     }
 
     private static void loadShopItem(String section) {
+        boolean enable = shopItemsYml.getBoolean("settings." + section + ".enable");
         String category = shopItemsYml.getString("items." + section + ".category");
         int slot = shopItemsYml.getInt("items." + section + ".slot");
         String material = shopItemsYml.getString("items." + section + ".material");
@@ -187,11 +203,24 @@ public class ShopItemAddon {
             return;
         }
 
-        if (section.equals("recover-bed") && RecoverBed.settings_recover_bed_enable) {
-            RecoverBed.recover_bed_material = material;
-            RecoverBed.recover_bed_section = "shop-items-messages." + category + ".content-item-" + section;
+        if (enable) {
             addBedWarsShopItemCfg(section, category, slot, material, cost);
             addCategoryContent(shopCategory, new CategoryContent(shopCategory.getName() + ".category-content." + section, section, shopCategory.getName(), ProviderUtil.bw.getConfigs().getShopConfig().getYml(), shopCategory));
+        }
+
+        String secLoc = "shop-items-messages." + category + ".content-item-" + section;
+
+        switch (section) {
+            case "recover_bed":
+                RecoverBed.settings_recover_bed_enable = enable;
+                RecoverBed.recover_bed_material = material;
+                RecoverBed.recover_bed_section = secLoc;
+                break;
+            case "suicide_bomber":
+                SuicideBomber.settings_suicide_bomber_enable = enable;
+                SuicideBomber.suicide_bomber_material = material;
+                SuicideBomber.suicide_bomber_section = secLoc;
+                break;
         }
     }
 

@@ -7,7 +7,6 @@ import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import com.andrei1058.bedwars.api.events.player.PlayerGeneratorCollectEvent;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -122,6 +121,12 @@ public class InteractEventHandler implements Listener {
         Inventory inventory = event.getInventory();
         if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             BedWarsShopUtil.handleShopOpen(player, inventory);
+        }
+    }
+
+    public static void addPreventDrop(ItemStack itemStack) {
+        if (!InteractEventHandler.preventDrops.contains(itemStack)) {
+            InteractEventHandler.preventDrops.add(itemStack);
         }
     }
 

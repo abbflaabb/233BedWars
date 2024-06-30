@@ -18,6 +18,10 @@ settings:
     valid_minutes: 10
     use_count_limit: 1
     title_stay: 3
+  suicide_bomber:
+    enable: true
+    use_sound: "CHICKEN_EGG_POP:1:1"
+    active_time: 5
 
 messages:
   recover_bed_destroy_tips: "&a目前处于游戏10分钟内，即使无床，苟依然有机会购买回春床恢复！"
@@ -35,10 +39,17 @@ messages:
   recover_bed_invalid: "&c你的床已被摧毁，死亡后无法重生！"
   recover_bed_limited: "&c每局只能使用一次，你的床无法再恢复！"
   recover_bed_failed: "&c开局时间已过10分钟，你的床无法再恢复！"
+  suicide_bomber_active: "&e你身上的炸弹将在{bomb_time}秒后爆炸！"
+  suicide_bomber_fuse: "&c&lBOOM!"
 
 items:
-  recover-bed:
+  recover_bed:
     category: "utility-category"
     slot: 31
     material: BED
     cost: "gold:12"
+  suicide_bomber:
+    category: "utility-category"
+    slot: 32
+    material: EXPLOSIVE_MINECART
+    cost: "iron:30"

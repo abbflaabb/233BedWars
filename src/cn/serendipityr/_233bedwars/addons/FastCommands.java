@@ -45,7 +45,7 @@ public class FastCommands {
         gui_items.clear();
         for (String item : cfg.getConfigurationSection("Item").getKeys(false)) {
             ItemStack _item = ConfigManager.parseItem(cfg.getConfigurationSection("Item." + item));
-            InteractEventHandler.preventDrops.add(_item);
+            InteractEventHandler.addPreventDrop(_item);
             items.put(Integer.parseInt(item), _item);
         }
         for (String item : cfg.getConfigurationSection("GUI.items").getKeys(false)) {

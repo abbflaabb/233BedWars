@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RecoverBed {
-    public static String recover_bed_material = "";
-    public static String recover_bed_section = "";
+    public static String recover_bed_material;
+    public static String recover_bed_section;
     public static Boolean settings_recover_bed_enable = false;
     static String settings_recover_bed_recover_sound;
     static Integer settings_recover_bed_valid_minutes;
@@ -46,7 +46,6 @@ public class RecoverBed {
 
 
     public static void loadConfig(YamlConfiguration cfg) {
-        settings_recover_bed_enable = cfg.getBoolean("settings.recover_bed.enable");
         settings_recover_bed_recover_sound = cfg.getString("settings.recover_bed.recover_sound");
         settings_recover_bed_valid_minutes = cfg.getInt("settings.recover_bed.valid_minutes");
         settings_recover_bed_use_count_limit = cfg.getInt("settings.recover_bed.use_count_limit");
@@ -82,7 +81,7 @@ public class RecoverBed {
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
-        if (content.getIdentifier().contains("recover-bed")) {
+        if (content.getIdentifier().contains("recover_bed")) {
             ITeam team = arena.getTeam(player);
             if (!team.isBedDestroyed()) {
                 player.sendMessage(messages_recover_bed_cant_buy_alive);
@@ -100,9 +99,6 @@ public class RecoverBed {
                     itemMeta.setDisplayName(Language.getMsg(player, RecoverBed.recover_bed_section + "-name"));
                     itemStack.setItemMeta(itemMeta);
                     buyItem.setItemStack(itemStack);
-                    if (!InteractEventHandler.preventDrops.contains(itemStack)) {
-                        InteractEventHandler.preventDrops.add(itemStack);
-                    }
                 }
             }
         }
@@ -186,12 +182,7 @@ public class RecoverBed {
                     String[] _sound = settings_recover_bed_recover_sound.split(":");
                     ShopItemAddon.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
                     placeBed(team);
-                    if (item.getAmount() == 1) {
-                        player.setItemInHand(new ItemStack(Material.AIR));
-                    } else {
-                        player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
-                    }
-                    player.updateInventory();
+                    ShopItemAddon.consumeItem(player, item, 1);
                     team.setBedDestroyed(false);
                     if (!limit_use_map.containsKey(team)) {
                         limit_use_map.put(team, 1);
