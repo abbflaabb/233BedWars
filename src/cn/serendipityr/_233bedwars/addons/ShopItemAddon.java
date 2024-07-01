@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.addons;
 
+import cn.serendipityr._233bedwars.addons.shopItems.Landmine;
 import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
 import cn.serendipityr._233bedwars.utils.LogUtil;
@@ -39,6 +40,7 @@ public class ShopItemAddon {
         shopItemsYml = cfg;
         RecoverBed.loadConfig(cfg);
         SuicideBomber.loadConfig(cfg);
+        Landmine.loadConfig(cfg);
     }
 
     public static void init() {
@@ -65,9 +67,11 @@ public class ShopItemAddon {
             return false;
         }
 
-        if (RecoverBed.handleBlockPlace(block)) {
+        if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
             return true;
         }
+
+        Landmine.onBlockPlace(player, block);
 
         return false;
     }
@@ -78,12 +82,36 @@ public class ShopItemAddon {
         }
     }
 
+    public static boolean handleBlockDestroy(Player player, Block block) {
+        if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            return false;
+        }
+
+        Landmine.onBlockDestroy(block);
+
+        return false;
+    }
+
+    public static boolean handleBlockInteract(Player player, Block block) {
+        if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            return false;
+        }
+
+        Landmine.onBlockInteract(player, block);
+
+        return false;
+    }
+
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
             return true;
         }
 
-        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleShopBuy(player, arena, content)) {
+        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleShopBuy(player, content)) {
+            return true;
+        }
+
+        if (Landmine.settings_landmine_enable && Landmine.handleShopBuy(player, content)) {
             return true;
         }
 
@@ -224,6 +252,16 @@ public class ShopItemAddon {
                 SuicideBomber.settings_suicide_bomber_enable = enable;
                 SuicideBomber.suicide_bomber_material = material;
                 SuicideBomber.suicide_bomber_section = secLoc;
+                break;
+            case "landmine":
+                Landmine.settings_landmine_enable = enable;
+                Landmine.landmine_material = material;
+                Landmine.landmine_section = secLoc;
+                break;
+            case "light_landmine":
+                Landmine.settings_light_landmine_enable = enable;
+                Landmine.light_landmine_material = material;
+                Landmine.light_landmine_section = secLoc;
                 break;
         }
     }

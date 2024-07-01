@@ -2,12 +2,10 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.shop.IContentTier;
-import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.language.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -48,7 +46,7 @@ public class SuicideBomber {
         }
     }
 
-    public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
+    public static boolean handleShopBuy(Player player, ICategoryContent content) {
         if (content.getIdentifier().contains("suicide_bomber")) {
             for (IContentTier tier : content.getContentTiers()) {
                 for (IBuyItem buyItem : tier.getBuyItemsList()) {

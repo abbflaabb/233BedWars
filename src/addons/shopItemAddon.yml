@@ -22,6 +22,12 @@ settings:
     enable: true
     use_sound: "CHICKEN_EGG_POP:1:1"
     active_time: 5
+  landmine:
+    enable: true
+    explosion_damage: 5
+  light_landmine:
+    enable: true
+    explosion_damage: 5
 
 messages:
   recover_bed_destroy_tips: "&a目前处于游戏10分钟内，即使无床，苟依然有机会购买回春床恢复！"
@@ -41,6 +47,9 @@ messages:
   recover_bed_failed: "&c开局时间已过10分钟，你的床无法再恢复！"
   suicide_bomber_active: "&e你身上的炸弹将在{bomb_time}秒后爆炸！"
   suicide_bomber_fuse: "&c&lBOOM!"
+  landmine_place: "&e你放置了地雷！"
+  landmine_fuse: "&e你的地雷被引爆了！"
+  landmine_remove: "&e你的地雷被挖了！"
 
 items:
   recover_bed:
@@ -53,3 +62,13 @@ items:
     slot: 32
     material: EXPLOSIVE_MINECART
     cost: "iron:30"
+  landmine:
+    category: "utility-category"
+    slot: 33
+    material: STONE_PLATE
+    cost: "gold:6"
+  light_landmine:
+    category: "utility-category"
+    slot: 34
+    material: IRON_PLATE
+    cost: "gold:6"

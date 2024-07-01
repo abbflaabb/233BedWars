@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -60,9 +62,24 @@ public class InteractEventHandler implements Listener {
     }
 
     @EventHandler
+    public void onPlayerDestroyBlock(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        if (ShopItemAddon.handleBlockDestroy(player, block)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        Block block = event.getClickedBlock();
+        if (event.getAction() == Action.PHYSICAL) {
+            if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleBlockInteract(player, block)) {
+                event.setCancelled(true);
+            }
+        }
         if (item == null) {
             return;
         }

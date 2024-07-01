@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
