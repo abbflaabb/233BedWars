@@ -1,8 +1,10 @@
 package cn.serendipityr._233bedwars.addons;
 
+import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.shopItems.Landmine;
 import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
+import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -16,28 +18,50 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.QuickBuyButton;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.main.ShopIndex;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.github.paperspigot.Title;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class ShopItemAddon {
     static List<String> shop_layout = new ArrayList<>();
     static List<String> shopItems = new ArrayList<>();
     static YamlConfiguration shopItemsYml;
+    static HashMap<String, Integer> cooling_items = new HashMap<>();
+    static Integer cooling_progress_length;
+    static String cooling_progress_unit;
+    static String cooling_progress_color_current;
+    static String cooling_progress_color_left;
+    static String cooling_actionbar;
 
     public static void loadConfig(YamlConfiguration cfg) {
         shop_layout = cfg.getStringList("shop_layout");
         shopItems.addAll(cfg.getConfigurationSection("items").getKeys(false));
         shopItemsYml = cfg;
+
+        List<String> cooling = cfg.getStringList("settings.cooling.items");
+        for (String str : cooling) {
+            String[] _str = str.split(":");
+            cooling_items.put(_str[0], Integer.parseInt(_str[1]));
+        }
+        cooling_progress_length = cfg.getInt("settings.cooling.progress.length");
+        cooling_progress_unit = cfg.getString("settings.cooling.progress.unit");
+        cooling_progress_color_current = cfg.getString("settings.cooling.progress.color_current").replace("&", "§");
+        cooling_progress_color_left = cfg.getString("settings.cooling.progress.color_left").replace("&", "§");
+        cooling_actionbar = cfg.getString("messages.cooling_actionbar").replace("&", "§");
+
         RecoverBed.loadConfig(cfg);
         SuicideBomber.loadConfig(cfg);
         Landmine.loadConfig(cfg);
@@ -71,7 +95,9 @@ public class ShopItemAddon {
             return true;
         }
 
-        Landmine.onBlockPlace(player, block);
+        if (Landmine.settings_landmine_enable && Landmine.handleBlockPlace(player, block)) {
+            return true;
+        }
 
         return false;
     }
@@ -135,6 +161,39 @@ public class ShopItemAddon {
         }
 
         return false;
+    }
+
+    public static void handleBlockRedstone(Block block, int old_state, int new_state) {
+        Landmine.onBlockRedstone(block, old_state, new_state);
+    }
+
+    public static void setCooling(Player player, String identity) {
+        if (cooling_items.containsKey(identity)) {
+            player.setMetadata(identity, new FixedMetadataValue(_233BedWars.getInstance(), ""));
+            Bukkit.getScheduler().runTaskAsynchronously(_233BedWars.getInstance(), () -> {
+                int total = cooling_items.get(identity) * 10;
+                int cooling = total;
+                while (cooling > 0) {
+                    cooling--;
+                    int current = Math.round((float) cooling / total * cooling_progress_length);
+                    int left = cooling_progress_length - current;
+                    String progress = cooling_progress_color_current + String.join("", Collections.nCopies(left, cooling_progress_unit)) + cooling_progress_color_left + String.join("", Collections.nCopies(current, cooling_progress_unit));
+                    String msg = cooling_actionbar
+                            .replace("{progress}", progress)
+                            .replace("{cooling_time}", String.valueOf(cooling / 10))
+                            .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name"));
+                    ActionBarUtil.send(player, msg);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {}
+                }
+                player.removeMetadata(identity, _233BedWars.getInstance());
+            });
+        }
+    }
+
+    public static boolean checkCooling(Player player, String identity) {
+        return player.hasMetadata(identity);
     }
 
     public static boolean isBeforeInstant(Instant instant, long seconds) {
@@ -223,6 +282,7 @@ public class ShopItemAddon {
         }
     }
 
+    static HashMap<String, String> sectionMap = new HashMap<>();
     private static void loadShopItem(String section) {
         boolean enable = shopItemsYml.getBoolean("settings." + section + ".enable");
         String category = shopItemsYml.getString("items." + section + ".category");
@@ -241,6 +301,7 @@ public class ShopItemAddon {
         }
 
         String secLoc = "shop-items-messages." + category + ".content-item-" + section;
+        sectionMap.put(section, secLoc);
 
         switch (section) {
             case "recover_bed":

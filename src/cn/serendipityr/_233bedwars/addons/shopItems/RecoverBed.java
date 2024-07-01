@@ -106,6 +106,9 @@ public class RecoverBed {
 
     public static boolean handleItemInteract(Player player, ItemStack item, IArena arena, ITeam team) {
         if (settings_recover_bed_enable) {
+            if (ShopItemAddon.checkCooling(player, "recover_bed")) {
+                return false;
+            }
             return recoverBed(player, item, arena, team);
         }
         return false;
@@ -188,6 +191,7 @@ public class RecoverBed {
                     } else {
                         limit_use_map.put(team, limit_use_map.get(team) + 1);
                     }
+                    ShopItemAddon.setCooling(player, "recover_bed");
                     return true;
                 } else {
                     player.sendMessage(messages_recover_bed_failed_msg);

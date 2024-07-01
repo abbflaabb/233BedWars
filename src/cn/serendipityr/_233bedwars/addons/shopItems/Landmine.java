@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
@@ -12,6 +13,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -57,13 +60,34 @@ public class Landmine {
     public static HashMap<Block, Player> landmineMap = new HashMap<>();
     public static HashMap<Block, ITeam> landmineTeamMap = new HashMap<>();
 
-    public static void onBlockPlace(Player player, Block block) {
+    public static boolean handleBlockPlace(Player player, Block block) {
         if (block.getType().toString().contains("PLATE")) {
-            player.sendMessage(messages_landmine_place);
-            landmineMap.put(block, player);
-            ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
-            landmineTeamMap.put(block, team);
+            boolean check = false;
+            if (block.getType().toString().contains("STONE")) {
+                if (ShopItemAddon.checkCooling(player, "landmine")) {
+                    return true;
+                }
+                check = true;
+                ShopItemAddon.setCooling(player, "landmine");
+            }
+
+            if (block.getType().toString().contains("IRON")) {
+                if (ShopItemAddon.checkCooling(player, "light_landmine")) {
+                    return true;
+                }
+                check = true;
+                ShopItemAddon.setCooling(player, "light_landmine");
+            }
+
+            if (check) {
+                player.sendMessage(messages_landmine_place);
+                landmineMap.put(block, player);
+                ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
+                landmineTeamMap.put(block, team);
+            }
         }
+
+        return false;
     }
 
     public static void onBlockDestroy(Block block) {
@@ -86,14 +110,27 @@ public class Landmine {
         }
     }
 
+    public static void onBlockRedstone(Block block, int old_state, int new_state) {
+        if (landmineMap.containsKey(block) && old_state == 0 && new_state != 0) {
+            for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 1, 1, 1)) {
+                if (entity.getType() == EntityType.DROPPED_ITEM) {
+                    Player placer = landmineMap.get(block);
+                    placer.sendMessage(messages_landmine_fuse);
+                    fuse(block);
+                    break;
+                }
+            }
+        }
+    }
+
     private static void fuse(Block block) {
         Location loc = block.getLocation();
         if (block.getType().toString().contains("IRON")) {
-            loc.getWorld().createExplosion(loc, settings_light_landmine_explosion_damage, true);
+            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_light_landmine_explosion_damage, false, false);
         } else {
-            loc.getWorld().createExplosion(loc, settings_landmine_explosion_damage, true);
+            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_landmine_explosion_damage, false, false);
         }
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), ()-> block.setType(Material.AIR), 2L);
+        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> block.setType(Material.AIR), 2L);
         landmineMap.remove(block);
         landmineTeamMap.remove(block);
     }

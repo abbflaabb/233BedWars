@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.shop.IContentTier;
@@ -35,6 +34,9 @@ public class SuicideBomber {
 
     public static boolean handleItemInteract(Player player, ItemStack item) {
         if (settings_suicide_bomber_enable) {
+            if (ShopItemAddon.checkCooling(player, "suicide_bomber")) {
+                return false;
+            }
             return suicideBomber(player, item);
         }
         return false;
@@ -74,6 +76,7 @@ public class SuicideBomber {
                     fuseBomb(player);
                 }
             }, settings_suicide_bomber_active_time * 20L);
+            ShopItemAddon.setCooling(player, "suicide_bomber");
             return true;
         }
 

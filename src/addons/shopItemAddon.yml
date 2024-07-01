@@ -12,6 +12,18 @@ shop_layout:
   - "8:quick-buy-category"
 
 settings:
+  cooling:
+    items:
+      - "suicide_bomber:5"
+      - "recover_bed:5"
+      - "landmine:5"
+      - "light_landmine:5"
+      - "flight_firework:5"
+    progress:
+      length: 30
+      unit: "|"
+      color_current: "&a"
+      color_left: "&f"
   recover_bed:
     enable: true
     recover_sound: "LEVEL_UP:1:2"
@@ -28,8 +40,12 @@ settings:
   light_landmine:
     enable: true
     explosion_damage: 5
+  flight_firework:
+    enable: true
+    fuse_delay: 3
 
 messages:
+  cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
   recover_bed_destroy_tips: "&a目前处于游戏10分钟内，即使无床，苟依然有机会购买回春床恢复！"
   recover_bed_success_title: "&a&l床已恢复"
   recover_bed_success_subtitle: "&3{player}恢复了床，现在死亡可以重生！"
@@ -50,6 +66,8 @@ messages:
   landmine_place: "&e你放置了地雷！"
   landmine_fuse: "&e你的地雷被引爆了！"
   landmine_remove: "&e你的地雷被挖了！"
+  flight_firework_use: "&e点火起飞！"
+  flight_firework_title: "&c呀！好疼！"
 
 items:
   recover_bed:
@@ -71,4 +89,9 @@ items:
     category: "utility-category"
     slot: 34
     material: IRON_PLATE
+    cost: "gold:6"
+  flight_firework:
+    category: "utility-category"
+    slot: 35
+    material: FIREWORK
     cost: "gold:6"
