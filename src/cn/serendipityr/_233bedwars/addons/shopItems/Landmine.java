@@ -3,11 +3,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
-import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
-import com.andrei1058.bedwars.api.arena.shop.IContentTier;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
-import com.andrei1058.bedwars.api.language.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +12,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
@@ -40,21 +34,6 @@ public class Landmine {
         messages_landmine_fuse = cfg.getString("messages.landmine_fuse").replace("&", "§");
         messages_landmine_place = cfg.getString("messages.landmine_place").replace("&", "§");
         messages_landmine_remove = cfg.getString("messages.landmine_remove").replace("&", "§");
-    }
-
-    public static boolean handleShopBuy(Player player, ICategoryContent content) {
-        if (content.getIdentifier().contains("landmine") || content.getIdentifier().contains("light_landmine")) {
-            for (IContentTier tier : content.getContentTiers()) {
-                for (IBuyItem buyItem : tier.getBuyItemsList()) {
-                    ItemStack itemStack = buyItem.getItemStack().clone();
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(Language.getMsg(player, SuicideBomber.suicide_bomber_section + "-name"));
-                    itemStack.setItemMeta(itemMeta);
-                    buyItem.setItemStack(itemStack);
-                }
-            }
-        }
-        return false;
     }
 
     public static HashMap<Block, Player> landmineMap = new HashMap<>();

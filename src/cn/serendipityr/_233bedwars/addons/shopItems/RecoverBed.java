@@ -105,11 +105,11 @@ public class RecoverBed {
     }
 
     public static boolean handleItemInteract(Player player, ItemStack item, IArena arena, ITeam team) {
-        if (settings_recover_bed_enable) {
-            if (ShopItemAddon.checkCooling(player, "recover_bed")) {
-                return false;
+        if (isRecoverBed(player, item)) {
+            if (!ShopItemAddon.checkCooling(player, "recover_bed")) {
+                return recoverBed(player, item, arena, team);
             }
-            return recoverBed(player, item, arena, team);
+            return true;
         }
         return false;
     }
@@ -159,44 +159,42 @@ public class RecoverBed {
     }
 
     private static boolean recoverBed(Player player, ItemStack item, IArena arena, ITeam team) {
-        if (isRecoverBed(player, item)) {
-            if (team.isBedDestroyed()) {
-                if (limit_use_map.containsKey(team)) {
-                    if (limit_use_map.get(team) >= settings_recover_bed_use_count_limit) {
-                        player.sendMessage(messages_recover_bed_limited);
-                        return false;
-                    }
-                }
-                if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60)) {
-                    ShopItemAddon.sendTeamMessage(team, messages_recover_bed_success_msg);
-                    ShopItemAddon.sendTeamTitle(team,
-                            messages_recover_bed_success_title
-                                    .replace("{player}", player.getDisplayName()),
-                            messages_recover_bed_success_subtitle
-                                    .replace("{player}", player.getDisplayName()),
-                            settings_recover_bed_title_stay * 20);
-                    for (String msg : messages_recover_bed_success_broadcast) {
-                        ShopItemAddon.sendGlobalMessage(arena, msg
-                                .replace("{player}", player.getDisplayName())
-                                .replace("{tColor}", PlaceholderUtil.getTeamColor(team))
-                                .replace("{tName}", PlaceholderUtil.getTeamName(team)));
-                    }
-                    String[] _sound = settings_recover_bed_recover_sound.split(":");
-                    ShopItemAddon.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
-                    placeBed(team);
-                    ShopItemAddon.consumeItem(player, item, 1);
-                    team.setBedDestroyed(false);
-                    if (!limit_use_map.containsKey(team)) {
-                        limit_use_map.put(team, 1);
-                    } else {
-                        limit_use_map.put(team, limit_use_map.get(team) + 1);
-                    }
-                    ShopItemAddon.setCooling(player, "recover_bed");
-                    return true;
-                } else {
-                    player.sendMessage(messages_recover_bed_failed_msg);
+        if (team.isBedDestroyed()) {
+            if (limit_use_map.containsKey(team)) {
+                if (limit_use_map.get(team) >= settings_recover_bed_use_count_limit) {
+                    player.sendMessage(messages_recover_bed_limited);
                     return false;
                 }
+            }
+            if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60)) {
+                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_success_msg);
+                ShopItemAddon.sendTeamTitle(team,
+                        messages_recover_bed_success_title
+                                .replace("{player}", player.getDisplayName()),
+                        messages_recover_bed_success_subtitle
+                                .replace("{player}", player.getDisplayName()),
+                        settings_recover_bed_title_stay * 20);
+                for (String msg : messages_recover_bed_success_broadcast) {
+                    ShopItemAddon.sendGlobalMessage(arena, msg
+                            .replace("{player}", player.getDisplayName())
+                            .replace("{tColor}", PlaceholderUtil.getTeamColor(team))
+                            .replace("{tName}", PlaceholderUtil.getTeamName(team)));
+                }
+                String[] _sound = settings_recover_bed_recover_sound.split(":");
+                ShopItemAddon.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
+                placeBed(team);
+                ShopItemAddon.consumeItem(player, item, 1);
+                ShopItemAddon.setCooling(player, "recover_bed");
+                team.setBedDestroyed(false);
+                if (!limit_use_map.containsKey(team)) {
+                    limit_use_map.put(team, 1);
+                } else {
+                    limit_use_map.put(team, limit_use_map.get(team) + 1);
+                }
+                return true;
+            } else {
+                player.sendMessage(messages_recover_bed_failed_msg);
+                return false;
             }
         }
         return false;

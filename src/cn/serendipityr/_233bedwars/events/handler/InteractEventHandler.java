@@ -17,7 +17,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -98,8 +97,10 @@ public class InteractEventHandler implements Listener {
         if (handleClick(player, item)) {
             event.setCancelled(true);
         }
-        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleItemInteract(player, item)) {
-            event.setCancelled(true);
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleItemInteract(player, item)) {
+                event.setCancelled(true);
+            }
         }
     }
 

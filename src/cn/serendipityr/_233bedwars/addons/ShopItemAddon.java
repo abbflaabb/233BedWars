@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
 import cn.serendipityr._233bedwars.addons.shopItems.Landmine;
 import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
@@ -8,7 +9,9 @@ import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
+import com.andrei1058.bedwars.api.arena.shop.IContentTier;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.configuration.ConfigPath;
 import com.andrei1058.bedwars.api.language.Language;
@@ -23,8 +26,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.github.paperspigot.Title;
 
@@ -65,6 +70,7 @@ public class ShopItemAddon {
         RecoverBed.loadConfig(cfg);
         SuicideBomber.loadConfig(cfg);
         Landmine.loadConfig(cfg);
+        FlightFirework.loadConfig(cfg);
     }
 
     public static void init() {
@@ -128,16 +134,24 @@ public class ShopItemAddon {
         return false;
     }
 
+    public static boolean handleFireworkExplode(Firework firework) {
+        if (FlightFirework.handleFireworkExplode(firework)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
             return true;
-        }
-
-        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleShopBuy(player, content)) {
+        } else if (SuicideBomber.settings_suicide_bomber_enable && handleShopBuy(player, content, "suicide_bomber", SuicideBomber.suicide_bomber_section)) {
             return true;
-        }
-
-        if (Landmine.settings_landmine_enable && Landmine.handleShopBuy(player, content)) {
+        } else if (Landmine.settings_landmine_enable && handleShopBuy(player, content, "landmine", Landmine.landmine_section)) {
+            return true;
+        } else if (Landmine.settings_light_landmine_enable && handleShopBuy(player, content, "light_landmine", Landmine.light_landmine_section)) {
+            return true;
+        } else if (FlightFirework.settings_flight_firework_enable && handleShopBuy(player, content, "flight_firework", FlightFirework.flight_firework_section)) {
             return true;
         }
 
@@ -157,6 +171,10 @@ public class ShopItemAddon {
         }
 
         if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleItemInteract(player, item)) {
+            return true;
+        }
+
+        if (FlightFirework.settings_flight_firework_enable && FlightFirework.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -180,16 +198,32 @@ public class ShopItemAddon {
                     String progress = cooling_progress_color_current + String.join("", Collections.nCopies(left, cooling_progress_unit)) + cooling_progress_color_left + String.join("", Collections.nCopies(current, cooling_progress_unit));
                     String msg = cooling_actionbar
                             .replace("{progress}", progress)
-                            .replace("{cooling_time}", String.valueOf(cooling / 10))
+                            .replace("{cooling_time}", String.valueOf((double) cooling / 10))
                             .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name"));
                     ActionBarUtil.send(player, msg);
                     try {
                         Thread.sleep(100);
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {
+                    }
                 }
                 player.removeMetadata(identity, _233BedWars.getInstance());
             });
         }
+    }
+
+    public static boolean handleShopBuy(Player player, ICategoryContent content, String identity, String section) {
+        if (content.getIdentifier().contains(identity)) {
+            for (IContentTier tier : content.getContentTiers()) {
+                for (IBuyItem buyItem : tier.getBuyItemsList()) {
+                    ItemStack itemStack = buyItem.getItemStack().clone();
+                    ItemMeta itemMeta = itemStack.getItemMeta();
+                    itemMeta.setDisplayName(Language.getMsg(player, section + "-name"));
+                    itemStack.setItemMeta(itemMeta);
+                    buyItem.setItemStack(itemStack);
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean checkCooling(Player player, String identity) {
@@ -283,6 +317,7 @@ public class ShopItemAddon {
     }
 
     static HashMap<String, String> sectionMap = new HashMap<>();
+
     private static void loadShopItem(String section) {
         boolean enable = shopItemsYml.getBoolean("settings." + section + ".enable");
         String category = shopItemsYml.getString("items." + section + ".category");
@@ -323,6 +358,11 @@ public class ShopItemAddon {
                 Landmine.settings_light_landmine_enable = enable;
                 Landmine.light_landmine_material = material;
                 Landmine.light_landmine_section = secLoc;
+                break;
+            case "flight_firework":
+                FlightFirework.settings_flight_firework_enable = enable;
+                FlightFirework.flight_firework_material = material;
+                FlightFirework.flight_firework_section = secLoc;
                 break;
         }
     }

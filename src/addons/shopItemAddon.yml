@@ -42,7 +42,8 @@ settings:
     explosion_damage: 5
   flight_firework:
     enable: true
-    fuse_delay: 3
+    fuse_delay: 1
+    explosion_damage: 3
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -94,4 +95,4 @@ items:
     category: "utility-category"
     slot: 35
     material: FIREWORK
-    cost: "gold:6"
+    cost: "gold:13"

@@ -2,10 +2,6 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
-import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
-import com.andrei1058.bedwars.api.arena.shop.IContentTier;
-import com.andrei1058.bedwars.api.language.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,7 +9,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class SuicideBomber {
@@ -33,11 +28,11 @@ public class SuicideBomber {
     }
 
     public static boolean handleItemInteract(Player player, ItemStack item) {
-        if (settings_suicide_bomber_enable) {
-            if (ShopItemAddon.checkCooling(player, "suicide_bomber")) {
-                return false;
+        if (isSuicideBomber(player, item)) {
+            if (!ShopItemAddon.checkCooling(player, "suicide_bomber")) {
+                suicideBomber(player, item);
             }
-            return suicideBomber(player, item);
+            return true;
         }
         return false;
     }
@@ -48,39 +43,19 @@ public class SuicideBomber {
         }
     }
 
-    public static boolean handleShopBuy(Player player, ICategoryContent content) {
-        if (content.getIdentifier().contains("suicide_bomber")) {
-            for (IContentTier tier : content.getContentTiers()) {
-                for (IBuyItem buyItem : tier.getBuyItemsList()) {
-                    ItemStack itemStack = buyItem.getItemStack().clone();
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(Language.getMsg(player, SuicideBomber.suicide_bomber_section + "-name"));
-                    itemStack.setItemMeta(itemMeta);
-                    buyItem.setItemStack(itemStack);
-                }
+    private static void suicideBomber(Player player, ItemStack item) {
+        ShopItemAddon.consumeItem(player, item, 1);
+        ShopItemAddon.setCooling(player, "suicide_bomber");
+        player.sendMessage(messages_suicide_bomber_active);
+        String[] _sound = settings_suicide_bomber_use_sound.split(":");
+        player.playSound(player.getLocation(), Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
+        player.getInventory().setHelmet(new ItemStack(Material.TNT));
+        player.setMetadata("suicide_bomber", new FixedMetadataValue(_233BedWars.getInstance(), ""));
+        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+            if (isCarryBomb(player)) {
+                fuseBomb(player);
             }
-        }
-        return false;
-    }
-
-    private static boolean suicideBomber(Player player, ItemStack item) {
-        if (isSuicideBomber(player, item)) {
-            ShopItemAddon.consumeItem(player, item, 1);
-            player.sendMessage(messages_suicide_bomber_active);
-            String[] _sound = settings_suicide_bomber_use_sound.split(":");
-            player.playSound(player.getLocation(), Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
-            player.getInventory().setHelmet(new ItemStack(Material.TNT));
-            player.setMetadata("suicide_bomber", new FixedMetadataValue(_233BedWars.getInstance(), ""));
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                if (isCarryBomb(player)) {
-                    fuseBomb(player);
-                }
-            }, settings_suicide_bomber_active_time * 20L);
-            ShopItemAddon.setCooling(player, "suicide_bomber");
-            return true;
-        }
-
-        return false;
+        }, settings_suicide_bomber_active_time * 20L);
     }
 
     private static boolean isSuicideBomber(Player player, ItemStack item) {
