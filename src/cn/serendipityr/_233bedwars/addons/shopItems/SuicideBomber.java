@@ -36,7 +36,9 @@ public class SuicideBomber {
     public static boolean handleItemInteract(Player player, ItemStack item) {
         if (isSuicideBomber(player, item)) {
             if (!ShopItemAddon.checkCooling(player, "suicide_bomber")) {
-                suicideBomber(player, item);
+                suicideBomber(player);
+                ShopItemAddon.consumeItem(player, item, 1);
+                ShopItemAddon.setCooling(player, "suicide_bomber");
             }
             return true;
         }
@@ -49,9 +51,7 @@ public class SuicideBomber {
         }
     }
 
-    private static void suicideBomber(Player player, ItemStack item) {
-        ShopItemAddon.consumeItem(player, item, 1);
-        ShopItemAddon.setCooling(player, "suicide_bomber");
+    private static void suicideBomber(Player player) {
         player.sendMessage(messages_suicide_bomber_active);
         String[] _sound = settings_suicide_bomber_use_sound.split(":");
         player.playSound(player.getLocation(), Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));

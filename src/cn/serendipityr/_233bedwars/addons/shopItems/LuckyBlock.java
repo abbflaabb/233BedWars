@@ -109,10 +109,11 @@ public class LuckyBlock {
             case "EFFECT":
                 String effect = p[1];
                 int level = Integer.parseInt(p[2]);
-                int duration = Integer.parseInt(p[3]);
+                int duration = Integer.parseInt(p[3]) * 20;
                 boolean particle = Boolean.getBoolean(p[4]);
+                boolean force = Boolean.getBoolean(p[5]);
                 PotionEffect potionEffect = getEffect(effect, duration, level, particle);
-                player.addPotionEffect(potionEffect);
+                player.addPotionEffect(potionEffect, force);
                 break;
             case "EXPLOSION":
                 int power = Integer.parseInt(p[1]);

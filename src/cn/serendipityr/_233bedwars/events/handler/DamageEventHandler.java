@@ -7,6 +7,7 @@ import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,30 +17,27 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class DamageEventHandler implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        Player victim = null;
-        if (event.getEntity() instanceof Player) {
-            victim = (Player) event.getEntity();
-        }
-        if (victim != null) {
-            Player damager = null;
-            if (event.getDamager() instanceof Player) {
-                damager = (Player) event.getDamager();
-            }
+        Entity victim = event.getEntity();
+        if (victim instanceof Player) {
+            victim = event.getEntity();
+            Entity damager = event.getDamager();
             if (damager != null) {
-                IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(damager);
-                if (arena != null && arena.getStatus() == GameState.playing) {
-                    if (arena.getTeam(damager) != arena.getTeam(victim)) {
-                        if (ConfigManager.addon_combatDetails) {
-                            CombatDetails.sendDamageMsg(damager, victim, event.getDamage(), event.getFinalDamage());
-                            CombatDetails.checkStrengthEffect(damager, victim);
-                        }
-
-                        if (ConfigManager.addon_shopItemAddon) {
-                            if (SuicideBomber.settings_suicide_bomber_enable) {
-                                SuicideBomber.handlePlayerDamage(victim);
+                if (damager instanceof Player) {
+                    damager = event.getDamager();
+                    IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer((Player) damager);
+                    if (arena != null && arena.getStatus() == GameState.playing) {
+                        if (arena.getTeam((Player) damager) != arena.getTeam((Player) victim)) {
+                            if (ConfigManager.addon_combatDetails) {
+                                CombatDetails.sendDamageMsg((Player) damager, (Player) victim, event.getDamage(), event.getFinalDamage());
+                                CombatDetails.checkStrengthEffect((Player) damager, (Player) victim);
                             }
                         }
                     }
+                }
+            }
+            if (ConfigManager.addon_shopItemAddon) {
+                if (SuicideBomber.settings_suicide_bomber_enable) {
+                    SuicideBomber.handlePlayerDamage((Player) victim);
                 }
             }
         }

@@ -5,7 +5,6 @@ import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -21,6 +20,8 @@ public class FlightFirework {
     public static Boolean settings_flight_firework_enable = false;
     public static Integer settings_flight_firework_fuse_delay;
     public static Integer settings_flight_firework_explosion_damage;
+    public static Boolean settings_flight_firework_set_fire;
+    public static Boolean settings_flight_firework_break_block;
     public static String messages_flight_firework_use;
     public static String messages_flight_firework_title;
 
@@ -33,6 +34,8 @@ public class FlightFirework {
     public static void loadConfig(YamlConfiguration cfg) {
         settings_flight_firework_fuse_delay = cfg.getInt("settings.flight_firework.fuse_delay");
         settings_flight_firework_explosion_damage = cfg.getInt("settings.flight_firework.explosion_damage");
+        settings_flight_firework_set_fire = cfg.getBoolean("settings.flight_firework.set_fire");
+        settings_flight_firework_break_block = cfg.getBoolean("settings.flight_firework.break_block");
         messages_flight_firework_use = cfg.getString("messages.flight_firework_use").replace("&", "§");
         messages_flight_firework_title = cfg.getString("messages.flight_firework_title").replace("&", "§");
     }
@@ -40,7 +43,9 @@ public class FlightFirework {
     public static boolean handleItemInteract(Player player, ItemStack item) {
         if (isFlightFirework(player, item)) {
             if (!ShopItemAddon.checkCooling(player, "flight_firework")) {
-                flightFirework(player, item);
+                flightFirework(player);
+                ShopItemAddon.consumeItem(player, item, 1);
+                ShopItemAddon.setCooling(player, "flight_firework");
             }
             return true;
         }
@@ -60,15 +65,13 @@ public class FlightFirework {
         if (firework.hasMetadata("flight_firework")) {
             firework.removeMetadata("flight_firework", _233BedWars.getInstance());
             Location loc = firework.getLocation();
-            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_flight_firework_explosion_damage, false, false);
+            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_flight_firework_explosion_damage, settings_flight_firework_set_fire, settings_flight_firework_break_block);
         }
 
         return false;
     }
 
-    private static void flightFirework(Player player, ItemStack item) {
-        ShopItemAddon.consumeItem(player, item, 1);
-        ShopItemAddon.setCooling(player, "flight_firework");
+    private static void flightFirework(Player player) {
         player.sendMessage(messages_flight_firework_use);
         player.sendTitle(new Title(messages_flight_firework_title, "", 0, settings_flight_firework_fuse_delay * 20, 0));
         Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);

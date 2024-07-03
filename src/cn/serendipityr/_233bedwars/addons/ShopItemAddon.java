@@ -69,6 +69,7 @@ public class ShopItemAddon {
         Landmine.loadConfig(cfg);
         FlightFirework.loadConfig(cfg);
         LuckyBlock.loadConfig(cfg);
+        Grenade.loadConfig(cfg);
     }
 
     public static void init() {
@@ -163,6 +164,8 @@ public class ShopItemAddon {
             return true;
         } else if (LuckyBlock.settings_lucky_block_enable && handleShopBuy(player, content, "lucky_block", LuckyBlock.lucky_block_section)) {
             return true;
+        } else if (Grenade.settings_grenade_enable && handleShopBuy(player, content, "grenade", Grenade.grenade_section)) {
+            return true;
         }
 
         return false;
@@ -181,6 +184,8 @@ public class ShopItemAddon {
         } else if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleItemInteract(player, item)) {
             return true;
         } else if (FlightFirework.settings_flight_firework_enable && FlightFirework.handleItemInteract(player, item)) {
+            return true;
+        } else if (Grenade.settings_grenade_enable && Grenade.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -362,6 +367,9 @@ public class ShopItemAddon {
                 break;
             case "lucky_block":
                 LuckyBlock.init(enable, material, secLoc);
+                break;
+            case "grenade":
+                Grenade.init(enable, material, secLoc);
                 break;
         }
     }
