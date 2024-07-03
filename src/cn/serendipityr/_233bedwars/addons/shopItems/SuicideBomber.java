@@ -20,6 +20,12 @@ public class SuicideBomber {
     public static String messages_suicide_bomber_active;
     public static String messages_suicide_bomber_fuse;
 
+    public static void init(boolean enable, String material, String section) {
+        suicide_bomber_material = material;
+        suicide_bomber_section = section;
+        settings_suicide_bomber_enable = enable;
+    }
+
     public static void loadConfig(YamlConfiguration cfg) {
         settings_suicide_bomber_use_sound = cfg.getString("settings.suicide_bomber.use_sound");
         settings_suicide_bomber_active_time = cfg.getInt("settings.suicide_bomber.active_time");
@@ -59,7 +65,7 @@ public class SuicideBomber {
     }
 
     private static boolean isSuicideBomber(Player player, ItemStack item) {
-        return item.getType() == Material.getMaterial(suicide_bomber_material) && ShopItemAddon.compareAddonItem(player, item, suicide_bomber_section);
+        return item.getType().toString().equals(suicide_bomber_material) && ShopItemAddon.compareAddonItem(player, item, suicide_bomber_section);
     }
 
     private static boolean isCarryBomb(Player player) {

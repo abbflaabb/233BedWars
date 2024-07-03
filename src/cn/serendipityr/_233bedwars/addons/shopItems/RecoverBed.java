@@ -43,6 +43,11 @@ public class RecoverBed {
     static String messages_recover_bed_limited;
     static List<String> messages_recover_bed_success_broadcast;
 
+    public static void init(boolean enable, String material, String section) {
+        recover_bed_material = material;
+        recover_bed_section = section;
+        settings_recover_bed_enable = enable;
+    }
 
     public static void loadConfig(YamlConfiguration cfg) {
         settings_recover_bed_recover_sound = cfg.getString("settings.recover_bed.recover_sound");
@@ -115,7 +120,7 @@ public class RecoverBed {
     }
 
     private static boolean isRecoverBed(Player player, ItemStack item) {
-        return item.getType() == Material.getMaterial(recover_bed_material) && ShopItemAddon.compareAddonItem(player, item, recover_bed_section);
+        return item.getType().toString().equals(recover_bed_material) && ShopItemAddon.compareAddonItem(player, item, recover_bed_section);
     }
 
     static HashMap<ITeam, Integer> limit_use_map = new HashMap<>();

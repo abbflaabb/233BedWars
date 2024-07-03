@@ -19,6 +19,7 @@ settings:
       - "landmine:5"
       - "light_landmine:5"
       - "flight_firework:5"
+      - "lucky_block:5"
     progress:
       length: 30
       unit: "|"
@@ -44,6 +45,23 @@ settings:
     enable: true
     fuse_delay: 1
     explosion_damage: 3
+  lucky_block:
+    enable: true
+    # 格式: 幸运/厄运:触发概率:执行类型
+    # 执行类型:
+    # ITEM - 物品名称:物品描述:物品ID:物品数量:物品附魔
+    # EFFECT - 药水效果:效果等级:持续时间:粒子效果
+    # EXPLOSION - 爆炸威力:生成火焰:破坏方块
+    # TELEPORT - X轴增量:Y轴增量:Z轴增量
+    # COMMANDS - 以控制台执行具体指令 (变量: %player_name%)
+    # SAY - 以玩家身份发送消息 (变量: %player_name%)
+    possibilities:
+      - "0.1:LUCKY:ITEM:&b幸运的钻石头盔:&a描述1#&6描述2#&c描述3:DIAMOND_HELMET:1:PROTECTION_ENVIRONMENTAL.4#DURABILITY.3"
+      - "0.1:LUCKY:EFFECT:SPEED:0:30:true"
+      - "0.1:UNLUCKY:TELEPORT:0:30:0"
+      - "0.1:UNLUCKY:EXPLOSION:5:true:true"
+      - "0.1:UNLUCKY:COMMAND:points add %player_name% 1"
+      - "0.1:UNLUCKY:SAY:我是神里绫华的狗！"
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -69,6 +87,8 @@ messages:
   landmine_remove: "&e你的地雷被挖了！"
   flight_firework_use: "&e点火起飞！"
   flight_firework_title: "&c呀！好疼！"
+  lucky_block_lucky: "&a&l欧皇！"
+  lucky_block_unlucky: "&c&l非酋！"
 
 items:
   recover_bed:
@@ -96,3 +116,8 @@ items:
     slot: 35
     material: FIREWORK
     cost: "gold:13"
+  lucky_block:
+    category: "utility-category"
+    slot: 36
+    material: SPONGE
+    cost: "iron:40"

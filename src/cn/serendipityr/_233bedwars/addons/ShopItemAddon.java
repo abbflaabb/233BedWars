@@ -1,10 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
-import cn.serendipityr._233bedwars.addons.shopItems.Landmine;
-import cn.serendipityr._233bedwars.addons.shopItems.RecoverBed;
-import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
+import cn.serendipityr._233bedwars.addons.shopItems.*;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
@@ -71,6 +68,7 @@ public class ShopItemAddon {
         SuicideBomber.loadConfig(cfg);
         Landmine.loadConfig(cfg);
         FlightFirework.loadConfig(cfg);
+        LuckyBlock.loadConfig(cfg);
     }
 
     public static void init() {
@@ -101,7 +99,11 @@ public class ShopItemAddon {
             return true;
         }
 
-        if (Landmine.settings_landmine_enable && Landmine.handleBlockPlace(player, block)) {
+        if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockPlace(player, block)) {
+            return true;
+        }
+
+        if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(block)) {
             return true;
         }
 
@@ -119,7 +121,13 @@ public class ShopItemAddon {
             return false;
         }
 
-        Landmine.onBlockDestroy(block);
+        if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockDestroy(block)) {
+            return true;
+        }
+
+        if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockDestroy(player, block)) {
+            return true;
+        }
 
         return false;
     }
@@ -153,6 +161,8 @@ public class ShopItemAddon {
             return true;
         } else if (FlightFirework.settings_flight_firework_enable && handleShopBuy(player, content, "flight_firework", FlightFirework.flight_firework_section)) {
             return true;
+        } else if (LuckyBlock.settings_lucky_block_enable && handleShopBuy(player, content, "lucky_block", LuckyBlock.lucky_block_section)) {
+            return true;
         }
 
         return false;
@@ -168,13 +178,9 @@ public class ShopItemAddon {
 
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleItemInteract(player, item, arena, team)) {
             return true;
-        }
-
-        if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleItemInteract(player, item)) {
+        } else if (SuicideBomber.settings_suicide_bomber_enable && SuicideBomber.handleItemInteract(player, item)) {
             return true;
-        }
-
-        if (FlightFirework.settings_flight_firework_enable && FlightFirework.handleItemInteract(player, item)) {
+        } else if (FlightFirework.settings_flight_firework_enable && FlightFirework.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -340,29 +346,22 @@ public class ShopItemAddon {
 
         switch (section) {
             case "recover_bed":
-                RecoverBed.settings_recover_bed_enable = enable;
-                RecoverBed.recover_bed_material = material;
-                RecoverBed.recover_bed_section = secLoc;
+                RecoverBed.init(enable, material, secLoc);
                 break;
             case "suicide_bomber":
-                SuicideBomber.settings_suicide_bomber_enable = enable;
-                SuicideBomber.suicide_bomber_material = material;
-                SuicideBomber.suicide_bomber_section = secLoc;
+                SuicideBomber.init(enable, material, secLoc);
                 break;
             case "landmine":
-                Landmine.settings_landmine_enable = enable;
-                Landmine.landmine_material = material;
-                Landmine.landmine_section = secLoc;
+                Landmine.init(enable, material, secLoc);
                 break;
             case "light_landmine":
-                Landmine.settings_light_landmine_enable = enable;
-                Landmine.light_landmine_material = material;
-                Landmine.light_landmine_section = secLoc;
+                Landmine.light_init(enable, material, secLoc);
                 break;
             case "flight_firework":
-                FlightFirework.settings_flight_firework_enable = enable;
-                FlightFirework.flight_firework_material = material;
-                FlightFirework.flight_firework_section = secLoc;
+                FlightFirework.init(enable, material, secLoc);
+                break;
+            case "lucky_block":
+                LuckyBlock.init(enable, material, secLoc);
                 break;
         }
     }

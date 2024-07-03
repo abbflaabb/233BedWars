@@ -28,6 +28,18 @@ public class Landmine {
     public static String messages_landmine_fuse;
     public static String messages_landmine_remove;
 
+    public static void init(boolean enable, String material, String section) {
+        landmine_material = material;
+        landmine_section = section;
+        settings_landmine_enable = enable;
+    }
+
+    public static void light_init(boolean enable, String material, String section) {
+        light_landmine_material = material;
+        light_landmine_section = section;
+        settings_light_landmine_enable = enable;
+    }
+
     public static void loadConfig(YamlConfiguration cfg) {
         settings_landmine_explosion_damage = cfg.getInt("settings.landmine.explosion_damage");
         settings_light_landmine_explosion_damage = cfg.getInt("settings.light_landmine.explosion_damage");
@@ -40,42 +52,44 @@ public class Landmine {
     public static HashMap<Block, ITeam> landmineTeamMap = new HashMap<>();
 
     public static boolean handleBlockPlace(Player player, Block block) {
-        if (block.getType().toString().contains("PLATE")) {
-            boolean check = false;
-            if (block.getType().toString().contains("STONE")) {
-                if (ShopItemAddon.checkCooling(player, "landmine")) {
-                    return true;
-                }
-                check = true;
-                ShopItemAddon.setCooling(player, "landmine");
+        boolean check = false;
+        if (block.getType().toString().equals(landmine_material)) {
+            if (ShopItemAddon.checkCooling(player, "landmine")) {
+                return true;
             }
+            check = true;
+            ShopItemAddon.setCooling(player, "landmine");
+        }
 
-            if (block.getType().toString().contains("IRON")) {
-                if (ShopItemAddon.checkCooling(player, "light_landmine")) {
-                    return true;
-                }
-                check = true;
-                ShopItemAddon.setCooling(player, "light_landmine");
+        if (block.getType().toString().equals(light_landmine_material)) {
+            if (ShopItemAddon.checkCooling(player, "light_landmine")) {
+                return true;
             }
+            check = true;
+            ShopItemAddon.setCooling(player, "light_landmine");
+        }
 
-            if (check) {
-                player.sendMessage(messages_landmine_place);
-                landmineMap.put(block, player);
-                ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
-                landmineTeamMap.put(block, team);
-            }
+        if (check) {
+            player.sendMessage(messages_landmine_place);
+            landmineMap.put(block, player);
+            ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
+            landmineTeamMap.put(block, team);
         }
 
         return false;
     }
 
-    public static void onBlockDestroy(Block block) {
+    public static boolean handleBlockDestroy(Block block) {
         if (landmineMap.containsKey(block)) {
+            block.setType(Material.AIR);
             Player placer = landmineMap.get(block);
             placer.sendMessage(messages_landmine_remove);
             landmineMap.remove(block);
             landmineTeamMap.remove(block);
+            return true;
         }
+
+        return false;
     }
 
     public static void onBlockInteract(Player player, Block block) {

@@ -24,6 +24,12 @@ public class FlightFirework {
     public static String messages_flight_firework_use;
     public static String messages_flight_firework_title;
 
+    public static void init(boolean enable, String material, String section) {
+        flight_firework_material = material;
+        flight_firework_section = section;
+        settings_flight_firework_enable = enable;
+    }
+
     public static void loadConfig(YamlConfiguration cfg) {
         settings_flight_firework_fuse_delay = cfg.getInt("settings.flight_firework.fuse_delay");
         settings_flight_firework_explosion_damage = cfg.getInt("settings.flight_firework.explosion_damage");
@@ -81,6 +87,6 @@ public class FlightFirework {
     }
 
     private static boolean isFlightFirework(Player player, ItemStack item) {
-        return item.getType() == Material.getMaterial(flight_firework_material) && ShopItemAddon.compareAddonItem(player, item, flight_firework_section);
+        return item.getType().toString().equals(flight_firework_material) && ShopItemAddon.compareAddonItem(player, item, flight_firework_section);
     }
 }
