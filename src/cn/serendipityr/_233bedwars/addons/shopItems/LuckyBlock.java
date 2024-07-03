@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.addons.shopItems;
 
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -41,9 +42,13 @@ public class LuckyBlock {
 
     static List<Block> blocks = new ArrayList<>();
 
-    public static boolean handleBlockPlace(Block block) {
+    public static boolean handleBlockPlace(Player player, Block block) {
         if (block.getType().toString().equals(lucky_block_material)) {
+            if (ShopItemAddon.checkCooling(player, "lucky_block")) {
+                return true;
+            }
             blocks.add(block);
+            ShopItemAddon.setCooling(player, "lucky_block");
         }
         return false;
     }

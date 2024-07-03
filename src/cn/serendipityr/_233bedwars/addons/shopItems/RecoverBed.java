@@ -73,15 +73,13 @@ public class RecoverBed {
     }
 
     public static void handleBedDestroy(IArena arena, ITeam team) {
-        if (settings_recover_bed_enable) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
-                if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60) && (!limit_use_map.containsKey(team) || limit_use_map.get(team) < settings_recover_bed_use_count_limit)) {
-                    ShopItemAddon.sendTeamMessage(team, messages_recover_bed_destroy_tips);
-                } else {
-                    ShopItemAddon.sendTeamMessage(team, messages_recover_bed_invalid_msg);
-                }
-            }, 1L);
-        }
+        Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
+            if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60) && (!limit_use_map.containsKey(team) || limit_use_map.get(team) < settings_recover_bed_use_count_limit)) {
+                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_destroy_tips);
+            } else {
+                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_invalid_msg);
+            }
+        }, 1L);
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {

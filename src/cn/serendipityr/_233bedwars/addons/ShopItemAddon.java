@@ -103,7 +103,7 @@ public class ShopItemAddon {
             return true;
         }
 
-        if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(block)) {
+        if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block)) {
             return true;
         }
 
