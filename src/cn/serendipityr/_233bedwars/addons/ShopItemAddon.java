@@ -18,24 +18,25 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.QuickBuyButton;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.main.ShopIndex;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.github.paperspigot.Title;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ShopItemAddon {
     static List<String> shop_layout = new ArrayList<>();
@@ -70,6 +71,8 @@ public class ShopItemAddon {
         FlightFirework.loadConfig(cfg);
         LuckyBlock.loadConfig(cfg);
         Grenade.loadConfig(cfg);
+        BridgeChicken.loadConfig(cfg);
+        BridgeCat.loadConfig(cfg);
     }
 
     public static void init() {
@@ -166,6 +169,10 @@ public class ShopItemAddon {
             return true;
         } else if (Grenade.settings_grenade_enable && handleShopBuy(player, content, "grenade", Grenade.grenade_section)) {
             return true;
+        } else if (BridgeChicken.settings_bridge_chicken_enable && handleShopBuy(player, content, "bridge_chicken", BridgeChicken.bridge_chicken_section)) {
+            return true;
+        } else if (BridgeCat.settings_bridge_cat_enable && handleShopBuy(player, content, "bridge_cat", BridgeCat.bridge_cat_section)) {
+            return true;
         }
 
         return false;
@@ -187,6 +194,10 @@ public class ShopItemAddon {
             return true;
         } else if (Grenade.settings_grenade_enable && Grenade.handleItemInteract(player, item)) {
             return true;
+        } else if (BridgeChicken.settings_bridge_chicken_enable && BridgeChicken.handleItemInteract(player, item)) {
+            return true;
+        } else if (BridgeCat.settings_bridge_cat_enable && BridgeCat.handleItemInteract(player, item)) {
+            return true;
         }
 
         return false;
@@ -194,6 +205,16 @@ public class ShopItemAddon {
 
     public static void handleBlockRedstone(Block block, int old_state, int new_state) {
         Landmine.onBlockRedstone(block, old_state, new_state);
+    }
+
+    public static boolean handleEntityDeath(Entity entity) {
+        if (BridgeChicken.settings_bridge_chicken_enable && BridgeChicken.handleEntityDeath(entity)) {
+            return true;
+        } else if (BridgeCat.settings_bridge_cat_enable && BridgeCat.handleEntityDeath(entity)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static void setCooling(Player player, String identity) {
@@ -229,6 +250,22 @@ public class ShopItemAddon {
                     ItemStack itemStack = buyItem.getItemStack().clone();
                     ItemMeta itemMeta = itemStack.getItemMeta();
                     itemMeta.setDisplayName(Language.getMsg(player, section + "-name"));
+                    if (itemStack.getType().toString().contains("SKULL")) {
+                        String texture = ShopItemAddon.getSkullTexture(identity);
+                        if (!texture.trim().isEmpty()) {
+                            SkullMeta skullMeta = (SkullMeta) itemMeta;
+                            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                            profile.getProperties().put("textures", new Property("textures", texture));
+                            try {
+                                Field profileField = skullMeta.getClass().getDeclaredField("profile");
+                                profileField.setAccessible(true);
+                                profileField.set(skullMeta, profile);
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            itemStack.setItemMeta(skullMeta);
+                        }
+                    }
                     itemStack.setItemMeta(itemMeta);
                     buyItem.setItemStack(itemStack);
                 }
@@ -302,6 +339,33 @@ public class ShopItemAddon {
         }
     }
 
+    public static String getSkullTexture(String identity) {
+        String texture = shopItemsYml.getString("items." + identity + ".texture");
+        return texture == null ? "" : texture;
+    }
+
+    public static String getSkullTextureFromItemStack(ItemStack skullItem) {
+        if (!skullItem.getType().toString().contains("SKULL")) {
+            return "";
+        }
+
+        SkullMeta skullMeta = (SkullMeta) skullItem.getItemMeta();
+
+        try {
+            Field profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            GameProfile profile = (GameProfile) profileField.get(skullMeta);
+            if (profile != null) {
+                for (Property property : profile.getProperties().get("textures")) {
+                    return property.getValue();
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        return "";
+    }
+
     private static void setQuickButtonSlot(ShopIndex shopIndex, int slot) {
         try {
             Field quickBuyButtonField = ShopIndex.class.getDeclaredField("quickBuyButton");
@@ -371,6 +435,12 @@ public class ShopItemAddon {
             case "grenade":
                 Grenade.init(enable, material, secLoc);
                 break;
+            case "bridge_chicken":
+                BridgeChicken.init(enable, material, secLoc, getSkullTexture(section));
+                break;
+            case "bridge_cat":
+                BridgeCat.init(enable, material, secLoc, getSkullTexture(section));
+                break;
         }
     }
 
@@ -382,7 +452,7 @@ public class ShopItemAddon {
         bwCfg.addDefault(path + ConfigPath.SHOP_CATEGORY_CONTENT_IS_DOWNGRADABLE, false);
         path.append(ConfigPath.SHOP_CATEGORY_CONTENT_CONTENT_TIERS + ".tier1.");
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_MATERIAL, material);
-        bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_DATA, 0);
+        bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_DATA, getSkullTexture(section).trim().isEmpty() ? 0 : 3);
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_AMOUNT, 1);
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_ENCHANTED, false);
         String[] _cost = cost.split(":");
@@ -390,7 +460,7 @@ public class ShopItemAddon {
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_SETTINGS_COST, Integer.parseInt(_cost[1]));
         path.append(ConfigPath.SHOP_CONTENT_BUY_ITEMS_PATH + ".").append(section).append(".");
         bwCfg.addDefault(path + "material", material);
-        bwCfg.addDefault(path + "data", 0);
+        bwCfg.addDefault(path + "data", getSkullTexture(section).trim().isEmpty() ? 0 : 3);
         bwCfg.addDefault(path + "amount", 1);
     }
 

@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.CombatDetails;
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
 import cn.serendipityr._233bedwars.config.ConfigManager;
@@ -13,6 +14,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+
+import java.util.ArrayList;
 
 public class DamageEventHandler implements Listener {
     @EventHandler
@@ -52,6 +56,15 @@ public class DamageEventHandler implements Listener {
                     FlightFirework.onPlayerDamage(player);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Entity entity = event.getEntity();
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleEntityDeath(entity)) {
+            event.setDroppedExp(0);
+            event.getDrops().clear();
         }
     }
 }

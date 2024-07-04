@@ -1,6 +1,8 @@
 package cn.serendipityr._233bedwars.utils;
 
+import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.XpResMode;
+import cn.serendipityr._233bedwars.config.ConfigManager;
 import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
@@ -15,12 +17,15 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.quickbuy.PlayerQuickBuyCache;
 import com.andrei1058.bedwars.shop.quickbuy.QuickBuyElement;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -128,6 +133,9 @@ public class BedWarsShopUtil {
         List<String> lores = getCategoryContentLore(player, content);
 
         ItemStack itemStack = shopInv.getItem(slot);
+        if (itemStack == null) {
+            return;
+        }
         ItemMeta itemMeta = itemStack.getItemMeta();
 
         boolean affordable = isAffordable(player, price);
@@ -143,8 +151,25 @@ public class BedWarsShopUtil {
         } else {
             itemMeta.setDisplayName(getCategoryContentName(player, content).replace("{color}", "§c"));
         }
-
         itemMeta.setLore(lores);
+        if (ConfigManager.addon_shopItemAddon) {
+            if (itemStack.getType().toString().contains("SKULL")) {
+                String texture = ShopItemAddon.getSkullTexture(content.getIdentifier().split("\\.")[2]);
+                if (!texture.trim().isEmpty()) {
+                    SkullMeta skullMeta = (SkullMeta) itemMeta;
+                    GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                    profile.getProperties().put("textures", new Property("textures", texture));
+                    try {
+                        Field profileField = skullMeta.getClass().getDeclaredField("profile");
+                        profileField.setAccessible(true);
+                        profileField.set(skullMeta, profile);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    itemStack.setItemMeta(skullMeta);
+                }
+            }
+        }
         itemStack.setItemMeta(itemMeta);
         shopInv.setItem(slot, itemStack);
     }

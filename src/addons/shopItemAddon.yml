@@ -74,6 +74,22 @@ settings:
     fuse_delay: 3
     set_fire: false
     break_block: true
+  bridge_chicken:
+    enable: true
+    build_delay: 0.25
+    max_blocks: 36
+    complete_explosion: true
+    explosion_damage: 1
+    set_fire: false
+    break_block: false
+  bridge_cat:
+    enable: true
+    build_delay: 0.25
+    max_blocks: 26
+    complete_explosion: true
+    explosion_damage: 1
+    set_fire: false
+    break_block: false
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -138,3 +154,15 @@ items:
     slot: 37
     material: FIREWORK_CHARGE
     cost: "iron:40"
+  bridge_chicken:
+    category: "utility-category"
+    slot: 38
+    material: SKULL_ITEM
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ=="
+    cost: "iron:60"
+  bridge_cat:
+    category: "utility-category"
+    slot: 39
+    material: SKULL_ITEM
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIyNTNmYzZiNjU2OTg4NDUzYTJkNzEzOGZjYTRkMWYyNzUyZjQ3NjkxZjBjNDM0ZTQzMjE4Mzc3MWNmZTEifX19"
+    cost: "iron:75"
