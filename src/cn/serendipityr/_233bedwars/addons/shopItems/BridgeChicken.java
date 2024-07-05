@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Location;
@@ -96,10 +97,12 @@ public class BridgeChicken {
                 }
 
                 Block block = start.getBlock();
-                if (block == start.add(direction).getBlock()) {
+                start.add(direction);
+                start.setY(initY + yIncrement);
+                if (block.getLocation().equals(start.getBlock().getLocation())) {
+                    blocksPlaced++;
                     return;
                 }
-                start.setY(initY + yIncrement);
 
                 if (start.getBlock().getType() != Material.AIR || blocksPlaced >= settings_bridge_chicken_max_blocks || arena.isProtected(start) || chicken.isDead()) {
                     chicken.setHealth(0);

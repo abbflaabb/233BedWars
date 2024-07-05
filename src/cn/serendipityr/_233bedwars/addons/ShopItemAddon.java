@@ -73,6 +73,8 @@ public class ShopItemAddon {
         Grenade.loadConfig(cfg);
         BridgeChicken.loadConfig(cfg);
         BridgeCat.loadConfig(cfg);
+        Pillar.loadConfig(cfg);
+        ToxicBall.loadConfig(cfg);
     }
 
     public static void init() {
@@ -97,17 +99,13 @@ public class ShopItemAddon {
     public static boolean handleBlockPlace(Player player, Block block) {
         if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             return false;
-        }
-
-        if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
+        } else if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
             return true;
-        }
-
-        if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockPlace(player, block)) {
+        } else if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockPlace(player, block)) {
             return true;
-        }
-
-        if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block)) {
+        } else if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block)) {
+            return true;
+        } else if (Pillar.settings_pillar_enable && Pillar.handleBlockPlace(player, block)) {
             return true;
         }
 
@@ -173,6 +171,10 @@ public class ShopItemAddon {
             return true;
         } else if (BridgeCat.settings_bridge_cat_enable && handleShopBuy(player, content, "bridge_cat", BridgeCat.bridge_cat_section)) {
             return true;
+        } else if (Pillar.settings_pillar_enable && handleShopBuy(player, content, "pillar", Pillar.pillar_section)) {
+            return true;
+        } else if (ToxicBall.settings_toxic_ball_enable && handleShopBuy(player, content, "toxic_ball", ToxicBall.toxic_ball_section)) {
+            return true;
         }
 
         return false;
@@ -197,6 +199,8 @@ public class ShopItemAddon {
         } else if (BridgeChicken.settings_bridge_chicken_enable && BridgeChicken.handleItemInteract(player, item)) {
             return true;
         } else if (BridgeCat.settings_bridge_cat_enable && BridgeCat.handleItemInteract(player, item)) {
+            return true;
+        } else if (ToxicBall.settings_toxic_ball_enable && ToxicBall.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -440,6 +444,12 @@ public class ShopItemAddon {
                 break;
             case "bridge_cat":
                 BridgeCat.init(enable, material, secLoc, getSkullTexture(section));
+                break;
+            case "pillar":
+                Pillar.init(enable, material, secLoc);
+                break;
+            case "toxic_ball":
+                ToxicBall.init(enable, material, secLoc);
                 break;
         }
     }

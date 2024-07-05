@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -79,11 +81,12 @@ public class BridgeCat {
 
             public void run() {
                 Block block = start.getBlock();
-                if (block == start.add(direction).getBlock()) {
+                start.add(direction);
+                start.setY(initY);
+                if (block.getLocation().equals(start.getBlock().getLocation())) {
+                    blocksPlaced++;
                     return;
                 }
-                start.setY(initY);
-
                 if (blocksPlaced >= settings_bridge_cat_max_blocks || start.getBlock().getType() != Material.AIR || arena.isProtected(start) || cat.isDead()) {
                     cat.setHealth(0);
                     completeExplosion(start);

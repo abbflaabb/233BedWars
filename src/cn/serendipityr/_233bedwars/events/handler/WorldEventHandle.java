@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.shopItems.Grenade;
+import cn.serendipityr._233bedwars.addons.shopItems.ToxicBall;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Projectile;
@@ -25,6 +26,10 @@ public class WorldEventHandle implements Listener {
         if (ConfigManager.addon_shopItemAddon) {
             if (Grenade.settings_grenade_enable) {
                 Grenade.onProjectileHit(projectile);
+            }
+
+            if (ToxicBall.settings_toxic_ball_enable) {
+                ToxicBall.onProjectileHit(projectile);
             }
         }
     }
