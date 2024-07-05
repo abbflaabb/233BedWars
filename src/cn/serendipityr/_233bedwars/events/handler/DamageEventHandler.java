@@ -16,8 +16,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import java.util.ArrayList;
-
 public class DamageEventHandler implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
