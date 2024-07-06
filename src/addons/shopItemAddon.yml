@@ -99,6 +99,14 @@ settings:
     effect_level: 0
     effect_duration: 10
     effect_particle: true
+  obsidian_breaker:
+    enable: true
+    convert_time: 10
+    replace_block: "STONE"
+    complete_explosion: true
+    explosion_damage: 1
+    set_fire: false
+    break_block: false
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -186,3 +194,8 @@ items:
     slot: 41
     material: SLIME_BALL
     cost: "iron:40"
+  obsidian_breaker:
+    category: "utility-category"
+    slot: 42
+    material: BLAZE_POWDER
+    cost: "emerald:5"

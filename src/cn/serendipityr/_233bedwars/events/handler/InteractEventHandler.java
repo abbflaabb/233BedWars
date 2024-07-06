@@ -98,8 +98,15 @@ public class InteractEventHandler implements Listener {
             event.setCancelled(true);
         }
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleItemInteract(player, item)) {
-                event.setCancelled(true);
+            if (ConfigManager.addon_shopItemAddon) {
+                if (ShopItemAddon.handleItemInteract(player, item)) {
+                    event.setCancelled(true);
+                }
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (ShopItemAddon.handleBlockItemInteract(player, item, block)) {
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }

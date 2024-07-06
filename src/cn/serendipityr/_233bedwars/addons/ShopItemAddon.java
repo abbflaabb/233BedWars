@@ -75,6 +75,7 @@ public class ShopItemAddon {
         BridgeCat.loadConfig(cfg);
         Pillar.loadConfig(cfg);
         ToxicBall.loadConfig(cfg);
+        ObsidianBreaker.loadConfig(cfg);
     }
 
     public static void init() {
@@ -139,13 +140,23 @@ public class ShopItemAddon {
             return false;
         }
 
-        Landmine.onBlockInteract(player, block);
+        if (Landmine.settings_light_landmine_enable || Landmine.settings_landmine_enable) {
+            Landmine.onBlockInteract(player, block);
+        }
 
         return false;
     }
 
     public static boolean handleFireworkExplode(Firework firework) {
-        if (FlightFirework.handleFireworkExplode(firework)) {
+        if (FlightFirework.settings_flight_firework_enable && FlightFirework.handleFireworkExplode(firework)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean handleBlockItemInteract(Player player, ItemStack item, Block block) {
+        if (ObsidianBreaker.settings_obsidian_breaker_enable && ObsidianBreaker.handleBlockItemInteract(player, item, block)) {
             return true;
         }
 
@@ -174,6 +185,8 @@ public class ShopItemAddon {
         } else if (Pillar.settings_pillar_enable && handleShopBuy(player, content, "pillar", Pillar.pillar_section)) {
             return true;
         } else if (ToxicBall.settings_toxic_ball_enable && handleShopBuy(player, content, "toxic_ball", ToxicBall.toxic_ball_section)) {
+            return true;
+        } else if (ObsidianBreaker.settings_obsidian_breaker_enable && handleShopBuy(player, content, "obsidian_breaker", ObsidianBreaker.obsidian_breaker_section)) {
             return true;
         }
 
@@ -450,6 +463,9 @@ public class ShopItemAddon {
                 break;
             case "toxic_ball":
                 ToxicBall.init(enable, material, secLoc);
+                break;
+            case "obsidian_breaker":
+               ObsidianBreaker.init(enable, material, secLoc);
                 break;
         }
     }
