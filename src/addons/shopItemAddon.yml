@@ -107,6 +107,14 @@ settings:
     explosion_damage: 1
     set_fire: false
     break_block: false
+  portal_scroll:
+    enable: true
+    portal_time: 10
+    title_stay: 25
+    progress_length: 10
+    progress_unit: "{unicode_arrow}"
+    progress_color_current: "&a"
+    progress_color_left: "&f"
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -134,7 +142,13 @@ messages:
   flight_firework_title: "&c呀！好疼！"
   lucky_block_lucky: "&a&l欧皇！"
   lucky_block_unlucky: "&c&l非酋！"
-  pillar_build: "Biu!"
+  pillar_build: "&eBiu!"
+  portal_scroll_tips: "&e将在 &e&l{left_time} &r&e后回城"
+  portal_scroll_broadcast: "{tColor}{tName}{player} &e&l正在使用回城卷轴！"
+  portal_scroll_use_title: "&c请勿移动！"
+  portal_scroll_use_subtitle: "{portal_progress}"
+  portal_scroll_success: "&e回城！"
+  portal_scroll_failed: "&c已移动，取消回城！"
 
 items:
   recover_bed:
@@ -199,3 +213,8 @@ items:
     slot: 42
     material: BLAZE_POWDER
     cost: "emerald:5"
+  portal_scroll:
+    category: "utility-category"
+    slot: 43
+    material: PAPER
+    cost: "iron:40"

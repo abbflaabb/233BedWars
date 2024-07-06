@@ -21,6 +21,7 @@ import com.andrei1058.bedwars.shop.main.ShopIndex;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -76,6 +77,7 @@ public class ShopItemAddon {
         Pillar.loadConfig(cfg);
         ToxicBall.loadConfig(cfg);
         ObsidianBreaker.loadConfig(cfg);
+        PortalScroll.loadConfig(cfg);
     }
 
     public static void init() {
@@ -188,6 +190,8 @@ public class ShopItemAddon {
             return true;
         } else if (ObsidianBreaker.settings_obsidian_breaker_enable && handleShopBuy(player, content, "obsidian_breaker", ObsidianBreaker.obsidian_breaker_section)) {
             return true;
+        } else if (PortalScroll.settings_portal_scroll_enable && handleShopBuy(player, content, "portal_scroll", PortalScroll.portal_scroll_section)) {
+            return true;
         }
 
         return false;
@@ -214,6 +218,16 @@ public class ShopItemAddon {
         } else if (BridgeCat.settings_bridge_cat_enable && BridgeCat.handleItemInteract(player, item)) {
             return true;
         } else if (ToxicBall.settings_toxic_ball_enable && ToxicBall.handleItemInteract(player, item)) {
+            return true;
+        } else if (PortalScroll.settings_portal_scroll_enable && PortalScroll.handleItemInteract(player, item)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean handlePlayerMovement(Player player, Location from, Location to) {
+        if (PortalScroll.settings_portal_scroll_enable && PortalScroll.handlePlayerMovement(player, from, to)) {
             return true;
         }
 
@@ -466,6 +480,9 @@ public class ShopItemAddon {
                 break;
             case "obsidian_breaker":
                ObsidianBreaker.init(enable, material, secLoc);
+                break;
+            case "portal_scroll":
+                PortalScroll.init(enable, material, secLoc);
                 break;
         }
     }

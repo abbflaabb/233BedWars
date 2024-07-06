@@ -44,36 +44,12 @@ public class PlaceholderUtil {
         team_heart_animation_ticks = cfg.getInt("team_heart_animation_ticks");
         team_heart_danger_search_radius = cfg.getDouble("team_heart_danger_search_radius");
         team_heart_danger_animation = cfg.getStringList("team_heart_danger_animation");
-        team_heart_danger_animation.replaceAll(s -> s
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚"));
-        team_heart_destroyed = cfg.getString("team_heart_destroyed")
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚");
-        team_heart_normal = cfg.getString("team_heart_normal")
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚");
-        teamNameFormat = cfg.getString("teamNameFormat")
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚");
-        team_in_danger = cfg.getString("team_in_danger")
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚");
-        team_in_danger_full = cfg.getString("team_in_danger_full")
-                .replace("{unicode_square}", "▊")
-                .replace("{unicode_heart}", "❤")
-                .replace("{unicode_block}", "☲")
-                .replace("{unicode_cross}", "✚");
+        team_heart_danger_animation.replaceAll(PlaceholderUtil::formatTextUnicode);
+        team_heart_destroyed = formatTextUnicode(cfg.getString("team_heart_destroyed"));
+        team_heart_normal = formatTextUnicode(cfg.getString("team_heart_normal"));
+        teamNameFormat = formatTextUnicode(cfg.getString("teamNameFormat"));
+        team_in_danger = formatTextUnicode(cfg.getString("team_in_danger"));
+        team_in_danger_full = formatTextUnicode(cfg.getString("team_in_danger_full"));
         for (String mN : cfg.getConfigurationSection("modeName").getKeys(false)) {
             modeName.put(mN, cfg.getString("modeName." + mN));
         }
@@ -240,6 +216,7 @@ public class PlaceholderUtil {
                 .replace("{mode}", ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getGroup())
                 .replace("{sTime}", PlaceholderUtil.getCurrentFormattedTime())
                 .replace("{sId}", ConfigManager.serverID);
+        text = formatTextUnicode(text);
         if (team != null) {
             text = text.replace("{tHeart}", getTeamHeart(team))
                     .replace("{tDanger}", getTeamDanger(team))
@@ -251,6 +228,15 @@ public class PlaceholderUtil {
                     .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
         }
         return text.replace("&", "§");
+    }
+
+    public static String formatTextUnicode(String text) {
+        return text
+                .replace("{unicode_square}", "▊")
+                .replace("{unicode_heart}", "❤")
+                .replace("{unicode_block}", "☲")
+                .replace("{unicode_cross}", "✚")
+                .replace("{unicode_arrow}", "➤");
     }
 
     public static String getModeName(String mode) {
