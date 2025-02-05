@@ -262,7 +262,7 @@ public class ShopItemAddon {
                     String msg = cooling_actionbar
                             .replace("{progress}", progress)
                             .replace("{cooling_time}", String.valueOf((double) cooling / 10))
-                            .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name"));
+                            .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name").replace("{color}", "§e"));
                     ActionBarUtil.send(player, msg);
                     try {
                         Thread.sleep(100);
