@@ -57,9 +57,9 @@ public class LuckyBlock {
         if (blocks.contains(block)) {
             block.setType(Material.AIR);
             parseExecute(random(), player, block.getLocation());
+            blocks.remove(block);
             return true;
         }
-
         return false;
     }
 
