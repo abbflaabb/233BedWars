@@ -6,6 +6,8 @@ main: cn.serendipityr._233bedwars._233BedWars
 permissions:
   bw233.cmd:
     default: true
+  bw233.admin:
+    default: op
 commands:
   233bw:
     permission: bw233.cmd
