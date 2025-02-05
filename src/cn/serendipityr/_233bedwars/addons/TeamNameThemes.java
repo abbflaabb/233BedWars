@@ -34,7 +34,7 @@ public class TeamNameThemes {
         List<String> keysList = new ArrayList<>(themes.get(arena.getGroup()).keySet());
         String randomTheme = keysList.get(new Random().nextInt(keysList.size()));
         arenaTheme.put(arena, randomTheme);
-        if (themes.containsKey(group) && themes.get(group).size() != 0) {
+        if (themes.containsKey(group) && !themes.get(group).isEmpty()) {
             for (Player player : arena.getPlayers()) {
                 player.sendMessage(applyThemeMsg.replace("{tTheme}", randomTheme));
             }
