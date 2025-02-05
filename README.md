@@ -10,6 +10,12 @@
 #### [BedWars1058](https://www.spigotmc.org/resources/bedwars1058-opensource.97320/)
 #### [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) (可选)
 
+## 食用方法
+
+1. 安装插件及可选前置于已配置好的BedWars1058服务端
+2. 编辑需要的语言文件，如 `/plugins/BedWars1058/Languages/messages_zh_cn.yml`
+3. 启动服务器
+
 ## 权限 & 命令
 
 | 权限 | 说明 |
