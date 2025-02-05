@@ -99,16 +99,16 @@ public class ShopItemAddon {
         }
     }
 
-    public static boolean handleBlockPlace(Player player, Block block) {
+    public static boolean handleBlockPlace(Player player, Block block, ItemStack item) {
         if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             return false;
         } else if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
             return true;
         } else if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockPlace(player, block)) {
             return true;
-        } else if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block)) {
+        } else if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block, item)) {
             return true;
-        } else if (Pillar.settings_pillar_enable && Pillar.handleBlockPlace(player, block)) {
+        } else if (Pillar.settings_pillar_enable && Pillar.handleBlockPlace(player, block, item)) {
             return true;
         }
 
@@ -280,7 +280,7 @@ public class ShopItemAddon {
                 for (IBuyItem buyItem : tier.getBuyItemsList()) {
                     ItemStack itemStack = buyItem.getItemStack().clone();
                     ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(Language.getMsg(player, section + "-name"));
+                    itemMeta.setDisplayName(Language.getMsg(player, section + "-name").replace("{color}", "§e"));
                     if (itemStack.getType().toString().contains("SKULL")) {
                         String texture = ShopItemAddon.getSkullTexture(identity);
                         if (!texture.trim().isEmpty()) {
@@ -339,7 +339,7 @@ public class ShopItemAddon {
 
     public static boolean compareAddonItem(Player player, ItemStack itemStack, String section) {
         if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
-            return Language.getMsg(player, section + "-name").equals(itemStack.getItemMeta().getDisplayName());
+            return Language.getMsg(player, section + "-name").replace("{color}", "§e").equals(itemStack.getItemMeta().getDisplayName());
         }
         return false;
     }

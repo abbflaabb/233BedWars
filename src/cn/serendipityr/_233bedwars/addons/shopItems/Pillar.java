@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Pillar {
     public static String pillar_material;
@@ -27,8 +28,8 @@ public class Pillar {
         settings_pillar_enable = enable;
     }
 
-    public static boolean handleBlockPlace(Player player, Block block) {
-        if (block.getType().toString().equals(pillar_material)) {
+    public static boolean handleBlockPlace(Player player, Block block, ItemStack item) {
+        if (isPillar(player, item)) {
             if (ShopItemAddon.checkCooling(player, "pillar")) {
                 return true;
             }
@@ -49,5 +50,9 @@ public class Pillar {
             b.setType(Material.getMaterial(pillar_material));
             arena.addPlacedBlock(b);
         }
+    }
+
+    private static boolean isPillar(Player player, ItemStack item) {
+        return item.getType().toString().equals(pillar_material) && ShopItemAddon.compareAddonItem(player, item, pillar_section);
     }
 }

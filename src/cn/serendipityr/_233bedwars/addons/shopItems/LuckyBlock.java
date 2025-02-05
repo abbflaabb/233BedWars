@@ -42,8 +42,8 @@ public class LuckyBlock {
 
     static List<Block> blocks = new ArrayList<>();
 
-    public static boolean handleBlockPlace(Player player, Block block) {
-        if (block.getType().toString().equals(lucky_block_material)) {
+    public static boolean handleBlockPlace(Player player, Block block, ItemStack item) {
+        if (isLuckyBlock(player, item)) {
             if (ShopItemAddon.checkCooling(player, "lucky_block")) {
                 return true;
             }
@@ -154,5 +154,9 @@ public class LuckyBlock {
 
     private static PotionEffect getEffect(String effect, int duration, int level, boolean particle) {
         return new PotionEffect(PotionEffectType.getByName(effect), duration, level, particle);
+    }
+
+    private static boolean isLuckyBlock(Player player, ItemStack item) {
+        return item.getType().toString().equals(lucky_block_material) && ShopItemAddon.compareAddonItem(player, item, lucky_block_section);
     }
 }
