@@ -45,7 +45,7 @@ public class InteractEventHandler implements Listener {
             if (handleClick(player, event.getCurrentItem())) {
                 event.setCancelled(true);
             }
-            if (BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
+            if (!event.getClick().isShiftClick() && BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
                 event.setCancelled(true);
             }
         }

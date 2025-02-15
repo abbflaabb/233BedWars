@@ -63,7 +63,7 @@ public class BedWarsShopUtil {
                 CategoryContent content = element.getCategoryContent();
                 int slot = element.getSlot();
                 int price = getCategoryContentPrice(shopCache, content);
-                setContentInventory(player, content, shopCache, shopInv, slot, price);
+                setContentInventory(player, content, shopCache, shopInv, slot, price, true);
             }
         } else {
             ShopCategory category = getCategoryFromInventory(player, shopInv);
@@ -75,7 +75,7 @@ public class BedWarsShopUtil {
             for (CategoryContent content : category.getCategoryContentList()) {
                 int slot = content.getSlot();
                 int price = getCategoryContentPrice(shopCache, content);
-                setContentInventory(player, content, shopCache, shopInv, slot, price);
+                setContentInventory(player, content, shopCache, shopInv, slot, price, false);
             }
         }
     }
@@ -129,7 +129,7 @@ public class BedWarsShopUtil {
         return ProviderUtil.bw.getPlayerLanguage(player).m("shop-items-messages." + category + ".inventory-name");
     }
 
-    private static void setContentInventory(Player player, CategoryContent content, ShopCache shopCache, Inventory shopInv, int slot, int price) {
+    private static void setContentInventory(Player player, CategoryContent content, ShopCache shopCache, Inventory shopInv, int slot, int price, boolean isQuickBuy) {
         List<String> lores = getCategoryContentLore(player, content);
 
         ItemStack itemStack = shopInv.getItem(slot);
@@ -141,7 +141,7 @@ public class BedWarsShopUtil {
         boolean affordable = isAffordable(player, price);
         lores.replaceAll(s -> s
                 .replace("{buy_status}", getBuyStatus(player, content, shopCache, affordable))
-                .replace("{quick_buy}", getQuickBuyTips(player))
+                .replace("{quick_buy}", getQuickBuyTips(player, isQuickBuy))
                 .replace("{tier}", intToRoman(getContentTier(shopCache, content)))
                 .replace("{cost}", XpResMode.currency_color + price)
                 .replace("{currency}", XpResMode.currency_color + XpResMode.currency)
@@ -202,8 +202,8 @@ public class BedWarsShopUtil {
         return shopCache.getContentTier(content.getIdentifier());
     }
 
-    private static String getQuickBuyTips(Player player) {
-        return Language.getMsg(player, Messages.SHOP_LORE_QUICK_ADD);
+    private static String getQuickBuyTips(Player player, boolean isQuickBuy) {
+        return Language.getMsg(player, isQuickBuy ? Messages.SHOP_LORE_QUICK_REMOVE : Messages.SHOP_LORE_QUICK_ADD);
     }
 
     private static Integer getCategoryContentPrice(ShopCache shopCache, CategoryContent content) {
@@ -317,13 +317,13 @@ public class BedWarsShopUtil {
                     CategoryContent categoryContent = quickBuyElement.getCategoryContent();
                     int c_slot = quickBuyElement.getSlot();
                     int c_price = getCategoryContentPrice(shopCache, categoryContent);
-                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price, true);
                 }
             } else {
                 for (CategoryContent categoryContent : category.getCategoryContentList()) {
                     int c_slot = categoryContent.getSlot();
                     int c_price = getCategoryContentPrice(shopCache, categoryContent);
-                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price, false);
                 }
             }
             player.updateInventory();
