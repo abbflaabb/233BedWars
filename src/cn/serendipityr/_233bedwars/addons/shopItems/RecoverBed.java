@@ -98,7 +98,7 @@ public class RecoverBed {
                 for (IBuyItem buyItem : tier.getBuyItemsList()) {
                     ItemStack itemStack = buyItem.getItemStack().clone();
                     ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(Language.getMsg(player, RecoverBed.recover_bed_section + "-name"));
+                    itemMeta.setDisplayName(Language.getMsg(player, RecoverBed.recover_bed_section + "-name").replace("{color}", "§e"));
                     itemStack.setItemMeta(itemMeta);
                     buyItem.setItemStack(itemStack);
                 }
