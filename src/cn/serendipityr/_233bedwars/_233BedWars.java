@@ -34,6 +34,8 @@ public class _233BedWars extends JavaPlugin {
         ShopItemAddon.init();
         LogUtil.consoleLog("&3 > &a插件已启用！");
         LogUtil.consoleLog("&3&l&m--------------------------------------------");
+        // bStats统计
+        new Metrics(this, 24790);
     }
 
     @Override
