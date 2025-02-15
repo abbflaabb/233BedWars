@@ -308,10 +308,23 @@ public class BedWarsShopUtil {
             Sounds.playSound("shop-bought", player);
             player.sendMessage(Language.getMsg(player, "shop-new-purchase").replace("{item}", ChatColor.stripColor(getCategoryContentName(player, content)).replace("{color}", "").replace("{tier}", "")));
             // 更新其他物品信息
-            for (CategoryContent categoryContent : category.getCategoryContentList()) {
-                int c_slot = categoryContent.getSlot();
-                int c_price = getCategoryContentPrice(shopCache, categoryContent);
-                setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price);
+            if (isQuickBuy(player, shopInv)) {
+                PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(player.getUniqueId());
+                if (quickBuyCache == null) {
+                    return;
+                }
+                for (QuickBuyElement quickBuyElement : quickBuyCache.getElements()) {
+                    CategoryContent categoryContent = quickBuyElement.getCategoryContent();
+                    int c_slot = quickBuyElement.getSlot();
+                    int c_price = getCategoryContentPrice(shopCache, categoryContent);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price);
+                }
+            } else {
+                for (CategoryContent categoryContent : category.getCategoryContentList()) {
+                    int c_slot = categoryContent.getSlot();
+                    int c_price = getCategoryContentPrice(shopCache, categoryContent);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price);
+                }
             }
             player.updateInventory();
             shopCache.setCategoryWeight(category, contentWeight);
