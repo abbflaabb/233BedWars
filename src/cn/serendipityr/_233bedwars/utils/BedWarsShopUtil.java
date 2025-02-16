@@ -7,9 +7,13 @@ import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.IContentTier;
+import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.events.shop.ShopBuyEvent;
+import com.andrei1058.bedwars.api.events.upgrades.UpgradeBuyEvent;
 import com.andrei1058.bedwars.api.language.Language;
 import com.andrei1058.bedwars.api.language.Messages;
+import com.andrei1058.bedwars.api.upgrades.MenuContent;
+import com.andrei1058.bedwars.api.upgrades.UpgradeAction;
 import com.andrei1058.bedwars.configuration.Sounds;
 import com.andrei1058.bedwars.shop.ShopCache;
 import com.andrei1058.bedwars.shop.ShopManager;
@@ -17,19 +21,23 @@ import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.quickbuy.PlayerQuickBuyCache;
 import com.andrei1058.bedwars.shop.quickbuy.QuickBuyElement;
+import com.andrei1058.bedwars.upgrades.UpgradesManager;
+import com.andrei1058.bedwars.upgrades.menu.*;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class BedWarsShopUtil {
     static Field weightField;
@@ -109,6 +117,288 @@ public class BedWarsShopUtil {
         ShopCache shopCache = ShopCache.getShopCache(uuid);
         buyItem(player, shopCache, content, shopInv, slot);
         return true;
+    }
+
+    public static void handleUpgradeShopOpen(Player player, Inventory shopInv) {
+        if (!XpResMode.isExpMode(player) || !isWatchingUpgradeShop(player)) {
+            return;
+        }
+        IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+        ImmutableMap<Integer, MenuContent> index = UpgradesManager.getMenuForArena(arena).getMenuContentBySlot();
+        updateUpgradeShop(index, player, shopInv, arena);
+    }
+
+    public static boolean handleUpgradeShopClick(Player player, Inventory shopInv, int slot) {
+        if (!XpResMode.isExpMode(player) || !isWatchingUpgradeShop(player) || shopInv.getItem(slot) == null) {
+            return false;
+        }
+        MenuContent mc = UpgradesManager.getMenuContent(shopInv.getItem(slot));
+        if (mc == null) {
+            return false;
+        }
+        IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+        ITeam team = arena.getTeam(player);
+        if (mc instanceof MenuUpgrade) {
+            MenuUpgrade mu = (MenuUpgrade) mc;
+            String name = mu.getName();
+            List<UpgradeTier> tiers = mu.getTiers();
+            int tier = -1;
+            if (team.getTeamUpgradeTiers().containsKey(name)) {
+                tier = team.getTeamUpgradeTiers().get(name);
+            }
+            if (tiers.size() - 1 > tier) {
+                UpgradeTier ut = tiers.get(tier + 1);
+                int cost = XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost());
+                if (player.getLevel() < cost) {
+                    Sounds.playSound("shop-insufficient-money", player);
+                    player.sendMessage(Language.getMsg(player, Messages.SHOP_INSUFFICIENT_MONEY).replace("{currency}", XpResMode.currency).replace("{amount}", String.valueOf(cost - player.getLevel())));
+                    player.closeInventory();
+                    return true;
+                }
+                UpgradeBuyEvent event;
+                Bukkit.getPluginManager().callEvent(event = new UpgradeBuyEvent(mu, player, team));
+                if (event.isCancelled()) {
+                    return true;
+                }
+                if (team.getTeamUpgradeTiers().containsKey(name)) {
+                    team.getTeamUpgradeTiers().replace(name, team.getTeamUpgradeTiers().get(name) + 1);
+                } else {
+                    team.getTeamUpgradeTiers().put(name, 0);
+                }
+                takeMoney(player, cost);
+                Sounds.playSound("shop-bought", player);
+                for (UpgradeAction ua : ut.getUpgradeActions()) {
+                    ua.onBuy(player, team);
+                }
+                for (Player member : team.getMembers()) {
+                    member.sendMessage(Language.getMsg(member, Messages.UPGRADES_UPGRADE_BOUGHT_CHAT).replace("{playername}", player.getName()).replace("{player}", player.getDisplayName()).replace("{upgradeName}", ChatColor.stripColor(Language.getMsg(member, Messages.UPGRADES_UPGRADE_TIER_ITEM_NAME.replace("{name}", name.replace("upgrade-", "")).replace("{tier}", ut.getName())))).replace("{color}", ""));
+                }
+                ImmutableMap<Integer, MenuContent> index = UpgradesManager.getMenuForArena(arena).getMenuContentBySlot();
+                updateUpgradeShop(index, player, shopInv, arena);
+            }
+        }
+        if (mc instanceof MenuCategory) {
+            MenuCategory mcg = (MenuCategory) mc;
+            String name = mcg.getName();
+            if (name.equalsIgnoreCase("category-traps")) {
+                int queueLimit = UpgradesManager.getConfiguration().getInt(team.getArena().getGroup().toLowerCase() + "-upgrades-settings.trap-queue-limit");
+                if (queueLimit == 0) {
+                    queueLimit = UpgradesManager.getConfiguration().getInt("default-upgrades-settings.trap-queue-limit");
+                }
+                if (queueLimit <= team.getActiveTraps().size()) {
+                    player.sendMessage(Language.getMsg(player, Messages.UPGRADES_TRAP_QUEUE_LIMIT));
+                    return true;
+                }
+            }
+            Inventory inv = Bukkit.createInventory(null, 45, Language.getMsg(player, Messages.UPGRADES_CATEGORY_GUI_NAME_PATH + name.replace("category-", "")));
+            try {
+                Field field = mcg.getClass().getDeclaredField("menuContentBySlot");
+                field.setAccessible(true);
+                HashMap<Integer, MenuContent> menuContentBySlot = (HashMap<Integer, MenuContent>) field.get(mcg);
+                for (int s : menuContentBySlot.keySet()) {
+                    inv.setItem(s, menuContentBySlot.get(s).getDisplayItem(player, team));
+                }
+                player.openInventory(inv);
+                UpgradesManager.setWatchingUpgrades(player.getUniqueId());
+                updateCategoryMenu(menuContentBySlot, player.getOpenInventory().getTopInventory(), player, team);
+            } catch (Exception ignored) {}
+        }
+        if (mc instanceof MenuBaseTrap) {
+            MenuBaseTrap mbt = (MenuBaseTrap) mc;
+            String name = mbt.getName();
+            if (name.contains("trap-slot")) {
+                return true;
+            }
+            int queueLimit = UpgradesManager.getConfiguration().getInt(team.getArena().getGroup().toLowerCase() + "-upgrades-settings.trap-queue-limit");
+            if (queueLimit == 0) {
+                queueLimit = UpgradesManager.getConfiguration().getInt("default-upgrades-settings.trap-queue-limit");
+            }
+            if (queueLimit <= team.getActiveTraps().size()) {
+                player.sendMessage(Language.getMsg(player, Messages.UPGRADES_TRAP_QUEUE_LIMIT));
+            } else {
+                int cost = getTrapCost(team);
+                if (player.getLevel() < cost) {
+                    Sounds.playSound("shop-insufficient-money", player);
+                    player.sendMessage(Language.getMsg(player, Messages.SHOP_INSUFFICIENT_MONEY).replace("{currency}", XpResMode.currency).replace("{amount}", String.valueOf(cost - player.getLevel())));
+                    player.closeInventory();
+                } else {
+                    UpgradeBuyEvent event;
+                    Bukkit.getPluginManager().callEvent(event = new UpgradeBuyEvent(mbt, player, team));
+                    if (!event.isCancelled()) {
+                        takeMoney(player, cost);
+                        Sounds.playSound("shop-bought", player);
+                        team.getActiveTraps().add(mbt);
+                        for (Player p : team.getArena().getPlayers()) {
+                            if (!team.isMember(p) && !team.getArena().isReSpawning(p) && p.getLocation().distance(team.getBed()) <= (double)team.getArena().getIslandRadius()) {
+                                team.getActiveTraps().remove(0).trigger(team, p);
+                                break;
+                            }
+                        }
+                        for (Player m : team.getMembers()) {
+                            String msg = Language.getMsg(m, Messages.UPGRADES_UPGRADE_BOUGHT_CHAT).replace("{playername}", player.getName()).replace("{player}", player.getDisplayName());
+                            m.sendMessage(msg.replace("{upgradeName}", ChatColor.stripColor(Language.getMsg(m, Messages.UPGRADES_BASE_TRAP_ITEM_NAME_PATH + name.replace("base-trap-", "")).replace("{color}", ""))));
+                        }
+                        UpgradesManager.getMenuForArena(team.getArena()).open(player);
+                    }
+                }
+            }
+        }
+        return !(mc instanceof MenuSeparator);
+    }
+
+    private static void updateCategoryMenu(HashMap<Integer, MenuContent> menuContentBySlot, Inventory inv, Player player, ITeam team) {
+        for (int slot : menuContentBySlot.keySet()) {
+            MenuContent mc = menuContentBySlot.get(slot);
+            if (mc instanceof MenuBaseTrap) {
+                MenuBaseTrap mbt = (MenuBaseTrap) mc;
+                String name = mbt.getName();
+                int cost = getTrapCost(team);
+                ItemStack i = mbt.getItemStack().clone();
+                ItemMeta im = i.getItemMeta();
+                if (im != null) {
+                    boolean afford = player.getLevel() >= cost;
+                    String color;
+                    if (afford) {
+                        color = Language.getMsg(player, Messages.FORMAT_UPGRADE_COLOR_CAN_AFFORD);
+                    } else {
+                        color = Language.getMsg(player, Messages.FORMAT_UPGRADE_COLOR_CANT_AFFORD);
+                    }
+
+                    im.setDisplayName(Language.getMsg(player, Messages.UPGRADES_BASE_TRAP_ITEM_NAME_PATH + name.replace("base-trap-", "")).replace("{color}", color));
+                    List<String> lore = Language.getList(player, Messages.UPGRADES_BASE_TRAP_ITEM_LORE_PATH + name.replace("base-trap-", ""));
+                    String currencyMsg = XpResMode.currency;
+                    lore.add(Language.getMsg(player, Messages.FORMAT_UPGRADE_TRAP_COST).replace("{cost}", String.valueOf(cost)).replace("{currency}", currencyMsg).replace("{currencyColor}", XpResMode.currency_color));
+                    lore.add("");
+                    if (afford) {
+                        lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_CLICK_TO_BUY).replace("{color}", color));
+                    } else {
+                        lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_INSUFFICIENT_MONEY).replace("{currency}", currencyMsg).replace("{color}", color));
+                    }
+
+                    im.setLore(lore);
+                    im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                    i.setItemMeta(im);
+                }
+                inv.setItem(slot, i);
+            }
+        }
+        player.updateInventory();
+    }
+
+    private static void updateUpgradeShop(ImmutableMap<Integer, MenuContent> index, Player player, Inventory shopInv, IArena arena) {
+        ITeam team = arena.getTeam(player);
+        String currencyMsg = XpResMode.currency;
+        for (int slot : index.keySet()) {
+            if (shopInv.getItem(slot) == null) {
+                return;
+            }
+            MenuContent mc = index.get(slot);
+            if (mc instanceof MenuUpgrade) {
+                MenuUpgrade mu = (MenuUpgrade) mc;
+                String name = mu.getName();
+                List<UpgradeTier> tiers = mu.getTiers();
+                if (tiers.isEmpty()) {
+                    continue;
+                }
+                int tier = 0;
+                if (team.getTeamUpgradeTiers().containsKey(name)) {
+                    tier = team.getTeamUpgradeTiers().get(name);
+                }
+                ItemStack i = new ItemStack(tiers.get(tier).getDisplayItem());
+                ItemMeta im = i.getItemMeta();
+                if (!i.getType().equals(shopInv.getItem(slot).getType())) {
+                    continue;
+                }
+                UpgradeTier ut = tiers.get(tier);
+                boolean highest = tiers.size() == tier + 1 && team.getTeamUpgradeTiers().containsKey(name);
+                boolean afford = isAffordable(player, XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost()));
+                String color;
+                if (!highest) {
+                    if (afford) {
+                        color = Language.getMsg(player, Messages.FORMAT_UPGRADE_COLOR_CAN_AFFORD);
+                    } else {
+                        color = Language.getMsg(player, Messages.FORMAT_UPGRADE_COLOR_CANT_AFFORD);
+                    }
+                } else {
+                    color = Language.getMsg(player, Messages.FORMAT_UPGRADE_COLOR_UNLOCKED);
+                }
+                im.setDisplayName(Language.getMsg(player, Messages.UPGRADES_UPGRADE_TIER_ITEM_NAME.replace("{name}", name.replace("upgrade-", "")).replace("{tier}", ut.getName())).replace("{color}", color));
+                List<String> lore = new ArrayList<>();
+                for (String s : Language.getList(player, Messages.UPGRADES_UPGRADE_TIER_ITEM_LORE.replace("{name}", name.replace("upgrade-", "")))){
+                    if (s.contains("{tier_")){
+                        String result = s.replaceAll(".*_([0-9]+)_.*", "$1");
+                        String tierColor = Messages.FORMAT_UPGRADE_TIER_LOCKED;
+                        if (Integer.parseInt(result)-1 <= team.getTeamUpgradeTiers().getOrDefault(name, -1)) {
+                            tierColor = Messages.FORMAT_UPGRADE_TIER_UNLOCKED;
+                        }
+                        UpgradeTier upgradeTier = tiers.get(Integer.parseInt(result)-1);
+                        lore.add(s.replace("{tier_" + result + "_cost}", String.valueOf(XpResMode.calcExpLevel(upgradeTier.getCurrency(), upgradeTier.getCost())))
+                                .replace("{tier_" + result + "_currency}", currencyMsg)
+                                .replace("{tier_" + result + "_color}", Language.getMsg(player, tierColor)));
+
+                    } else {
+                        lore.add(s.replace("{color}", color));
+                    }
+                }
+                if (highest){
+                    lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_UNLOCKED).replace("{color}", color));
+                } else if (afford){
+                    lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_CLICK_TO_BUY).replace("{color}", color));
+                } else {
+                    lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_INSUFFICIENT_MONEY).replace("{currency}", currencyMsg).replace("{color}", color));
+                }
+                im.setLore(lore);
+                im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                i.setItemMeta(im);
+                shopInv.setItem(slot, i);
+            }
+            if (mc instanceof MenuTrapSlot) {
+                MenuTrapSlot mts = (MenuTrapSlot) mc;
+                String name = mts.getName();
+                ItemStack i = shopInv.getItem(slot);
+                if (i == null) {
+                    continue;
+                }
+                ItemMeta im = i.getItemMeta();
+                List<String> lore = new ArrayList<>();
+                int cost = getTrapCost(team);
+                for (String s : Language.getList(player, Messages.UPGRADES_TRAP_SLOT_ITEM_LORE1_PATH + name.replace("trap-slot-", ""))) {
+                    lore.add(s.replace("{cost}", String.valueOf(cost)).replace("{currency}", currencyMsg));
+                }
+                lore.add("");
+                for (String s : Language.getList(player, Messages.UPGRADES_TRAP_SLOT_ITEM_LORE2_PATH + name.replace("trap-slot-", ""))) {
+                    lore.add(s.replace("{cost}", String.valueOf(cost)).replace("{currency}", currencyMsg));
+                }
+                im.setLore(lore);
+                i.setItemMeta(im);
+                shopInv.setItem(slot, i);
+            }
+        }
+        player.updateInventory();
+    }
+
+    private static boolean isWatchingUpgradeShop(Player player) {
+        return ProviderUtil.bw.getTeamUpgradesUtil().isWatchingGUI(player);
+    }
+
+    private static int getTrapCost(ITeam team) {
+        String curr = UpgradesManager.getConfiguration().getString(team.getArena().getArenaName().toLowerCase() + "-upgrades-settings.trap-currency");
+        if (curr == null) {
+            curr = UpgradesManager.getConfiguration().getString("default-upgrades-settings.trap-currency");
+        }
+        int cost = UpgradesManager.getConfiguration().getInt(team.getArena().getArenaName().toLowerCase() + "-upgrades-settings.trap-start-price");
+        if (cost == 0) {
+            cost = UpgradesManager.getConfiguration().getInt("default-upgrades-settings.trap-start-price");
+        }
+        if (!team.getActiveTraps().isEmpty()) {
+            int multiplier = UpgradesManager.getConfiguration().getInt(team.getArena().getArenaName().toLowerCase() + "-upgrades-settings.trap-increment-price");
+            if (multiplier == 0) {
+                multiplier = UpgradesManager.getConfiguration().getInt("default-upgrades-settings.trap-increment-price");
+            }
+            cost += team.getActiveTraps().size() * multiplier;
+        }
+        cost = XpResMode.calcExpLevel(Material.getMaterial(curr.toUpperCase()), cost);
+        return cost;
     }
 
     private static boolean isQuickBuy(Player player, Inventory shopInv) {

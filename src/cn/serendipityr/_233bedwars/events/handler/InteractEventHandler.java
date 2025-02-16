@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.events.handler;
 
+import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.FastCommands;
 import cn.serendipityr._233bedwars.addons.GeneratorEditor;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
@@ -7,6 +8,7 @@ import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -46,6 +48,9 @@ public class InteractEventHandler implements Listener {
                 event.setCancelled(true);
             }
             if (!event.getClick().isShiftClick() && BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
+                event.setCancelled(true);
+            }
+            if (BedWarsShopUtil.handleUpgradeShopClick(player, inventory, slot)) {
                 event.setCancelled(true);
             }
         }
@@ -162,12 +167,13 @@ public class InteractEventHandler implements Listener {
         }
     }
 
-    @EventHandler()
+    @EventHandler
     public void onPlayerOpenInventory(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = event.getInventory();
         if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             BedWarsShopUtil.handleShopOpen(player, inventory);
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> BedWarsShopUtil.handleUpgradeShopOpen(player, inventory), 1L);
         }
     }
 
