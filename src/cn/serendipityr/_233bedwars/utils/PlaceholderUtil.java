@@ -265,6 +265,9 @@ public class PlaceholderUtil {
 
     public static String getTeamName(ITeam team) {
         IArena arena = team.getArena();
+        if (!ConfigManager.addon_teamNameThemes) {
+            return team.getName();
+        }
         return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(team.getName(), team.getName());
     }
 

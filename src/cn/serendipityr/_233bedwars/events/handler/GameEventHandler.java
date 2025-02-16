@@ -94,8 +94,10 @@ public class GameEventHandler implements Listener {
         Player victim = event.getVictim();
         if (killer != null) {
             if (killer != victim) {
-                CombatDetails.checkPlayerKillDistance(killer, victim);
-                CombatDetails.calcKillStreak(arena, killer, victim);
+                if (ConfigManager.addon_combatDetails) {
+                    CombatDetails.checkPlayerKillDistance(killer, victim);
+                    CombatDetails.calcKillStreak(arena, killer, victim);
+                }
             }
         }
     }

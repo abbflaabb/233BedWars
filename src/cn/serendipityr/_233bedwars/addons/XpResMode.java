@@ -122,7 +122,7 @@ public class XpResMode {
     }
 
     public static boolean isExpMode(Player player) {
-        return playerResType.get(player);
+        return playerResType.getOrDefault(player, false);
     }
 
     public static int calcExpLevel(Material material, int amount) {
