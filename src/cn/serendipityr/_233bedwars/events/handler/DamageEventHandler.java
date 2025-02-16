@@ -4,12 +4,14 @@ import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
+import cn.serendipityr._233bedwars.addons.shopItems.ToxicBall;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -40,6 +42,11 @@ public class DamageEventHandler implements Listener {
             if (ConfigManager.addon_shopItemAddon) {
                 if (SuicideBomber.settings_suicide_bomber_enable) {
                     SuicideBomber.handlePlayerDamage((Player) victim);
+                }
+                if (ToxicBall.settings_toxic_ball_enable) {
+                    if (damager instanceof Projectile) {
+                        ToxicBall.onProjectileHit((Projectile) damager, (Player) victim);
+                    }
                 }
             }
         }

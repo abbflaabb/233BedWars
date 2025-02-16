@@ -27,10 +27,6 @@ public class WorldEventHandle implements Listener {
             if (Grenade.settings_grenade_enable) {
                 Grenade.onProjectileHit(projectile);
             }
-
-            if (ToxicBall.settings_toxic_ball_enable) {
-                ToxicBall.onProjectileHit(projectile);
-            }
         }
     }
 }

@@ -57,14 +57,9 @@ public class ToxicBall {
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> snowball.setShooter(null), 2L);
     }
 
-    public static void onProjectileHit(Projectile projectile) {
+    public static void onProjectileHit(Projectile projectile, Player victim) {
         if (projectile instanceof Snowball && projectile.hasMetadata("toxic_ball")) {
-            for (Entity entity : projectile.getNearbyEntities(1, 1, 1)) {
-                if (entity instanceof Player) {
-                    Player player = (Player) entity;
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.getByName(settings_toxic_ball_effect), settings_toxic_ball_effect_duration * 20, settings_toxic_ball_effect_level, settings_toxic_ball_effect_particle), true);
-                }
-            }
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.getByName(settings_toxic_ball_effect), settings_toxic_ball_effect_duration * 20, settings_toxic_ball_effect_level, settings_toxic_ball_effect_particle), true);
         }
     }
 }
