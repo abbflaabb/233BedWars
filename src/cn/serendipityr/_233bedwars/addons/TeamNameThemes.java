@@ -35,8 +35,10 @@ public class TeamNameThemes {
         String randomTheme = keysList.get(new Random().nextInt(keysList.size()));
         arenaTheme.put(arena, randomTheme);
         if (themes.containsKey(group) && !themes.get(group).isEmpty()) {
-            for (Player player : arena.getPlayers()) {
-                player.sendMessage(applyThemeMsg.replace("{tTheme}", randomTheme));
+            if (!applyThemeMsg.trim().isEmpty()) {
+                for (Player player : arena.getPlayers()) {
+                    player.sendMessage(applyThemeMsg.replace("{tTheme}", randomTheme));
+                }
             }
             LogUtil.consoleLog("&9233BedWars &3&l > &c为游戏 &b" + arenaName + "&7(" + group + ") &c应用了队伍名称主题: &a&l" + randomTheme);
         } else {
