@@ -265,10 +265,12 @@ public class PlaceholderUtil {
 
     public static String getTeamName(ITeam team, Player player) {
         IArena arena = team.getArena();
+        String name = team.getName();
+        String displayName = team.getDisplayName(ProviderUtil.bw.getPlayerLanguage(player));
         if (!ConfigManager.addon_teamNameThemes) {
-            return team.getDisplayName(ProviderUtil.bw.getPlayerLanguage(player));
+            return displayName;
         }
-        return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(team.getName(), team.getName());
+        return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(name, displayName);
     }
 
     static List<ITeam> riskyTeams = new CopyOnWriteArrayList<>();
