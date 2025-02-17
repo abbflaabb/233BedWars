@@ -99,7 +99,7 @@ public class DalaoWarning {
     }
 
     private static Integer getHighestLevel(ITeam team) {
-        if (team.getMembers().size() == 0) {
+        if (team.getMembers().isEmpty()) {
             return 0;
         }
         int highest = 0;
@@ -113,7 +113,7 @@ public class DalaoWarning {
     }
 
     private static Integer getAverageLevel(ITeam team) {
-        if (team.getMembers().size() == 0) {
+        if (team.getMembers().isEmpty()) {
             return 0;
         }
         int totalLevel = 0;

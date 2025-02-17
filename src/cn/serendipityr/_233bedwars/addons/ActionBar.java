@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.addons;
 
+import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
@@ -45,6 +46,11 @@ public class ActionBar {
     static int actionBarTicks = 0;
 
     public static void sendActionBar() {
+        if (!ConfigManager.addon_actionBar) {
+            arenas.clear();
+            actionBarTicks = 0;
+            return;
+        }
         actionBarTicks++;
         if (actionBarTicks > refreshTicks) {
             actionBarTicks = 0;
