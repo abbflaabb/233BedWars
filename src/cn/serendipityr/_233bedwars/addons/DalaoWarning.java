@@ -129,7 +129,7 @@ public class DalaoWarning {
                 player.sendMessage(s
                         .replace("&", "§")
                         .replace("{tColor}", PlaceholderUtil.getTeamColor(dalao))
-                        .replace("{tName}", PlaceholderUtil.getTeamName(dalao)));
+                        .replace("{tName}", PlaceholderUtil.getTeamName(dalao, player)));
             }
         }
     }

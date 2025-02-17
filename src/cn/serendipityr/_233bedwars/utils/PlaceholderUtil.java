@@ -134,7 +134,7 @@ public class PlaceholderUtil {
                 }
 
                 if (params.equalsIgnoreCase("tName")) {
-                    return getTeamName(team).replace("&", "§");
+                    return getTeamName(team, p).replace("&", "§");
                 }
 
                 if (params.equalsIgnoreCase("tDanger")) {
@@ -160,7 +160,7 @@ public class PlaceholderUtil {
                 if (params.contains("tInfo_")) {
                     String teamName = params.split("_")[1];
                     ITeam _team = arena.getTeam(teamName);
-                    return getFormattedTeamInfo(_team).replace("&", "§");
+                    return getFormattedTeamInfo(_team, p).replace("&", "§");
                 }
             } catch (Exception e) {
                 LogUtil.consoleLog("&9233BedWars &3&l > &c调用PlaceholderAPI时发生错误，可能存在异常的占位符引用。");
@@ -196,13 +196,13 @@ public class PlaceholderUtil {
         ScoreBoardUtil.addPlaceHolder(player, "{tDanger}", () -> getTeamDanger(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tDangerF}", () -> getTeamDangerFull(team));
         ScoreBoardUtil.addPlaceHolder(player, "{tColor}", () -> getTeamColor(team));
-        ScoreBoardUtil.addPlaceHolder(player, "{tName}", () -> getTeamName(team));
+        ScoreBoardUtil.addPlaceHolder(player, "{tName}", () -> getTeamName(team, player));
         ScoreBoardUtil.addPlaceHolder(player, "{tAlive}", () -> String.valueOf(getTeamAlive(team)));
         ScoreBoardUtil.addPlaceHolder(player, "{tDistance}", () -> String.valueOf(getTeamDistance(team, player)));
         ScoreBoardUtil.addPlaceHolder(player, "{tIndicator}", () -> getTeamIndicator(team, player));
         ScoreBoardUtil.addPlaceHolder(player, "{tAlive}", () -> String.valueOf(getTeamAlive(team)));
         for (ITeam _team : arena.getTeams()) {
-            ScoreBoardUtil.addPlaceHolder(player, "{tInfo_" + _team.getName() + "}", () -> getFormattedTeamInfo(_team));
+            ScoreBoardUtil.addPlaceHolder(player, "{tInfo_" + _team.getName() + "}", () -> getFormattedTeamInfo(_team, player));
         }
     }
 
@@ -222,7 +222,7 @@ public class PlaceholderUtil {
                     .replace("{tDanger}", getTeamDanger(team))
                     .replace("{tDangerF}", getTeamDangerFull(team))
                     .replace("{tColor}", getTeamColor(team))
-                    .replace("{tName}", getTeamName(team))
+                    .replace("{tName}", getTeamName(team, player))
                     .replace("{tDistance}", String.valueOf(getTeamDistance(team, player)))
                     .replace("{tIndicator}", getTeamIndicator(team, player))
                     .replace("{tAlive}", String.valueOf(getTeamAlive(team)));
@@ -263,10 +263,10 @@ public class PlaceholderUtil {
         return "开发中";
     }
 
-    public static String getTeamName(ITeam team) {
+    public static String getTeamName(ITeam team, Player player) {
         IArena arena = team.getArena();
         if (!ConfigManager.addon_teamNameThemes) {
-            return team.getName();
+            return team.getDisplayName(ProviderUtil.bw.getPlayerLanguage(player));
         }
         return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(team.getName(), team.getName());
     }
@@ -325,8 +325,8 @@ public class PlaceholderUtil {
         return riskyTeams.contains(team) ? team_in_danger_full : "";
     }
 
-    public static String getFormattedTeamInfo(ITeam team) {
-        return teamNameFormat.replace("{tColor}", getTeamColor(team)).replace("{tName}", getTeamName(team)).replace("{tHeart}", getTeamHeart(team)).replace("{tAlive}", String.valueOf(getTeamAlive(team)));
+    public static String getFormattedTeamInfo(ITeam team, Player player) {
+        return teamNameFormat.replace("{tColor}", getTeamColor(team)).replace("{tName}", getTeamName(team, player)).replace("{tHeart}", getTeamHeart(team)).replace("{tAlive}", String.valueOf(getTeamAlive(team)));
     }
 
     public static String getCurrentFormattedTime() {

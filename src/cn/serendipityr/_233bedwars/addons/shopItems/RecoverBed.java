@@ -181,7 +181,7 @@ public class RecoverBed {
                     ShopItemAddon.sendGlobalMessage(arena, msg
                             .replace("{player}", player.getDisplayName())
                             .replace("{tColor}", PlaceholderUtil.getTeamColor(team))
-                            .replace("{tName}", PlaceholderUtil.getTeamName(team)));
+                            .replace("{tName}", PlaceholderUtil.getTeamName(team, player)));
                 }
                 String[] _sound = settings_recover_bed_recover_sound.split(":");
                 ShopItemAddon.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
