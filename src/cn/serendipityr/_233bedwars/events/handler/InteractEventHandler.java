@@ -8,6 +8,7 @@ import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -161,8 +162,9 @@ public class InteractEventHandler implements Listener {
     @EventHandler
     public void onPlayerToggleShift(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
+        IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
         if (event.isSneaking()) {
-            if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+            if (arena != null && arena.getStatus() == GameState.playing) {
                 if (ConfigManager.addon_fastCommands) {
                     FastCommands.handleShiftToggle(player);
                 }
