@@ -2,6 +2,10 @@
 
 quick_reminding: "{tColor}{player} 说: &c注意，我们的床有危险！"
 
+quick_reminding_threshold: 1
+
+quick_reminding_threshold_timeout: 1
+
 quick_reminding_sound: "ORB_PICKUP:1:2"
 
 quick_reminding_delay: 10

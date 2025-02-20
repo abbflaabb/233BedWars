@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import org.bukkit.Bukkit;
@@ -15,10 +16,13 @@ import org.github.paperspigot.Title;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FastCommands {
     static String quick_reminding;
+    static Integer quick_reminding_threshold;
+    static Integer quick_reminding_threshold_timeout;
     static String[] quick_reminding_sound;
     static Integer quick_reminding_delay;
     static Integer quick_reminding_count;
@@ -30,9 +34,12 @@ public class FastCommands {
     static HashMap<Integer, ItemStack> items = new HashMap<>();
     static HashMap<Integer, ItemStack> gui_items = new HashMap<>();
     static List<Player> remindingPlayers = new CopyOnWriteArrayList<>();
+    static ConcurrentHashMap<Player, Integer> remindingThreshold = new ConcurrentHashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
         quick_reminding = cfg.getString("quick_reminding").replace("&", "§");
+        quick_reminding_threshold = cfg.getInt("quick_reminding_threshold");
+        quick_reminding_threshold_timeout = cfg.getInt("quick_reminding_threshold_timeout");
         quick_reminding_sound = cfg.getString("quick_reminding_sound").split(":");
         quick_reminding_delay = cfg.getInt("quick_reminding_delay");
         quick_reminding_count = cfg.getInt("quick_reminding_count");
@@ -63,7 +70,14 @@ public class FastCommands {
 
     public static void handleShiftToggle(Player player) {
         if (player.getLocation().getPitch() <= -80) {
-            if (!remindingPlayers.contains(player)) {
+            int threshold = remindingThreshold.containsKey(player) ? remindingThreshold.get(player) + 1 : 1;
+            remindingThreshold.put(player, threshold);
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                if (remindingThreshold.containsKey(player) && remindingThreshold.get(player) == threshold) {
+                    remindingThreshold.remove(player);
+                }
+            }, (long) quick_reminding_threshold_timeout * 20);
+            if (!remindingPlayers.contains(player) && threshold >= quick_reminding_threshold) {
                 ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
                 if (team == null) {
                     player.sendMessage(error_died);
@@ -81,6 +95,7 @@ public class FastCommands {
                             p.sendTitle(new Title("", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0));
                             p.playSound(p.getLocation(), Sound.valueOf(quick_reminding_sound[0]), Float.parseFloat(quick_reminding_sound[1]), Float.parseFloat(quick_reminding_sound[2]));
                             if (finalI == quick_reminding_count - 1) {
+                                remindingThreshold.remove(player);
                                 remindingPlayers.remove(player);
                             }
                         }, (long) i * quick_reminding_delay);
