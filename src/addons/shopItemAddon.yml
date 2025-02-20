@@ -115,6 +115,10 @@ settings:
     progress_unit: "{unicode_arrow}"
     progress_color_current: "&a"
     progress_color_left: "&f"
+  magical_wool:
+    enable: true
+    expand_length: 5
+    expand_delay: 5
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -218,3 +222,10 @@ items:
     slot: 43
     material: PAPER
     cost: "iron:40"
+  magical_wool:
+    category: "utility-category"
+    slot: 44
+    material: WOOL
+    enchanted: true
+    amount: 4
+    cost: "iron:1"

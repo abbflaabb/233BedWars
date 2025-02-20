@@ -78,6 +78,7 @@ public class ShopItemAddon {
         ToxicBall.loadConfig(cfg);
         ObsidianBreaker.loadConfig(cfg);
         PortalScroll.loadConfig(cfg);
+        MagicalWool.loadConfig(cfg);
     }
 
     public static void init() {
@@ -99,7 +100,7 @@ public class ShopItemAddon {
         }
     }
 
-    public static boolean handleBlockPlace(Player player, Block block, ItemStack item) {
+    public static boolean handleBlockPlace(Player player, Block block, Block against, ItemStack item) {
         if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             return false;
         } else if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
@@ -109,6 +110,8 @@ public class ShopItemAddon {
         } else if (LuckyBlock.settings_lucky_block_enable && LuckyBlock.handleBlockPlace(player, block, item)) {
             return true;
         } else if (Pillar.settings_pillar_enable && Pillar.handleBlockPlace(player, block, item)) {
+            return true;
+        } else if (MagicalWool.settings_magical_wool_enable && MagicalWool.handleBlockPlace(player, block, against, item)) {
             return true;
         }
 
@@ -191,6 +194,8 @@ public class ShopItemAddon {
         } else if (ObsidianBreaker.settings_obsidian_breaker_enable && handleShopBuy(player, content, "obsidian_breaker", ObsidianBreaker.obsidian_breaker_section)) {
             return true;
         } else if (PortalScroll.settings_portal_scroll_enable && handleShopBuy(player, content, "portal_scroll", PortalScroll.portal_scroll_section)) {
+            return true;
+        } else if (MagicalWool.settings_magical_wool_enable && handleShopBuy(player, content, "magical_wool", MagicalWool.magical_wool_section)) {
             return true;
         }
 
@@ -430,6 +435,12 @@ public class ShopItemAddon {
         int slot = shopItemsYml.getInt("items." + section + ".slot");
         String material = shopItemsYml.getString("items." + section + ".material");
         String cost = shopItemsYml.getString("items." + section + ".cost");
+        boolean enchanted = shopItemsYml.getBoolean("items." + section + ".enchanted");
+        int amount = shopItemsYml.getInt("items." + section + ".amount");
+
+        if (amount == 0) {
+            amount = 1;
+        }
 
         ShopCategory shopCategory = getCategory(category);
         if (shopCategory == null) {
@@ -437,7 +448,7 @@ public class ShopItemAddon {
         }
 
         if (enable) {
-            addBedWarsShopItemCfg(section, category, slot, material, cost);
+            addBedWarsShopItemCfg(section, category, slot, material, cost, enchanted, amount);
             addCategoryContent(shopCategory, new CategoryContent(shopCategory.getName() + ".category-content." + section, section, shopCategory.getName(), ProviderUtil.bw.getConfigs().getShopConfig().getYml(), shopCategory));
         }
 
@@ -484,10 +495,13 @@ public class ShopItemAddon {
             case "portal_scroll":
                 PortalScroll.init(enable, material, secLoc);
                 break;
+            case "magical_wool":
+                MagicalWool.init(enable, material, secLoc);
+                break;
         }
     }
 
-    private static void addBedWarsShopItemCfg(String section, String category, int slot, String material, String cost) {
+    private static void addBedWarsShopItemCfg(String section, String category, int slot, String material, String cost, boolean enchanted, int amount) {
         YamlConfiguration bwCfg = ProviderUtil.bw.getConfigs().getShopConfig().getYml();
         StringBuilder path = new StringBuilder(category + "." + ConfigPath.SHOP_CATEGORY_CONTENT_PATH + "." + section + ".");
         bwCfg.addDefault(path + ConfigPath.SHOP_CATEGORY_CONTENT_CONTENT_SLOT, slot);
@@ -497,14 +511,14 @@ public class ShopItemAddon {
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_MATERIAL, material);
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_DATA, getSkullTexture(section).trim().isEmpty() ? 0 : 3);
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_AMOUNT, 1);
-        bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_ENCHANTED, false);
+        bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_ITEM_ENCHANTED, enchanted);
         String[] _cost = cost.split(":");
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_SETTINGS_CURRENCY, _cost[0]);
         bwCfg.addDefault(path + ConfigPath.SHOP_CONTENT_TIER_SETTINGS_COST, Integer.parseInt(_cost[1]));
         path.append(ConfigPath.SHOP_CONTENT_BUY_ITEMS_PATH + ".").append(section).append(".");
         bwCfg.addDefault(path + "material", material);
         bwCfg.addDefault(path + "data", getSkullTexture(section).trim().isEmpty() ? 0 : 3);
-        bwCfg.addDefault(path + "amount", 1);
+        bwCfg.addDefault(path + "amount", amount);
     }
 
     private static ShopCategory getCategory(String name) {
