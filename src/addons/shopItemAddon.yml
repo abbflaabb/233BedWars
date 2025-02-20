@@ -118,7 +118,8 @@ settings:
   magical_wool:
     enable: true
     expand_length: 5
-    expand_delay: 5
+    expand_delay: 3
+    place_sound: "DIG_WOOL:1:1"
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -177,55 +178,55 @@ items:
     cost: "gold:6"
   flight_firework:
     category: "utility-category"
-    slot: 35
+    slot: 37
     material: FIREWORK
     cost: "gold:13"
   lucky_block:
     category: "utility-category"
-    slot: 36
+    slot: 38
     material: SPONGE
     cost: "iron:40"
   grenade:
     category: "utility-category"
-    slot: 37
+    slot: 39
     material: FIREWORK_CHARGE
     cost: "iron:40"
   bridge_chicken:
     category: "utility-category"
-    slot: 38
+    slot: 40
     material: SKULL_ITEM
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ=="
     cost: "iron:60"
   bridge_cat:
     category: "utility-category"
-    slot: 39
+    slot: 41
     material: SKULL_ITEM
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIyNTNmYzZiNjU2OTg4NDUzYTJkNzEzOGZjYTRkMWYyNzUyZjQ3NjkxZjBjNDM0ZTQzMjE4Mzc3MWNmZTEifX19"
     cost: "iron:75"
   pillar:
     category: "utility-category"
-    slot: 40
+    slot: 42
     material: SANDSTONE
     cost: "iron:4"
   toxic_ball:
     category: "utility-category"
-    slot: 41
+    slot: 43
     material: SLIME_BALL
     cost: "iron:40"
   obsidian_breaker:
     category: "utility-category"
-    slot: 42
+    slot: 46
     material: BLAZE_POWDER
     cost: "emerald:5"
   portal_scroll:
     category: "utility-category"
-    slot: 43
+    slot: 47
     material: PAPER
     cost: "iron:40"
   magical_wool:
     category: "utility-category"
-    slot: 44
+    slot: 48
     material: WOOL
     enchanted: true
     amount: 4
-    cost: "iron:1"
+    cost: "iron:4"

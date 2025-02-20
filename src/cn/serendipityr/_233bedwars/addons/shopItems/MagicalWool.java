@@ -23,10 +23,12 @@ public class MagicalWool {
     public static Boolean settings_magical_wool_enable = false;
     public static Integer settings_magical_wool_expand_length;
     public static Integer settings_magical_wool_expand_delay;
+    public static String settings_magical_wool_place_sound;
 
     public static void loadConfig(YamlConfiguration cfg) {
         settings_magical_wool_expand_length = cfg.getInt("settings.magical_wool.expand_length");
         settings_magical_wool_expand_delay = cfg.getInt("settings.magical_wool.expand_delay");
+        settings_magical_wool_place_sound = cfg.getString("settings.magical_wool.place_sound");
     }
 
     public static void init(boolean enable, String material, String section) {
@@ -80,7 +82,8 @@ public class MagicalWool {
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
                 replace.setType(wool);
                 arena.addPlacedBlock(replace);
-                player.playSound(playerLoc, Sound.DIG_WOOL,1,1);
+                String[] _sound = settings_magical_wool_place_sound.split(":");
+                player.playSound(playerLoc, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
                 ProviderUtil.bw.getVersionSupport().setBlockTeamColor(replace, teamColor);
             }, (long) i * settings_magical_wool_expand_delay);
         }
