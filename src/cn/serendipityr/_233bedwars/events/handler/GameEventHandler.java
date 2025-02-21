@@ -28,11 +28,6 @@ public class GameEventHandler implements Listener {
         if (state.equals(GameState.playing)) {
             if (ConfigManager.addon_teamNameThemes) {
                 TeamNameThemes.initGame(arena);
-                Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                    for (Player player : arena.getPlayers()) {
-                        FastCommands.giveItems(player);
-                    }
-                }, 20L);
             }
             if (ConfigManager.addon_dalaoWarning) {
                 DalaoWarning.initGame(arena);
@@ -43,6 +38,11 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_shopItemAddon) {
                 ShopItemAddon.initGame(arena);
             }
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
+                for (Player player : arena.getPlayers()) {
+                    FastCommands.giveItems(player);
+                }
+            }, 20L);
         }
         // 游戏结束时
         if (state.equals(GameState.restarting)) {
@@ -107,7 +107,7 @@ public class GameEventHandler implements Listener {
         Player player = event.getBuyer();
         IArena arena = event.getArena();
         ICategoryContent content = event.getCategoryContent();
-        if (ShopItemAddon.handleShopBuy(player, arena, content)) {
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleShopBuy(player, arena, content)) {
             event.setCancelled(true);
         }
     }
@@ -116,6 +116,8 @@ public class GameEventHandler implements Listener {
     public void onBedDestroy(PlayerBedBreakEvent event) {
         IArena arena = event.getArena();
         ITeam victim = event.getVictimTeam();
-        ShopItemAddon.handleBedDestroy(arena, victim);
+        if (ConfigManager.addon_shopItemAddon) {
+            ShopItemAddon.handleBedDestroy(arena, victim);
+        }
     }
 }

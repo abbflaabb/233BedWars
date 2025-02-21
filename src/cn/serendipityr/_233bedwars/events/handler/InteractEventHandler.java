@@ -64,7 +64,7 @@ public class InteractEventHandler implements Listener {
         Block block = event.getBlockPlaced();
         Block against = event.getBlockAgainst();
         ItemStack item = event.getItemInHand();
-        if (ShopItemAddon.handleBlockPlace(player, block, against,item)) {
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleBlockPlace(player, block, against,item)) {
             event.setCancelled(true);
         }
     }
@@ -73,7 +73,7 @@ public class InteractEventHandler implements Listener {
     public void onPlayerDestroyBlock(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if (ShopItemAddon.handleBlockDestroy(player, block)) {
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleBlockDestroy(player, block)) {
             event.setCancelled(true);
         }
     }

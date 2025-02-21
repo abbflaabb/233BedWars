@@ -31,7 +31,9 @@ public class _233BedWars extends JavaPlugin {
         ScoreBoardUtil.init();
         TaskUtil.initOneTickTask();
         BedWarsShopUtil.init();
-        ShopItemAddon.init();
+        if (ConfigManager.addon_shopItemAddon) {
+            ShopItemAddon.init();
+        }
         LogUtil.consoleLog("&3 > &a插件已启用！");
         LogUtil.consoleLog("&3&l&m--------------------------------------------");
         // bStats统计

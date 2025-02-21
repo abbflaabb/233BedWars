@@ -15,7 +15,7 @@ public class WorldEventHandle implements Listener {
     @EventHandler
     public void onFireworkExplode(FireworkExplodeEvent event) {
         Firework firework = event.getEntity();
-        if (ShopItemAddon.handleFireworkExplode(firework)) {
+        if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleFireworkExplode(firework)) {
             event.setCancelled(true);
         }
     }
