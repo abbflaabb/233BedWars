@@ -229,7 +229,7 @@ public class GeneratorEditor {
                 nearby = player.getWorld().getNearbyEntities(player.getLocation(), 1, 1, 1);
             }
             for (Entity entity : nearby) {
-                if (entity instanceof Player && arena.isPlayer(player) && entity != player) {
+                if (entity instanceof Player && arena.isPlayer(player) && !arena.isReSpawning(player) && entity != player) {
                     Player _player = (Player) entity;
                     if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(_player)) {
                         _player.setLevel(_player.getLevel() + giveLevels);
