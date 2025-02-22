@@ -78,6 +78,9 @@ public class GameEventHandler implements Listener {
         if (ConfigManager.addon_scoreBoardEditor) {
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
         }
+        if (arena.getStatus() == GameState.playing) {
+            return;
+        }
         if (ConfigManager.addon_actionBar) {
             ActionBar.initGame(arena, true);
         }

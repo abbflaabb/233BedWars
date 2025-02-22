@@ -229,8 +229,11 @@ public class GeneratorEditor {
                 nearby = player.getWorld().getNearbyEntities(player.getLocation(), 1, 1, 1);
             }
             for (Entity entity : nearby) {
-                if (entity instanceof Player && arena.isPlayer(player) && !arena.isReSpawning(player) && entity != player) {
+                if (entity instanceof Player && arena.isPlayer(player) && entity != player) {
                     Player _player = (Player) entity;
+                    if (arena.isReSpawning(_player) || arena.isSpectator(_player)) {
+                        continue;
+                    }
                     if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(_player)) {
                         _player.setLevel(_player.getLevel() + giveLevels);
                         _player.playSound(_player.getLocation(), Sound.valueOf(XpResMode.pick_up_sound[0]), Float.parseFloat(XpResMode.pick_up_sound[1]), Float.parseFloat(XpResMode.pick_up_sound[2]));

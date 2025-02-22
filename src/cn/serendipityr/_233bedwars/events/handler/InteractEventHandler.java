@@ -7,6 +7,7 @@ import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -123,7 +124,7 @@ public class InteractEventHandler implements Listener {
         Player player = event.getPlayer();
         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
         Item item = event.getItem();
-        if (arena != null && !arena.isReSpawning(player)) {
+        if (arena != null && !arena.isReSpawning(player) && !arena.isSpectator(player)) {
             if (ConfigManager.addon_xpResMode && XpResMode.handlePickUp(player, item)) {
                 event.setCancelled(true);
             }

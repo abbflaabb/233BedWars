@@ -30,7 +30,7 @@ public class DamageEventHandler implements Listener {
                 if (damager instanceof Player) {
                     damager = event.getDamager();
                     IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer((Player) damager);
-                    if (arena != null && arena.getStatus() == GameState.playing) {
+                    if (arena != null && arena.getStatus() == GameState.playing && arena.isPlayer((Player) damager) && !arena.isReSpawning((Player) damager)) {
                         if (arena.getTeam((Player) damager) != arena.getTeam((Player) victim)) {
                             if (ConfigManager.addon_combatDetails) {
                                 CombatDetails.sendDamageMsg((Player) damager, (Player) victim, event.getDamage(), event.getFinalDamage());
