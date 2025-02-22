@@ -165,7 +165,7 @@ public class InteractEventHandler implements Listener {
         Player player = event.getPlayer();
         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
         if (event.isSneaking()) {
-            if (arena != null && arena.getStatus() == GameState.playing) {
+            if (arena != null && arena.getStatus() == GameState.playing && !arena.isSpectator(player)) {
                 if (ConfigManager.addon_fastCommands) {
                     FastCommands.handleShiftToggle(player);
                 }
