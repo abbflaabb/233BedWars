@@ -1,6 +1,6 @@
 name: 233BedWars
 author: SerendipityR
-version: 1.0.5d
+version: 1.0.6
 softdepend: [BedWars1058, PlaceholderAPI]
 main: cn.serendipityr._233bedwars._233BedWars
 permissions:
