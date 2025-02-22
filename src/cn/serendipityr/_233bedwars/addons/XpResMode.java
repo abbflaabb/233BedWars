@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class XpResMode {
@@ -40,7 +41,7 @@ public class XpResMode {
     static String gui_title;
     static HashMap<Integer, ItemStack> items = new HashMap<>();
     static HashMap<Integer, ItemStack> gui_items = new HashMap<>();
-    static ConcurrentHashMap<Player, Boolean> playerResType = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<UUID, Boolean> playerResType = new ConcurrentHashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
         ratio_iron = cfg.getDouble("resRatio.IRON");
@@ -71,7 +72,7 @@ public class XpResMode {
     }
 
     public static void initPlayer(Player player) {
-        playerResType.put(player, true);
+        playerResType.put(player.getUniqueId(), true);
     }
 
     public static void openGUI(Player player) {
@@ -106,7 +107,7 @@ public class XpResMode {
     public static boolean handlePickUp(Player player, Item item) {
         ItemStack itemStack = item.getItemStack();
         int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount());
-        if (playerResType.get(player)) {
+        if (playerResType.get(player.getUniqueId())) {
             if (giveLevels != -1) {
                 item.remove();
                 player.setLevel(player.getLevel() + giveLevels);
@@ -119,18 +120,18 @@ public class XpResMode {
 
     public static void setResMode(Player player, String mode) {
         if ("exp".equals(mode)) {
-            playerResType.put(player, true);
+            playerResType.put(player.getUniqueId(), true);
             player.closeInventory();
             player.sendMessage(choose_exp);
         } else {
-            playerResType.put(player, false);
+            playerResType.put(player.getUniqueId(), false);
             player.closeInventory();
             player.sendMessage(choose_normal);
         }
     }
 
     public static boolean isExpMode(Player player) {
-        return playerResType.getOrDefault(player, false);
+        return playerResType.getOrDefault(player.getUniqueId(), false);
     }
 
     public static int calcExpLevel(Material material, int amount) {
