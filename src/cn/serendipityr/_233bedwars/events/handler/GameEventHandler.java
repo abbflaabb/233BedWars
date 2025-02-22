@@ -66,6 +66,9 @@ public class GameEventHandler implements Listener {
     public void onPlayerRespawn(PlayerReSpawnEvent event) {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> FastCommands.giveItems(player), 20L);
+        if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(player)) {
+            player.setLevel(0);
+        }
     }
 
     @EventHandler
@@ -90,6 +93,9 @@ public class GameEventHandler implements Listener {
         Player player = event.getPlayer();
         if (ConfigManager.addon_scoreBoardEditor) {
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
+        }
+        if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(player)) {
+            player.setLevel(0);
         }
     }
 
