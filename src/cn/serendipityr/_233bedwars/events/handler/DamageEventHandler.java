@@ -23,6 +23,9 @@ public class DamageEventHandler implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         Entity victim = event.getEntity();
+        if (event.isCancelled()) {
+            return;
+        }
         if (victim instanceof Player) {
             victim = event.getEntity();
             Entity damager = event.getDamager();
@@ -58,6 +61,9 @@ public class DamageEventHandler implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (ConfigManager.addon_shopItemAddon) {
