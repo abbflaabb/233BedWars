@@ -9,10 +9,7 @@ import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent;
-import com.andrei1058.bedwars.api.events.player.PlayerBedBreakEvent;
-import com.andrei1058.bedwars.api.events.player.PlayerJoinArenaEvent;
-import com.andrei1058.bedwars.api.events.player.PlayerKillEvent;
-import com.andrei1058.bedwars.api.events.player.PlayerReSpawnEvent;
+import com.andrei1058.bedwars.api.events.player.*;
 import com.andrei1058.bedwars.api.events.shop.ShopBuyEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -84,6 +81,15 @@ public class GameEventHandler implements Listener {
         if (ConfigManager.addon_xpResMode) {
             XpResMode.giveItems(player);
             XpResMode.initPlayer(player);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRejoinGame(PlayerReJoinEvent event) {
+        IArena arena = event.getArena();
+        Player player = event.getPlayer();
+        if (ConfigManager.addon_scoreBoardEditor) {
+            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
         }
     }
 
