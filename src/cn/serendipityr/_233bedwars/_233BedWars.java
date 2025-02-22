@@ -18,7 +18,15 @@ public class _233BedWars extends JavaPlugin {
         LogUtil.consoleLog("&3&l&m--------&9 233BedWars &fby &6SerendipityR &3&l&m--------");
         LogUtil.consoleLog("&3 > &e插件装载中...");
         LogUtil.consoleLog("&3 > &e正在加载配置...");
-        ConfigManager.loadConfig();
+        try {
+            ConfigManager.loadConfig();
+        } catch (Exception e) {
+            LogUtil.consoleLog("&3 > &c检测到第一次加载配置出错！如果你刚刚更新了插件，请重置配置文件。");
+            LogUtil.consoleLog("&3&l&m--------------------------------------------");
+            e.printStackTrace();
+            disablePlugin();
+            return;
+        }
         LogUtil.consoleLog("&3 > &eHooking BedWars1058...");
         ProviderUtil.bw = (BedWars) ProviderUtil.hookPlugin("BedWars1058", BedWars.class);
         LogUtil.consoleLog("&3 > &eHooking PlaceholderAPI...");

@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
 import cn.serendipityr._233bedwars.addons.shopItems.SuicideBomber;
 import cn.serendipityr._233bedwars.addons.shopItems.ToxicBall;
@@ -34,6 +35,9 @@ public class DamageEventHandler implements Listener {
                             if (ConfigManager.addon_combatDetails) {
                                 CombatDetails.sendDamageMsg((Player) damager, (Player) victim, event.getDamage(), event.getFinalDamage());
                                 CombatDetails.checkStrengthEffect((Player) damager, (Player) victim);
+                            }
+                            if (ConfigManager.addon_xpResMode) {
+                                XpResMode.handlePlayerDamage(arena, (Player) damager, (Player) victim, event.getFinalDamage());
                             }
                         }
                     }

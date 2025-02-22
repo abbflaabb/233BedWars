@@ -3,6 +3,8 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
+import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
+import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,6 +15,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +34,8 @@ public class XpResMode {
     static String choose_normal;
     static String choose_exp;
     static String[] pick_up_sound;
+    static Integer kill_reclaim_exp;
+    static String kill_reclaim_message;
     static Integer gui_size;
     static String gui_title;
     static HashMap<Integer, ItemStack> items = new HashMap<>();
@@ -48,6 +54,8 @@ public class XpResMode {
         choose_normal = cfg.getString("choose_normal").replace("&", "§");
         choose_exp = cfg.getString("choose_exp").replace("&", "§");
         pick_up_sound = cfg.getString("pick_up_sound").split(":");
+        kill_reclaim_exp = cfg.getInt("kill_reclaim_exp");
+        kill_reclaim_message = cfg.getString("kill_reclaim_message").replace("&", "§");
         gui_size = cfg.getInt("GUI.size");
         gui_title = cfg.getString("GUI.title").replace("&", "§");
         items.clear();
@@ -142,5 +150,35 @@ public class XpResMode {
                 break;
         }
         return giveLevels;
+    }
+
+    public static void handlePlayerDamage(IArena arena, Player killer, Player victim, double finalDamage) {
+        if (kill_reclaim_exp == 0) {
+            return;
+        }
+        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
+        if (roundedHealth <= 0) {
+            int claimExp = Math.round(victim.getLevel() * ((float) kill_reclaim_exp / 100));
+            if (claimExp == 0) {
+                return;
+            }
+            killer.setLevel(killer.getLevel() + claimExp);
+            if (kill_reclaim_message.trim().isEmpty()) {
+                return;
+            }
+            killer.sendMessage(kill_reclaim_message
+                    .replace("{vtColor}", PlaceholderUtil.getTeamColor(arena.getTeam(victim)))
+                    .replace("{victim}", victim.getName())
+                    .replace("{exp}", String.valueOf(claimExp)));
+        }
+    }
+
+    private static Double roundDouble(double num, int scale) {
+        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+        if (num > 0 && rounded == 0) {
+            return 0.1D;
+        } else {
+            return rounded;
+        }
     }
 }
