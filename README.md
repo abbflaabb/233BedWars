@@ -6,6 +6,7 @@
 #### <details><summary>...?</summary>一年前，lz的号被此服反作弊莫名封禁100年，此插件应运而生。</details>
 #### 授权发布：
 #### https://www.minebbs.com/resources/233bedwars.10504
+#### https://www.tinksp.com/resources/233bedwars.2226/
 ----
 
 ## 前置插件
