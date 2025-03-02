@@ -55,12 +55,12 @@ public class BedWarsShopUtil {
         }
     }
 
-    public static void handleShopOpen(Player player, Inventory shopInv) {
+    public static void handleShopOpen(Player player, Inventory shopInv, String title) {
         if (!XpResMode.isExpMode(player)) {
             return;
         }
         UUID uuid = player.getUniqueId();
-        if (isQuickBuy(player, shopInv)) {
+        if (isQuickBuy(player, shopInv, title)) {
             // 处理快速购买
             PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(uuid);
             ShopCache shopCache = ShopCache.getShopCache(uuid);
@@ -71,10 +71,10 @@ public class BedWarsShopUtil {
                 CategoryContent content = element.getCategoryContent();
                 int slot = element.getSlot();
                 int price = getCategoryContentPrice(shopCache, content);
-                setContentInventory(player, content, shopCache, shopInv, slot, price, true);
+                setContentInventory(player, content, shopCache, shopInv, title, slot, price, true);
             }
         } else {
-            ShopCategory category = getCategoryFromInventory(player, shopInv);
+            ShopCategory category = getCategoryFromInventory(player, shopInv, title);
             if (category == null) {
                 return;
             }
@@ -83,18 +83,18 @@ public class BedWarsShopUtil {
             for (CategoryContent content : category.getCategoryContentList()) {
                 int slot = content.getSlot();
                 int price = getCategoryContentPrice(shopCache, content);
-                setContentInventory(player, content, shopCache, shopInv, slot, price, false);
+                setContentInventory(player, content, shopCache, shopInv, title, slot, price, false);
             }
         }
     }
 
-    public static boolean handleShopClick(Player player, Inventory shopInv, int slot) {
+    public static boolean handleShopClick(Player player, Inventory shopInv, String title, int slot) {
         if (!XpResMode.isExpMode(player)) {
             return false;
         }
         UUID uuid = player.getUniqueId();
         CategoryContent content;
-        if (isQuickBuy(player, shopInv)) {
+        if (isQuickBuy(player, shopInv, title)) {
             // 处理快速购买
             PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(uuid);
             if (quickBuyCache == null) {
@@ -102,7 +102,7 @@ public class BedWarsShopUtil {
             }
             content = getCategoryContentFromQuickBuy(quickBuyCache, slot);
         } else {
-            ShopCategory category = getCategoryFromInventory(player, shopInv);
+            ShopCategory category = getCategoryFromInventory(player, shopInv, title);
             if (category == null) {
                 return false;
             }
@@ -115,7 +115,7 @@ public class BedWarsShopUtil {
         }
 
         ShopCache shopCache = ShopCache.getShopCache(uuid);
-        buyItem(player, shopCache, content, shopInv, slot);
+        buyItem(player, shopCache, content, shopInv, title, slot);
         return true;
     }
 
@@ -401,14 +401,14 @@ public class BedWarsShopUtil {
         return cost;
     }
 
-    private static boolean isQuickBuy(Player player, Inventory shopInv) {
-        return ProviderUtil.bw.getPlayerLanguage(player).m("shop-items-messages.inventory-name").equals(shopInv.getTitle());
+    private static boolean isQuickBuy(Player player, Inventory shopInv, String title) {
+        return ProviderUtil.bw.getPlayerLanguage(player).m("shop-items-messages.inventory-name").equals(title);
     }
 
-    private static ShopCategory getCategoryFromInventory(Player player, Inventory shopInv) {
+    private static ShopCategory getCategoryFromInventory(Player player, Inventory shopInv, String title) {
         for (ShopCategory shopCategory : ShopManager.getShop().getCategoryList()) {
             String name = getCategoryName(player, shopCategory.getName());
-            if (name.equals(shopInv.getTitle())) {
+            if (name.equals(title)) {
                 return shopCategory;
             }
         }
@@ -419,7 +419,7 @@ public class BedWarsShopUtil {
         return ProviderUtil.bw.getPlayerLanguage(player).m("shop-items-messages." + category + ".inventory-name");
     }
 
-    private static void setContentInventory(Player player, CategoryContent content, ShopCache shopCache, Inventory shopInv, int slot, int price, boolean isQuickBuy) {
+    private static void setContentInventory(Player player, CategoryContent content, ShopCache shopCache, Inventory shopInv, String title, int slot, int price, boolean isQuickBuy) {
         List<String> lores = getCategoryContentLore(player, content);
 
         ItemStack itemStack = shopInv.getItem(slot);
@@ -553,7 +553,7 @@ public class BedWarsShopUtil {
                 ones[num % 10];
     }
 
-    private static void buyItem(Player player, ShopCache shopCache, CategoryContent content, Inventory shopInv, int slot) {
+    private static void buyItem(Player player, ShopCache shopCache, CategoryContent content, Inventory shopInv, String title, int slot) {
         int tier = getContentTier(shopCache, content);
         int price = getCategoryContentPrice(shopCache, content);
 
@@ -598,7 +598,7 @@ public class BedWarsShopUtil {
             Sounds.playSound("shop-bought", player);
             player.sendMessage(Language.getMsg(player, "shop-new-purchase").replace("{item}", ChatColor.stripColor(getCategoryContentName(player, content)).replace("{color}", "").replace("{tier}", "")));
             // 更新其他物品信息
-            if (isQuickBuy(player, shopInv)) {
+            if (isQuickBuy(player, shopInv, title)) {
                 PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(player.getUniqueId());
                 if (quickBuyCache == null) {
                     return;
@@ -607,13 +607,13 @@ public class BedWarsShopUtil {
                     CategoryContent categoryContent = quickBuyElement.getCategoryContent();
                     int c_slot = quickBuyElement.getSlot();
                     int c_price = getCategoryContentPrice(shopCache, categoryContent);
-                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price, true);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, title, c_slot, c_price, true);
                 }
             } else {
                 for (CategoryContent categoryContent : category.getCategoryContentList()) {
                     int c_slot = categoryContent.getSlot();
                     int c_price = getCategoryContentPrice(shopCache, categoryContent);
-                    setContentInventory(player, categoryContent, shopCache, shopInv, c_slot, c_price, false);
+                    setContentInventory(player, categoryContent, shopCache, shopInv, title, c_slot, c_price, false);
                 }
             }
             player.updateInventory();

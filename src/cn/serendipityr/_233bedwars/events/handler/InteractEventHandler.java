@@ -42,6 +42,7 @@ public class InteractEventHandler implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             Inventory inventory = event.getClickedInventory();
+            String title = event.getView().getTitle();
             if (inventory == null) {
                 return;
             }
@@ -49,7 +50,7 @@ public class InteractEventHandler implements Listener {
             if (handleClick(player, event.getCurrentItem())) {
                 event.setCancelled(true);
             }
-            if (!event.getClick().isShiftClick() && BedWarsShopUtil.handleShopClick(player, inventory, slot)) {
+            if (!event.getClick().isShiftClick() && BedWarsShopUtil.handleShopClick(player, inventory, title, slot)) {
                 event.setCancelled(true);
             }
             if (BedWarsShopUtil.handleUpgradeShopClick(player, inventory, slot)) {
@@ -176,8 +177,9 @@ public class InteractEventHandler implements Listener {
     public void onPlayerOpenInventory(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = event.getInventory();
+        String title = event.getView().getTitle();
         if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
-            BedWarsShopUtil.handleShopOpen(player, inventory);
+            BedWarsShopUtil.handleShopOpen(player, inventory, title);
             Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> BedWarsShopUtil.handleUpgradeShopOpen(player, inventory), 1L);
         }
     }
