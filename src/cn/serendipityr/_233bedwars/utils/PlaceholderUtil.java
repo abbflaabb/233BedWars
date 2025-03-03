@@ -270,6 +270,12 @@ public class PlaceholderUtil {
         if (!ConfigManager.addon_teamNameThemes) {
             return displayName;
         }
+        if (!TeamNameThemes.themes.containsKey(arena.getGroup()) || !TeamNameThemes.arenaTheme.containsKey(arena)) {
+            return displayName;
+        }
+        if (!TeamNameThemes.themes.get(arena.getGroup()).containsKey(TeamNameThemes.arenaTheme.get(arena))) {
+            return displayName;
+        }
         return TeamNameThemes.themes.get(arena.getGroup()).get(TeamNameThemes.arenaTheme.get(arena)).getOrDefault(name, displayName);
     }
 
