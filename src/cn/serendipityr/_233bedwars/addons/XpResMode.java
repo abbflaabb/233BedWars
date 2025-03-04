@@ -3,8 +3,8 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
-import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
+import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -107,7 +107,7 @@ public class XpResMode {
 
     public static boolean handlePickUp(Player player, Item item) {
         ItemStack itemStack = item.getItemStack();
-        int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount());
+        int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount(), false);
         if (playerResType.get(player.getUniqueId())) {
             if (giveLevels != -1) {
                 item.remove();
@@ -135,19 +135,35 @@ public class XpResMode {
         return playerResType.getOrDefault(player.getUniqueId(), false);
     }
 
-    public static int calcExpLevel(Material material, int amount) {
+    public static int calcExpLevel(Material material, int amount, boolean shop) {
         int giveLevels = -1;
-        switch (material.name()) {
-            case "IRON_INGOT":
+        if (shop) {
+            Material iron_ingot = BedWars.getAPI().getShopUtil().getCurrency("iron");
+            Material gold_ingot = BedWars.getAPI().getShopUtil().getCurrency("gold");
+            Material diamond = BedWars.getAPI().getShopUtil().getCurrency("diamond");
+            Material emerald = BedWars.getAPI().getShopUtil().getCurrency("emerald");
+            if (material == iron_ingot) {
+                return (int) Math.round(amount * ratio_iron);
+            } else if (material == gold_ingot) {
+                return (int) Math.round(amount * ratio_gold);
+            } else if (material == diamond) {
+                return (int) Math.round(amount * ratio_diamond);
+            } else if (material == emerald) {
+                return (int) Math.round(amount * ratio_emerald);
+            }
+        }
+
+        switch (material) {
+            case IRON_INGOT:
                 giveLevels = (int) Math.round(amount * ratio_iron);
                 break;
-            case "GOLD_INGOT":
+            case GOLD_INGOT:
                 giveLevels = (int) Math.round(amount * ratio_gold);
                 break;
-            case "DIAMOND":
+            case DIAMOND:
                 giveLevels = (int) Math.round(amount * ratio_diamond);
                 break;
-            case "EMERALD":
+            case EMERALD:
                 giveLevels = (int) Math.round(amount * ratio_emerald);
                 break;
         }
