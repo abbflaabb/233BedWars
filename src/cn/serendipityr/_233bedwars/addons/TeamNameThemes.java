@@ -31,10 +31,10 @@ public class TeamNameThemes {
     public static void initGame(IArena arena) {
         String group = arena.getGroup();
         String arenaName = arena.getArenaName();
-        List<String> keysList = new ArrayList<>(themes.get(arena.getGroup()).keySet());
-        String randomTheme = keysList.get(new Random().nextInt(keysList.size()));
-        arenaTheme.put(arena, randomTheme);
         if (themes.containsKey(group) && !themes.get(group).isEmpty()) {
+            List<String> keysList = new ArrayList<>(themes.get(arena.getGroup()).keySet());
+            String randomTheme = keysList.get(new Random().nextInt(keysList.size()));
+            arenaTheme.put(arena, randomTheme);
             if (!applyThemeMsg.trim().isEmpty()) {
                 for (Player player : arena.getPlayers()) {
                     player.sendMessage(applyThemeMsg.replace("{tTheme}", randomTheme));

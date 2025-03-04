@@ -73,6 +73,9 @@ public class DalaoWarning {
                 List<Integer> sortedAvgKeys = avgMap.keySet().stream()
                         .sorted(Comparator.reverseOrder())
                         .collect(Collectors.toList());
+                if (sortedAvgKeys.size() <= 1) {
+                    return null;
+                }
                 Integer avg_first = sortedAvgKeys.get(0);
                 Integer avg_second = sortedAvgKeys.get(1);
                 int diff = avg_first - avg_second;

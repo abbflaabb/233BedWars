@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
@@ -136,17 +137,17 @@ public class XpResMode {
 
     public static int calcExpLevel(Material material, int amount) {
         int giveLevels = -1;
-        switch (material) {
-            case IRON_INGOT:
+        switch (material.name()) {
+            case "IRON_INGOT":
                 giveLevels = (int) Math.round(amount * ratio_iron);
                 break;
-            case GOLD_INGOT:
+            case "GOLD_INGOT":
                 giveLevels = (int) Math.round(amount * ratio_gold);
                 break;
-            case DIAMOND:
+            case "DIAMOND":
                 giveLevels = (int) Math.round(amount * ratio_diamond);
                 break;
-            case EMERALD:
+            case "EMERALD":
                 giveLevels = (int) Math.round(amount * ratio_emerald);
                 break;
         }
