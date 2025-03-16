@@ -44,11 +44,13 @@ public class ShopItemAddon {
     static List<String> shopItems = new ArrayList<>();
     static YamlConfiguration shopItemsYml;
     static HashMap<String, Integer> cooling_items = new HashMap<>();
+    public static HashMap<String, List<String>> disable_items_for_groups;
     static Integer cooling_progress_length;
     static String cooling_progress_unit;
     static String cooling_progress_color_current;
     static String cooling_progress_color_left;
     static String cooling_actionbar;
+    static String error_disable_item;
 
     public static void loadConfig(YamlConfiguration cfg) {
         shop_layout = cfg.getStringList("shop_layout");
@@ -60,11 +62,15 @@ public class ShopItemAddon {
             String[] _str = str.split(":");
             cooling_items.put(_str[0], Integer.parseInt(_str[1]));
         }
+        for (String key : shopItemsYml.getConfigurationSection("settings.disable_items_for_groups").getKeys(false)) {
+            disable_items_for_groups.put(key, shopItemsYml.getStringList("settings.disable_items_for_groups." + key));
+        }
         cooling_progress_length = cfg.getInt("settings.cooling.progress.length");
         cooling_progress_unit = cfg.getString("settings.cooling.progress.unit");
         cooling_progress_color_current = cfg.getString("settings.cooling.progress.color_current").replace("&", "§");
         cooling_progress_color_left = cfg.getString("settings.cooling.progress.color_left").replace("&", "§");
         cooling_actionbar = cfg.getString("messages.cooling_actionbar").replace("&", "§");
+        error_disable_item = cfg.getString("messages.error_disable_item").replace("&", "§");
 
         RecoverBed.loadConfig(cfg);
         SuicideBomber.loadConfig(cfg);
@@ -169,6 +175,14 @@ public class ShopItemAddon {
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {
+        String group = arena.getGroup();
+        if (disable_items_for_groups.containsKey(group)) {
+            List<String> disable_items = disable_items_for_groups.get(group);
+            if (!disable_items.isEmpty() && disable_items.contains(content.getIdentifier())) {
+                player.sendMessage(error_disable_item);
+                return true;
+            }
+        }
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
             return true;
         } else if (SuicideBomber.settings_suicide_bomber_enable && handleShopBuy(player, content, "suicide_bomber", SuicideBomber.suicide_bomber_section)) {

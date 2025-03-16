@@ -12,6 +12,9 @@ shop_layout:
   - "8:quick-buy-category"
 
 settings:
+  disable_items_for_groups:
+    rush_4v4v4v4:
+      - "recover_bed"
   cooling:
     items:
       - "suicide_bomber:5"
@@ -123,6 +126,7 @@ settings:
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
+  error_disable_item: "&c此物品在该模式下已禁用。"
   recover_bed_destroy_tips: "&a目前处于游戏10分钟内，即使无床，苟依然有机会购买回春床恢复！"
   recover_bed_success_title: "&a&l床已恢复"
   recover_bed_success_subtitle: "&3{player}恢复了床，现在死亡可以重生！"

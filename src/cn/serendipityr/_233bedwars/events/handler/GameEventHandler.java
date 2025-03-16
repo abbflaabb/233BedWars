@@ -132,6 +132,9 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         ITeam victim = event.getVictimTeam();
         if (ConfigManager.addon_shopItemAddon) {
+            if (ShopItemAddon.disable_items_for_groups.containsKey(arena.getGroup()) && ShopItemAddon.disable_items_for_groups.get(arena.getGroup()).contains("recover_bed")) {
+                return;
+            }
             ShopItemAddon.handleBedDestroy(arena, victim);
         }
     }
