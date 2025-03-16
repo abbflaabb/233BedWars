@@ -44,7 +44,7 @@ public class ShopItemAddon {
     static List<String> shopItems = new ArrayList<>();
     static YamlConfiguration shopItemsYml;
     static HashMap<String, Integer> cooling_items = new HashMap<>();
-    public static HashMap<String, List<String>> disable_items_for_groups;
+    public static HashMap<String, List<String>> disable_items_for_groups = new HashMap<>();
     static Integer cooling_progress_length;
     static String cooling_progress_unit;
     static String cooling_progress_color_current;
@@ -58,10 +58,12 @@ public class ShopItemAddon {
         shopItemsYml = cfg;
 
         List<String> cooling = cfg.getStringList("settings.cooling.items");
+        cooling_items.clear();
         for (String str : cooling) {
             String[] _str = str.split(":");
             cooling_items.put(_str[0], Integer.parseInt(_str[1]));
         }
+        disable_items_for_groups.clear();
         for (String key : shopItemsYml.getConfigurationSection("settings.disable_items_for_groups").getKeys(false)) {
             disable_items_for_groups.put(key, shopItemsYml.getStringList("settings.disable_items_for_groups." + key));
         }
@@ -181,7 +183,7 @@ public class ShopItemAddon {
         String group = arena.getGroup();
         if (disable_items_for_groups.containsKey(group)) {
             List<String> disable_items = disable_items_for_groups.get(group);
-            if (!disable_items.isEmpty() && disable_items.contains(content.getIdentifier())) {
+            if (!disable_items.isEmpty() && disable_items.contains(content.getIdentifier().split("\\.")[2])) {
                 player.sendMessage(error_disable_item);
                 return true;
             }
