@@ -125,6 +125,9 @@ public class ShopItemAddon {
     }
 
     public static void handleBedDestroy(IArena arena, ITeam team) {
+        if (ShopItemAddon.disable_items_for_groups.containsKey(arena.getGroup()) && ShopItemAddon.disable_items_for_groups.get(arena.getGroup()).contains("recover_bed")) {
+            return;
+        }
         if (RecoverBed.settings_recover_bed_enable) {
             RecoverBed.handleBedDestroy(arena, team);
         }
