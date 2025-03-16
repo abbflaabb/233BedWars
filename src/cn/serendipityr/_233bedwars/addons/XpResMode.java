@@ -38,6 +38,7 @@ public class XpResMode {
     static String[] pick_up_sound;
     static Integer kill_reclaim_exp;
     static String kill_reclaim_message;
+    public static Boolean replace_upgrade_shop;
     static Integer gui_size;
     static String gui_title;
     static HashMap<Integer, ItemStack> items = new HashMap<>();
@@ -58,6 +59,7 @@ public class XpResMode {
         pick_up_sound = cfg.getString("pick_up_sound").split(":");
         kill_reclaim_exp = cfg.getInt("kill_reclaim_exp");
         kill_reclaim_message = cfg.getString("kill_reclaim_message").replace("&", "§");
+        replace_upgrade_shop = cfg.getBoolean("replace_upgrade_shop");
         gui_size = cfg.getInt("GUI.size");
         gui_title = cfg.getString("GUI.title").replace("&", "§");
         items.clear();
@@ -146,7 +148,7 @@ public class XpResMode {
                 return (int) Math.round(amount * ratio_iron);
             } else if (material == gold_ingot) {
                 return (int) Math.round(amount * ratio_gold);
-            } else if (material == diamond) {
+            } else if (material == diamond && XpResMode.replace_upgrade_shop) {
                 return (int) Math.round(amount * ratio_diamond);
             } else if (material == emerald) {
                 return (int) Math.round(amount * ratio_emerald);
@@ -161,7 +163,9 @@ public class XpResMode {
                 giveLevels = (int) Math.round(amount * ratio_gold);
                 break;
             case DIAMOND:
-                giveLevels = (int) Math.round(amount * ratio_diamond);
+                if (XpResMode.replace_upgrade_shop) {
+                    giveLevels = (int) Math.round(amount * ratio_diamond);
+                }
                 break;
             case EMERALD:
                 giveLevels = (int) Math.round(amount * ratio_emerald);

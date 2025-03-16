@@ -120,7 +120,7 @@ public class BedWarsShopUtil {
     }
 
     public static void handleUpgradeShopOpen(Player player, Inventory shopInv) {
-        if (!XpResMode.isExpMode(player) || !isWatchingUpgradeShop(player)) {
+        if (!XpResMode.isExpMode(player) || !isWatchingUpgradeShop(player) || !XpResMode.replace_upgrade_shop) {
             return;
         }
         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
@@ -129,7 +129,7 @@ public class BedWarsShopUtil {
     }
 
     public static boolean handleUpgradeShopClick(Player player, Inventory shopInv, int slot) {
-        if (!XpResMode.isExpMode(player) || !isWatchingUpgradeShop(player) || shopInv.getItem(slot) == null) {
+        if (!XpResMode.isExpMode(player) || !XpResMode.replace_upgrade_shop || !isWatchingUpgradeShop(player) || shopInv.getItem(slot) == null) {
             return false;
         }
         MenuContent mc = UpgradesManager.getMenuContent(shopInv.getItem(slot));

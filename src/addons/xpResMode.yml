@@ -20,6 +20,8 @@ choose_exp: "&e你选择了 &b&l经验模式"
 
 pick_up_sound: "ORB_PICKUP:1:2"
 
+replace_upgrade_shop: true
+
 # 杀死对手夺取经验百分比
 # 设置为 0 关闭此功能
 kill_reclaim_exp: 100
