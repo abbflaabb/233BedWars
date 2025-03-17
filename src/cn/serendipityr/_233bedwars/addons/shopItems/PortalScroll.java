@@ -4,6 +4,7 @@ import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import cn.serendipityr._233bedwars.utils.TitleUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import org.bukkit.Location;
@@ -12,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.github.paperspigot.Title;
 
 import java.util.Collections;
 
@@ -103,7 +103,7 @@ public class PortalScroll {
                 int current = Math.round((float) delay / settings_portal_scroll_portal_time * settings_portal_scroll_progress_length);
                 int left = settings_portal_scroll_progress_length - current;
                 String progress = settings_portal_scroll_progress_color_current + String.join("", Collections.nCopies(left, settings_portal_scroll_progress_unit)) + settings_portal_scroll_progress_color_left + String.join("", Collections.nCopies(current, settings_portal_scroll_progress_unit));
-                player.sendTitle(new Title(messages_portal_scroll_use_title, messages_portal_scroll_use_subtitle.replace("{portal_progress}", PlaceholderUtil.formatTextUnicode(progress)), 0, settings_portal_scroll_title_stay, 0));
+                TitleUtil.send(player, messages_portal_scroll_use_title, messages_portal_scroll_use_subtitle.replace("{portal_progress}", PlaceholderUtil.formatTextUnicode(progress)), 0, settings_portal_scroll_title_stay, 0);
             }
         }.runTaskTimer(_233BedWars.getInstance(), 0, 20);
     }

@@ -4,6 +4,7 @@ import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import cn.serendipityr._233bedwars.utils.TitleUtil;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -11,7 +12,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.github.paperspigot.Title;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +91,7 @@ public class FastCommands {
                     for (int i = 0; i < quick_reminding_count; i++) {
                         int finalI = i;
                         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                            p.sendTitle(new Title("", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0));
+                            TitleUtil.send(p, "", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0);
                             p.playSound(p.getLocation(), Sound.valueOf(quick_reminding_sound[0]), Float.parseFloat(quick_reminding_sound[1]), Float.parseFloat(quick_reminding_sound[2]));
                             if (finalI == quick_reminding_count - 1) {
                                 remindingThreshold.remove(player);

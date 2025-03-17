@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.TitleUtil;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -12,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.github.paperspigot.Title;
 
 public class FlightFirework {
     public static String flight_firework_material;
@@ -73,7 +73,7 @@ public class FlightFirework {
 
     private static void flightFirework(Player player) {
         player.sendMessage(messages_flight_firework_use);
-        player.sendTitle(new Title(messages_flight_firework_title, "", 0, settings_flight_firework_fuse_delay * 20, 0));
+        TitleUtil.send(player, messages_flight_firework_title, "", 0, settings_flight_firework_fuse_delay * 20, 0);
         Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
         fireworkMeta.setPower(settings_flight_firework_fuse_delay);

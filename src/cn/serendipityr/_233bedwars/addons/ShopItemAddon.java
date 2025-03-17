@@ -5,6 +5,7 @@ import cn.serendipityr._233bedwars.addons.shopItems.*;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import cn.serendipityr._233bedwars.utils.TitleUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
@@ -33,7 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.github.paperspigot.Title;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -351,7 +351,7 @@ public class ShopItemAddon {
 
     public static void sendTeamTitle(ITeam team, String title, String subTitle, int stay) {
         for (Player teamPlayer : team.getMembers()) {
-            teamPlayer.sendTitle(new Title(title, subTitle, 0, stay, 0));
+            TitleUtil.send(teamPlayer, title, subTitle, 0, stay, 0);
         }
     }
 
