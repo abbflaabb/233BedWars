@@ -429,17 +429,18 @@ public class BedWarsShopUtil {
         ItemMeta itemMeta = itemStack.getItemMeta();
 
         boolean affordable = isAffordable(player, price);
+        String tier = intToRoman(getContentTier(shopCache, content));
         lores.replaceAll(s -> s
                 .replace("{buy_status}", getBuyStatus(player, content, shopCache, affordable))
                 .replace("{quick_buy}", getQuickBuyTips(player, isQuickBuy))
-                .replace("{tier}", intToRoman(getContentTier(shopCache, content)))
+                .replace("{tier}", tier)
                 .replace("{cost}", XpResMode.currency_color + price)
                 .replace("{currency}", XpResMode.currency_color + XpResMode.currency)
                 .replace("&", "§"));
         if (affordable) {
-            itemMeta.setDisplayName(getCategoryContentName(player, content).replace("{color}", "§a"));
+            itemMeta.setDisplayName(getCategoryContentName(player, content).replace("{color}", "§a").replace("{tier}", tier));
         } else {
-            itemMeta.setDisplayName(getCategoryContentName(player, content).replace("{color}", "§c"));
+            itemMeta.setDisplayName(getCategoryContentName(player, content).replace("{color}", "§c").replace("{tier}", tier));
         }
         itemMeta.setLore(lores);
         if (ConfigManager.addon_shopItemAddon) {
