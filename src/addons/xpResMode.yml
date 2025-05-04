@@ -22,6 +22,15 @@ pick_up_sound: "ORB_PICKUP:1:2"
 
 replace_upgrade_shop: true
 
+# 强制竞技场组应用指定资源模式
+# 组内的竞技场将*不允许*自行选择资源模式
+# 可用资源模式:
+# exp - 经验模式
+# normal - 普通模式
+force_groups:
+  - "test_exp_group:exp"
+  - "test_normal_group:normal"
+
 # 杀死对手夺取经验百分比
 # 设置为 0 关闭此功能
 kill_reclaim_exp: 100

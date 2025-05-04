@@ -41,6 +41,7 @@ public class XpResMode {
     public static Boolean replace_upgrade_shop;
     static Integer gui_size;
     static String gui_title;
+    public static HashMap<String, String> force_groups = new HashMap<>();
     static HashMap<Integer, ItemStack> items = new HashMap<>();
     static HashMap<Integer, ItemStack> gui_items = new HashMap<>();
     static ConcurrentHashMap<UUID, Boolean> playerResType = new ConcurrentHashMap<>();
@@ -56,6 +57,10 @@ public class XpResMode {
         unselected = cfg.getString("unselected").replace("&", "§");
         choose_normal = cfg.getString("choose_normal").replace("&", "§");
         choose_exp = cfg.getString("choose_exp").replace("&", "§");
+        for (String s : cfg.getStringList("force_groups")) {
+            String[] _s = s.split(":");
+            force_groups.put(_s[0], _s[1]);
+        }
         pick_up_sound = cfg.getString("pick_up_sound").split(":");
         kill_reclaim_exp = cfg.getInt("kill_reclaim_exp");
         kill_reclaim_message = cfg.getString("kill_reclaim_message").replace("&", "§");
@@ -74,8 +79,8 @@ public class XpResMode {
         }
     }
 
-    public static void initPlayer(Player player) {
-        playerResType.put(player.getUniqueId(), true);
+    public static void initPlayer(Player player, IArena arena) {
+        playerResType.put(player.getUniqueId(), force_groups.getOrDefault(arena.getGroup(), "exp").equals("exp"));
     }
 
     public static void openGUI(Player player) {
@@ -97,8 +102,11 @@ public class XpResMode {
         player.openInventory(gui);
     }
 
-    public static void giveItems(Player player) {
+    public static void giveItems(Player player, IArena arena) {
         if (ConfigManager.addon_xpResMode) {
+            if (force_groups.containsKey(arena.getGroup())) {
+                return;
+            }
             Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
                 for (Integer slot : items.keySet()) {
                     player.getInventory().setItem(slot, items.get(slot));

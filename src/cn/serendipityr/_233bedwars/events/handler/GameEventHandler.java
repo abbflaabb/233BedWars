@@ -85,8 +85,8 @@ public class GameEventHandler implements Listener {
             ActionBar.initGame(arena, true);
         }
         if (ConfigManager.addon_xpResMode) {
-            XpResMode.giveItems(player);
-            XpResMode.initPlayer(player);
+            XpResMode.giveItems(player, arena);
+            XpResMode.initPlayer(player, arena);
         }
     }
 
