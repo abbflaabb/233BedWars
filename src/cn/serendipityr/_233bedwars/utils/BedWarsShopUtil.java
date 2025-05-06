@@ -448,7 +448,7 @@ public class BedWarsShopUtil {
                 String texture = ShopItemAddon.getSkullTexture(content.getIdentifier().split("\\.")[2]);
                 if (!texture.trim().isEmpty()) {
                     SkullMeta skullMeta = (SkullMeta) itemMeta;
-                    GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                    GameProfile profile = new GameProfile(UUID.randomUUID(), "");
                     profile.getProperties().put("textures", new Property("textures", texture));
                     try {
                         Field profileField = skullMeta.getClass().getDeclaredField("profile");
