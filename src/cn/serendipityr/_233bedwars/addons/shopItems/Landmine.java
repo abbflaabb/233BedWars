@@ -61,7 +61,7 @@ public class Landmine {
 
     public static boolean handleBlockPlace(Player player, Block block) {
         boolean check = false;
-        if (block.getType().toString().equals(landmine_material)) {
+        if (block.getType().toString().equals(landmine_material) || block.getType().toString().equals(landmine_material.replace("LEGACY_", ""))) {
             if (ShopItemAddon.checkCooling(player, "landmine")) {
                 return true;
             }
@@ -69,7 +69,7 @@ public class Landmine {
             ShopItemAddon.setCooling(player, "landmine");
         }
 
-        if (block.getType().toString().equals(light_landmine_material)) {
+        if (block.getType().toString().equals(light_landmine_material) || block.getType().toString().equals(light_landmine_material.replace("LEGACY_", ""))) {
             if (ShopItemAddon.checkCooling(player, "light_landmine")) {
                 return true;
             }

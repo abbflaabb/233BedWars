@@ -53,6 +53,6 @@ public class Pillar {
     }
 
     private static boolean isPillar(Player player, ItemStack item) {
-        return item.getType().toString().equals(pillar_material) && ShopItemAddon.compareAddonItem(player, item, pillar_section);
+        return (item.getType().toString().equals(pillar_material) || item.getType().toString().equals(pillar_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, pillar_section);
     }
 }

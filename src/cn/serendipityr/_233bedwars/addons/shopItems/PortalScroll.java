@@ -109,6 +109,6 @@ public class PortalScroll {
     }
 
     private static boolean isPortalScroll(Player player, ItemStack item) {
-        return item.getType().toString().equals(portal_scroll_material) && ShopItemAddon.compareAddonItem(player, item, portal_scroll_section);
+        return (item.getType().toString().equals(portal_scroll_material) || item.getType().toString().equals(portal_scroll_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, portal_scroll_section);
     }
 }

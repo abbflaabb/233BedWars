@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.TitleUtil;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -90,6 +91,6 @@ public class FlightFirework {
     }
 
     private static boolean isFlightFirework(Player player, ItemStack item) {
-        return item.getType().toString().equals(flight_firework_material) && ShopItemAddon.compareAddonItem(player, item, flight_firework_section);
+        return (item.getType().toString().equals(flight_firework_material) || item.getType().toString().equals(flight_firework_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, flight_firework_section);
     }
 }

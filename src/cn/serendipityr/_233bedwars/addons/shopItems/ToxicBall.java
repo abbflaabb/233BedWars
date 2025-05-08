@@ -48,7 +48,7 @@ public class ToxicBall {
     }
 
     private static boolean isToxicBall(Player player, ItemStack item) {
-        return item.getType().toString().equals(toxic_ball_material) && ShopItemAddon.compareAddonItem(player, item, toxic_ball_section);
+        return (item.getType().toString().equals(toxic_ball_material) || item.getType().toString().equals(toxic_ball_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, toxic_ball_section);
     }
 
     private static void toxicBall(Player player) {

@@ -44,7 +44,7 @@ public class Grenade {
     }
 
     private static boolean isGrenade(Player player, ItemStack item) {
-        return item.getType().toString().equals(grenade_material) && ShopItemAddon.compareAddonItem(player, item, grenade_section);
+        return (item.getType().toString().equals(grenade_material) || item.getType().toString().equals(grenade_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, grenade_section);
     }
 
     private static void grenade(Player player) {

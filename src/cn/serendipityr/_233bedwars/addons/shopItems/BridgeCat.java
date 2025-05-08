@@ -61,7 +61,7 @@ public class BridgeCat {
     }
 
     private static boolean isBridgeCat(Player player, ItemStack item) {
-        return item.getType().toString().equals(bridge_cat_material) && ShopItemAddon.compareAddonItem(player, item, bridge_cat_section) && bridge_cat_texture.equals(ShopItemAddon.getSkullTextureFromItemStack(item));
+        return (item.getType().toString().equals(bridge_cat_material) || (item.getType().toString().equals("SKULL_ITEM") && bridge_cat_material.equals("PLAYER_HEAD"))) && ShopItemAddon.compareAddonItem(player, item, bridge_cat_section) && bridge_cat_texture.equals(ShopItemAddon.getSkullTextureFromItemStack(item));
     }
 
     private static void bridge(Player player) {

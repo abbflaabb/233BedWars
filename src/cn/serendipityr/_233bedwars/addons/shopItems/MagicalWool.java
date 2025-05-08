@@ -50,7 +50,7 @@ public class MagicalWool {
     }
 
     private static boolean isMagicalWool(Player player, ItemStack item) {
-        return item.getType().toString().equals(magical_wool_material) && ShopItemAddon.compareAddonItem(player, item, magical_wool_section);
+        return (item.getType().toString().equals(magical_wool_material) || item.getType().toString().equals(magical_wool_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, magical_wool_section);
     }
 
     private static void expand(Player player, Block block, Block against, IArena arena) {

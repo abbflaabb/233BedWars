@@ -61,7 +61,7 @@ public class BridgeChicken {
     }
 
     private static boolean isBridgeChicken(Player player, ItemStack item) {
-        return item.getType().toString().equals(bridge_chicken_material) && ShopItemAddon.compareAddonItem(player, item, bridge_chicken_section) && bridge_chicken_texture.equals(ShopItemAddon.getSkullTextureFromItemStack(item));
+        return (item.getType().toString().equals(bridge_chicken_material) || (item.getType().toString().equals("SKULL_ITEM") && bridge_chicken_material.equals("PLAYER_HEAD"))) && ShopItemAddon.compareAddonItem(player, item, bridge_chicken_section) && bridge_chicken_texture.equals(ShopItemAddon.getSkullTextureFromItemStack(item));
     }
 
     private static void bridge(Player player) {

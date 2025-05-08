@@ -36,6 +36,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.*;
 
@@ -415,7 +416,22 @@ public class ShopItemAddon {
                     return property.getValue();
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
+            try {
+                Field profileField = skullMeta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                GameProfile profile = (GameProfile) profileField.get(skullMeta);
+                if (profile != null) {
+                    for (Property property : profile.getProperties().get("textures")) {
+                        Method method = property.getClass().getMethod("value");
+                        method.setAccessible(true);
+                        return method.invoke(property).toString();
+                    }
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                LogUtil.consoleLog("&9233BedWars &3&l > &e[ShopItemAddon] &c发生致命错误！(无法获取头颅材质)");
+            }
         }
 
         return "";

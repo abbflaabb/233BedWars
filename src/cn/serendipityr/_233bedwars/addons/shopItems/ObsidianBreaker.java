@@ -65,6 +65,6 @@ public class ObsidianBreaker {
     }
 
     private static boolean isObsidianBreaker(Player player, ItemStack item) {
-        return item.getType().toString().equals(obsidian_breaker_material) && ShopItemAddon.compareAddonItem(player, item, obsidian_breaker_section);
+        return (item.getType().toString().equals(obsidian_breaker_material) || item.getType().toString().equals(obsidian_breaker_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, obsidian_breaker_section);
     }
 }

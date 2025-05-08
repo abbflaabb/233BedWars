@@ -157,6 +157,6 @@ public class LuckyBlock {
     }
 
     private static boolean isLuckyBlock(Player player, ItemStack item) {
-        return item.getType().toString().equals(lucky_block_material) && ShopItemAddon.compareAddonItem(player, item, lucky_block_section);
+        return (item.getType().toString().equals(lucky_block_material) || item.getType().toString().equals(lucky_block_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, lucky_block_section);
     }
 }

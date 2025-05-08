@@ -65,7 +65,7 @@ public class SuicideBomber {
     }
 
     private static boolean isSuicideBomber(Player player, ItemStack item) {
-        return item.getType().toString().equals(suicide_bomber_material) && ShopItemAddon.compareAddonItem(player, item, suicide_bomber_section);
+        return (item.getType().toString().equals(suicide_bomber_material) || item.getType().toString().equals(suicide_bomber_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, suicide_bomber_section);
     }
 
     private static boolean isCarryBomb(Player player) {
