@@ -43,7 +43,7 @@ public class ConfigManager {
         addon_actionBar = cfg.getBoolean("addons.ActionBar");
         addon_shopItemAddon = cfg.getBoolean("addons.ShopItemAddon");
         addon_xpResMode = cfg.getBoolean("addons.XpResMode");
-        addon_globalEvents = cfg.getBoolean("addons.globalEvents");
+        addon_globalEvents = cfg.getBoolean("addons.GlobalEvents");
         loadAddonsCfg();
     }
 

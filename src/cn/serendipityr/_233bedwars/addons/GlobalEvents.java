@@ -109,7 +109,7 @@ public class GlobalEvents {
                         String[] _p = placeHolder.split("#");
                         if (_p[0].equals("votes")) {
                             lores.add(lore
-                                    .replace(placeHolder, String.valueOf(votes_count.getOrDefault(_p[1], 0L))));
+                                    .replace("{" + placeHolder + "}", String.valueOf(votes_count.getOrDefault(_p[1], 0L))));
                         }
                     }
                 }

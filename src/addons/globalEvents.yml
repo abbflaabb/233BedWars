@@ -77,7 +77,7 @@ GUI:
         - "&e点击选择"
       execute: "[voteEvent] none"
     11:
-      material: BARRIER
+      material: STRING
       name: "&c随机"
       lore:
         - "&7将随机使用全域事件！"
