@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.utils;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.addons.GlobalEvents;
 import cn.serendipityr._233bedwars.addons.TeamNameThemes;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.config.ConfigManager;
@@ -260,7 +261,7 @@ public class PlaceholderUtil {
     }
 
     public static String getGlobalEvent(IArena arena) {
-        return "开发中";
+        return GlobalEvents.getEventInfo(GlobalEvents.getApplyEvent(arena))[0];
     }
 
     public static String getTeamName(ITeam team, Player player) {

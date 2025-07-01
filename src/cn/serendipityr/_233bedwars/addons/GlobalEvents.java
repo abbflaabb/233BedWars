@@ -206,12 +206,12 @@ public class GlobalEvents {
         }
     }
 
-    private static ConcurrentHashMap<Player, String> getVoteMap(IArena arena) {
-        return vote_map.containsKey(arena) ? vote_map.get(arena) : new ConcurrentHashMap<>();
+    public static String[] getEventInfo(String event) {
+        return event_info.get(event);
     }
 
-    private static String[] getEventInfo(String event) {
-        return event_info.get(event);
+    private static ConcurrentHashMap<Player, String> getVoteMap(IArena arena) {
+        return vote_map.containsKey(arena) ? vote_map.get(arena) : new ConcurrentHashMap<>();
     }
 
     private static void sendEventApplyMsg(IArena arena) {
