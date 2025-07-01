@@ -1,0 +1,96 @@
+# 全域游戏事件
+
+settings:
+  vote_events:
+    # 启用事件投票，不启用则为默认事件
+    enable: true
+    # 强制应用指定事件的竞技场组
+    # [!] 位于此竞技场组内的玩家无法进行投票
+    force_groups:
+      - "rush_4v4v4v4:infinite_firepower"
+  # 进场时的默认事件
+  default_event: "random"
+
+messages:
+  vote_msg: "&e你选择了 &a{event}"
+  vote_fail_msg: "&c该事件未被启用。"
+  vote_result: "&e事件 &6{final_event} &e取得了{final_votes}票，本局游戏将使用此事件！"
+  vote_result_none: "&e没有足够的投票开启事件，本局游戏将不启用事件！"
+  event_broadcast:
+    - "&e本局游戏已启用事件_(:з」∠)_:"
+    - "&a{event_name} &b{event_description}！"
+  event_info:
+    - "potions:随机药水:每隔五分钟随机获得一种正面药水效果"
+
+events:
+  random:
+    enable: true
+    disable_events:
+      - "inadequate_firepower"
+  potions:
+    enable: true
+    # 药水效果给予间隔 (秒)
+    interval: 300
+    # 使所有人共享同一药水效果增益
+    share_effect: false
+    # 死亡后保持药水效果
+    death_keep: false
+    # 随机抽取的药水效果
+    # [药水效果]:[等级]:[粒子效果]
+    potions:
+      - "SPEED:0:true"             # 速度
+      - "HASTE:0:true"             # 急迫
+      - "STRENGTH:0:true"          # 力量
+      - "REGENERATION:0:true"      # 生命恢复
+      - "RESISTANCE:0:true"        # 抗性提升
+      - "FIRE_RESISTANCE:0:true"   # 火焰抗性
+      - "WATER_BREATHING:0:true"   # 水下呼吸
+      - "INVISIBILITY:0:true"      # 隐身
+      - "NIGHT_VISION:0:true"      # 夜视
+      - "JUMP:0:true"              # 跳跃提升
+      - "ABSORPTION:0:true"        # 伤害吸收
+      - "HEALTH_BOOST:0:true"      # 生命提升
+      - "SATURATION:0:true"        # 饱和
+
+Item:
+  2:
+    material: MAGMA_CREAM
+    name: "&a事件投票 &7(右键打开)"
+    lore:
+      - ""
+    execute: "[gui_open] voteEvents"
+
+GUI:
+  size: 36
+  title: "&c事件投票"
+  items:
+    10:
+      material: BARRIER
+      name: "&c无"
+      lore:
+        - "&7将不启用任何事件！"
+        - ""
+        - "&7当前票数: &f{votes#none}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] none"
+    11:
+      material: BARRIER
+      name: "&c随机"
+      lore:
+        - "&7将随机使用全域事件！"
+        - ""
+        - "&7当前票数: &f{votes#random}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] random"
+    12:
+      material: POTION
+      name: "&a随机药水"
+      lore:
+        - "&7每隔五分钟随机获得一种正面药水效果！"
+        - ""
+        - "&7当前票数: &f{votes#potions}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] potions"

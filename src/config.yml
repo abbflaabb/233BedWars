@@ -29,3 +29,5 @@ addons:
   ShopItemAddon: true
   # 经验模式
   XpResMode: true
+  # 全域游戏事件
+  GlobalEvents: true

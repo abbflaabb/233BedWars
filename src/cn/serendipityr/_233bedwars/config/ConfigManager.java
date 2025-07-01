@@ -43,6 +43,7 @@ public class ConfigManager {
         addon_actionBar = cfg.getBoolean("addons.ActionBar");
         addon_shopItemAddon = cfg.getBoolean("addons.ShopItemAddon");
         addon_xpResMode = cfg.getBoolean("addons.XpResMode");
+        addon_globalEvents = cfg.getBoolean("addons.globalEvents");
         loadAddonsCfg();
     }
 
@@ -66,6 +67,7 @@ public class ConfigManager {
         ActionBar.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/actionBar.yml")));
         ShopItemAddon.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/shopItemAddon.yml")));
         XpResMode.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/xpResMode.yml")));
+        GlobalEvents.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/globalEvents.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {

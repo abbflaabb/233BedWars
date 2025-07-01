@@ -1,10 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.FastCommands;
-import cn.serendipityr._233bedwars.addons.GeneratorEditor;
-import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import cn.serendipityr._233bedwars.addons.XpResMode;
+import cn.serendipityr._233bedwars.addons.*;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
@@ -218,9 +215,19 @@ public class InteractEventHandler implements Listener {
                             return true;
                         }
                     }
+                    if ("voteEvents".equals(execute[1])) {
+                        if (ConfigManager.addon_globalEvents) {
+                            GlobalEvents.openGUI(player);
+                            return true;
+                        }
+                    }
                 }
                 if ("changeResMode".equals(execute[0])) {
                     XpResMode.setResMode(player, execute[1]);
+                    return true;
+                }
+                if ("voteEvent".equals(execute[0])) {
+                    GlobalEvents.setPlayerVote(player, execute[1]);
                     return true;
                 }
                 break;

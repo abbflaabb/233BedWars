@@ -23,6 +23,9 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         // 游戏开局时
         if (state.equals(GameState.playing)) {
+            if (ConfigManager.addon_globalEvents) {
+                GlobalEvents.applyEvent(arena);
+            }
             if (ConfigManager.addon_teamNameThemes) {
                 TeamNameThemes.initGame(arena);
             }
@@ -43,6 +46,9 @@ public class GameEventHandler implements Listener {
         }
         // 游戏结束时
         if (state.equals(GameState.restarting)) {
+            if (ConfigManager.addon_globalEvents) {
+                GlobalEvents.resetArena(arena);
+            }
             if (ConfigManager.addon_generatorEditor) {
                 GeneratorEditor.resetArena(arena);
             }
@@ -64,10 +70,14 @@ public class GameEventHandler implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerReSpawnEvent event) {
+        IArena arena = event.getArena();
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> FastCommands.giveItems(player), 20L);
         if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(player)) {
             player.setLevel(0);
+        }
+        if (ConfigManager.addon_globalEvents) {
+            GlobalEvents.handlePlayerRespawn(arena, player);
         }
     }
 
@@ -87,6 +97,9 @@ public class GameEventHandler implements Listener {
         if (ConfigManager.addon_xpResMode) {
             XpResMode.giveItems(player, arena);
             XpResMode.initPlayer(player, arena);
+        }
+        if (ConfigManager.addon_globalEvents) {
+            GlobalEvents.initPlayer(player, arena);
         }
     }
 
@@ -133,6 +146,17 @@ public class GameEventHandler implements Listener {
         ITeam victim = event.getVictimTeam();
         if (ConfigManager.addon_shopItemAddon) {
             ShopItemAddon.handleBedDestroy(arena, victim);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerLeaveArenaEvent event) {
+        IArena arena = event.getArena();
+        Player player = event.getPlayer();
+        if (arena.getStatus() == GameState.waiting || arena.getStatus() == GameState.starting) {
+            if (ConfigManager.addon_globalEvents) {
+                GlobalEvents.resetPlayer(arena, player);
+            }
         }
     }
 }

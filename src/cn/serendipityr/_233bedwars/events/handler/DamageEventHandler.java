@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.events.handler;
 
 import cn.serendipityr._233bedwars.addons.CombatDetails;
+import cn.serendipityr._233bedwars.addons.GlobalEvents;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.addons.XpResMode;
 import cn.serendipityr._233bedwars.addons.shopItems.FlightFirework;
@@ -41,6 +42,9 @@ public class DamageEventHandler implements Listener {
                             }
                             if (ConfigManager.addon_xpResMode) {
                                 XpResMode.handlePlayerDamage(arena, (Player) damager, (Player) victim, event.getFinalDamage());
+                            }
+                            if (ConfigManager.addon_globalEvents) {
+                                GlobalEvents.handlePlayerDamage(arena, (Player) damager, (Player) victim, event.getFinalDamage());
                             }
                         }
                     }
