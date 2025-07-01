@@ -19,6 +19,9 @@ public class RandomEvent {
     public static String getRandomEvent() {
         List<String> random = new ArrayList<>(GlobalEvents.enable_events);
         random.removeAll(disable_events);
+        if (random.isEmpty()) {
+            return "none";
+        }
         return random.get(new Random().nextInt(random.size()));
     }
 }

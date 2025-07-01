@@ -146,6 +146,7 @@ GUI:
       name: "&c火力不足"
       lore:
         - "&7所有资源生成速度x0.5！"
+        - "&c不会在随机事件中出现"
         - ""
         - "&7当前票数: &f{votes#inadequate_firepower}"
         - ""
