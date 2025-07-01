@@ -67,14 +67,24 @@ public class Potions {
         }.runTaskTimer(_233BedWars.getInstance(), 0L, 20L);
     }
 
-    public static void handlePlayerDamage(IArena arena, Player victim, double finalDamage) {
-        if (!death_keep) {
+    public static void handlePlayerDeath(IArena arena, Player victim) {
+        if (!"potions".equals(GlobalEvents.getApplyEvent(arena)) || !death_keep) {
             return;
         }
-        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
-        if (roundedHealth <= 0) {
-            deathKeepMap.put(victim, victim.getActivePotionEffects());
-        }
+        Collection<PotionEffect> old_effects = victim.getActivePotionEffects();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (arena.getRespawnSessions().containsKey(victim)) {
+                    int respawnTime = arena.getRespawnSessions().get(victim);
+                    Collection<PotionEffect> effects = new ArrayList<>();
+                    for (PotionEffect effect : old_effects) {
+                        effects.add(new PotionEffect(effect.getType(), effect.getDuration() - respawnTime, effect.getAmplifier(), effect.isAmbient()));
+                    }
+                    deathKeepMap.put(victim, effects);
+                }
+            }
+        }.runTaskLater(_233BedWars.getInstance(), 1L);
     }
 
     public static void handlePlayerRespawn(Player player) {
@@ -90,7 +100,7 @@ public class Potions {
 
     private static PotionEffect getRandomEffect() {
         String[] potion = potions.get(new Random().nextInt(potions.size()));
-        return new PotionEffect(PotionEffectType.getByName(potion[0]), interval, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
+        return new PotionEffect(PotionEffectType.getByName(potion[0]), interval * 20, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
     }
 
     private static Double roundDouble(double num, int scale) {

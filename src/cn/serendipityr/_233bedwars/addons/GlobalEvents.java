@@ -145,7 +145,7 @@ public class GlobalEvents {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
         if (filter != null) {
-            if (apply_events.get(arena).equals("none")) {
+            if (filter.getKey().equals("none")) {
                 ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
                 vote_map.remove(arena);
                 apply_events.put(arena, "none");
@@ -194,9 +194,9 @@ public class GlobalEvents {
         }
     }
 
-    public static void handlePlayerDamage(IArena arena, Player killer, Player victim, double finalDamage) {
+    public static void handlePlayerDeath(IArena arena, Player victim) {
         if (getApplyEvent(arena).equals("potions")) {
-            Potions.handlePlayerDamage(arena, victim, finalDamage);
+            Potions.handlePlayerDeath(arena, victim);
         }
     }
 

@@ -43,9 +43,6 @@ public class DamageEventHandler implements Listener {
                             if (ConfigManager.addon_xpResMode) {
                                 XpResMode.handlePlayerDamage(arena, (Player) damager, (Player) victim, event.getFinalDamage());
                             }
-                            if (ConfigManager.addon_globalEvents) {
-                                GlobalEvents.handlePlayerDamage(arena, (Player) damager, (Player) victim, event.getFinalDamage());
-                            }
                         }
                     }
                 }

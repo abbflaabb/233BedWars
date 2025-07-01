@@ -128,6 +128,9 @@ public class GameEventHandler implements Listener {
                 }
             }
         }
+        if (ConfigManager.addon_globalEvents) {
+            GlobalEvents.handlePlayerDeath(arena, victim);
+        }
     }
 
     @EventHandler
