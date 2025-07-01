@@ -10,10 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Potions {
@@ -53,11 +50,20 @@ public class Potions {
                     if (share_effect) {
                         PotionEffect potion = getRandomEffect();
                         for (Player p : arena.getPlayers()) {
-                            p.addPotionEffect(potion, true);
+                            if (arena.getRespawnSessions().containsKey(p)) {
+                                deathKeepMap.put(p, List.of(potion));
+                            } else {
+                                p.addPotionEffect(potion, true);
+                            }
                         }
                     } else {
                         for (Player p : arena.getPlayers()) {
-                            p.addPotionEffect(getRandomEffect(), true);
+                            PotionEffect potion = getRandomEffect();
+                            if (arena.getRespawnSessions().containsKey(p)) {
+                                deathKeepMap.put(p, List.of(potion));
+                            } else {
+                                p.addPotionEffect(potion, true);
+                            }
                         }
                     }
                 }
@@ -86,13 +92,11 @@ public class Potions {
     }
 
     public static void handlePlayerRespawn(Player player) {
-        if (!death_keep) {
-            return;
-        }
         if (deathKeepMap.containsKey(player)) {
             for (PotionEffect potion : deathKeepMap.get(player)) {
                 player.addPotionEffect(potion);
             }
+            deathKeepMap.remove(player);
         }
     }
 
