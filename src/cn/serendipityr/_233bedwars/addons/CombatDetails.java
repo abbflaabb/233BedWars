@@ -56,6 +56,7 @@ public class CombatDetails {
         death = cfg.getString("death");
         strengthEffectHint = cfg.getString("strengthEffectHint");
         killStreakKeepTime = cfg.getInt("killStreakKeepTime");
+        killStreakMsg.clear();
         for (String a : cfg.getStringList("killStreakMsg")) {
             String[] str = a.split("\\|");
             killStreakMsg.put(Integer.parseInt(str[0]), str[1]);

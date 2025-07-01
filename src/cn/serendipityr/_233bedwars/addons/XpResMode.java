@@ -57,6 +57,7 @@ public class XpResMode {
         unselected = cfg.getString("unselected").replace("&", "§");
         choose_normal = cfg.getString("choose_normal").replace("&", "§");
         choose_exp = cfg.getString("choose_exp").replace("&", "§");
+        force_groups.clear();
         for (String s : cfg.getStringList("force_groups")) {
             String[] _s = s.split(":");
             force_groups.put(_s[0], _s[1]);
