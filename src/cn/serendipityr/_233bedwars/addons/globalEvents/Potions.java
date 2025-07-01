@@ -10,8 +10,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,11 +53,11 @@ public class Potions {
                     if (share_effect) {
                         PotionEffect potion = getRandomEffect();
                         for (Player p : arena.getPlayers()) {
-                            p.addPotionEffect(potion);
+                            p.addPotionEffect(potion, true);
                         }
                     } else {
                         for (Player p : arena.getPlayers()) {
-                            p.addPotionEffect(getRandomEffect());
+                            p.addPotionEffect(getRandomEffect(), true);
                         }
                     }
                 }
@@ -76,7 +74,7 @@ public class Potions {
             @Override
             public void run() {
                 if (arena.getRespawnSessions().containsKey(victim)) {
-                    int respawnTime = arena.getRespawnSessions().get(victim);
+                    int respawnTime = arena.getRespawnSessions().get(victim) * 20 + 5;
                     Collection<PotionEffect> effects = new ArrayList<>();
                     for (PotionEffect effect : old_effects) {
                         effects.add(new PotionEffect(effect.getType(), effect.getDuration() - respawnTime, effect.getAmplifier(), effect.isAmbient()));
@@ -84,7 +82,7 @@ public class Potions {
                     deathKeepMap.put(victim, effects);
                 }
             }
-        }.runTaskLater(_233BedWars.getInstance(), 1L);
+        }.runTaskLater(_233BedWars.getInstance(), 5L);
     }
 
     public static void handlePlayerRespawn(Player player) {
@@ -101,14 +99,5 @@ public class Potions {
     private static PotionEffect getRandomEffect() {
         String[] potion = potions.get(new Random().nextInt(potions.size()));
         return new PotionEffect(PotionEffectType.getByName(potion[0]), interval * 20, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
-    }
-
-    private static Double roundDouble(double num, int scale) {
-        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
-        if (num > 0 && rounded == 0) {
-            return 0.1D;
-        } else {
-            return rounded;
-        }
     }
 }

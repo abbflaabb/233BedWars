@@ -20,8 +20,8 @@ messages:
     - "&e本局游戏已启用事件_(:з」∠)_:"
     - "&a{event_name} &b{event_description}！"
   event_info:
-    - "none:无:将不启用任何事件"
-    - "random:随机:将随机使用全域事件"
+    - "none:&c无:将不启用任何事件"
+    - "random:&c随机:将随机使用全域事件"
     - "potions:随机药水:每隔五分钟随机获得一种正面药水效果"
 
 events:

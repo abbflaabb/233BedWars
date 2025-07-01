@@ -55,7 +55,7 @@ public class GlobalEvents {
         event_broadcast.replaceAll(s -> s.replace("&", "§"));
         event_info.clear();
         for (String info : cfg.getStringList("messages.event_info")) {
-            String[] _info = info.split(":");
+            String[] _info = info.replace("&", "§").split(":");
             event_info.put(_info[0], Arrays.copyOfRange(_info, 1, 3));
         }
         items.clear();
