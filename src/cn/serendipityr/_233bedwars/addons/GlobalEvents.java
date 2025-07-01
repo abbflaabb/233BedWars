@@ -77,7 +77,7 @@ public class GlobalEvents {
     }
 
     public static void initPlayer(Player player, IArena arena) {
-        setPlayerVote(player, default_event);
+        setPlayerVote(player, default_event, false);
         giveItems(player, arena);
     }
 
@@ -122,7 +122,7 @@ public class GlobalEvents {
         player.openInventory(gui);
     }
 
-    public static void setPlayerVote(Player player, String event) {
+    public static void setPlayerVote(Player player, String event, boolean send_msg) {
         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
         if (arena == null) {
             return;
@@ -130,6 +130,13 @@ public class GlobalEvents {
         ConcurrentHashMap<Player, String> vote = getVoteMap(arena);
         vote.put(player, event);
         vote_map.put(arena, vote);
+        if (send_msg) {
+            String[] eventInfo = getEventInfo(event);
+            player.sendMessage(vote_msg
+                    .replace("{event_name}", eventInfo[0])
+                    .replace("{event_description}", eventInfo[1])
+            );
+        }
     }
 
     public static void applyEvent(IArena arena) {
@@ -138,6 +145,12 @@ public class GlobalEvents {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
         if (filter != null) {
+            if (apply_events.get(arena).equals("none")) {
+                ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
+                vote_map.remove(arena);
+                apply_events.put(arena, "none");
+                return;
+            }
             ShopItemAddon.sendGlobalMessage(arena, vote_result
                     .replace("{final_event}", getEventInfo(filter.getKey())[0])
                     .replace("{final_votes}", String.valueOf(filter.getValue()))

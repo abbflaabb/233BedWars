@@ -12,7 +12,7 @@ settings:
   default_event: "random"
 
 messages:
-  vote_msg: "&e你选择了 &a{event}"
+  vote_msg: "&e你选择了 &a{event_name}"
   vote_fail_msg: "&c该事件未被启用。"
   vote_result: "&e事件 &6{final_event} &e取得了{final_votes}票，本局游戏将使用此事件！"
   vote_result_none: "&e没有足够的投票开启事件，本局游戏将不启用事件！"
@@ -20,6 +20,8 @@ messages:
     - "&e本局游戏已启用事件_(:з」∠)_:"
     - "&a{event_name} &b{event_description}！"
   event_info:
+    - "none:无:将不启用任何事件"
+    - "random:随机:将随机使用全域事件"
     - "potions:随机药水:每隔五分钟随机获得一种正面药水效果"
 
 events:
@@ -38,11 +40,11 @@ events:
     # 随机抽取的药水效果
     # [药水效果]:[等级]:[粒子效果]
     potions:
+      - "FAST_DIGGING:0:true"      # 急迫
       - "SPEED:0:true"             # 速度
-      - "HASTE:0:true"             # 急迫
-      - "STRENGTH:0:true"          # 力量
+      - "INCREASE_DAMAGE:0:true"   # 力量
       - "REGENERATION:0:true"      # 生命恢复
-      - "RESISTANCE:0:true"        # 抗性提升
+      - "DAMAGE_RESISTANCE:0:true" # 抗性提升
       - "FIRE_RESISTANCE:0:true"   # 火焰抗性
       - "WATER_BREATHING:0:true"   # 水下呼吸
       - "INVISIBILITY:0:true"      # 隐身
