@@ -105,13 +105,15 @@ public class GlobalEvents {
             if (im != null) {
                 List<String> lores = new ArrayList<>();
                 for (String lore : im.getLore()) {
+                    String _lore = lore;
                     for (String placeHolder : getAllPlaceHolder(lore)) {
                         String[] _p = placeHolder.split("#");
                         if (_p[0].equals("votes")) {
-                            lores.add(lore
-                                    .replace("{" + placeHolder + "}", String.valueOf(votes_count.getOrDefault(_p[1], 0L))));
+                            _lore = lore
+                                    .replace("{" + placeHolder + "}", String.valueOf(votes_count.getOrDefault(_p[1], 0L)));
                         }
                     }
+                    lores.add(_lore);
                 }
                 im.setLore(lores);
             }
@@ -125,6 +127,9 @@ public class GlobalEvents {
     public static void setPlayerVote(Player player, IArena arena, String event, boolean send_msg) {
         if (arena == null) {
             return;
+        }
+        if (!enable_events.contains(event) && !"none".equals(event)) {
+            event = "random";
         }
         ConcurrentHashMap<Player, String> vote = getVoteMap(arena);
         vote.put(player, event);

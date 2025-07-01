@@ -22,7 +22,12 @@ messages:
   event_info:
     - "none:&c无:将不启用任何事件"
     - "random:&c随机:将随机使用全域事件"
-    - "potions:随机药水:每隔五分钟随机获得一种正面药水效果"
+    - "potions:&a随机药水:每隔五分钟随机获得一种正面药水效果"
+    - "doomsday_strike:&c末日打击:每隔一段时间将会对中心岛进行轰炸"
+    - "infinite_firepower:&a无限火力:所有资源生成速度x2"
+    - "forge_leveling:&a全员低保:熔炉每五分钟自动升级"
+    - "luck_advent:&a幸运降临:每隔五分钟将随机刷新幸运方块"
+    - "inadequate_firepower:&c火力不足:所有资源生成速度x0.5"
 
 events:
   random:
@@ -96,3 +101,53 @@ GUI:
         - ""
         - "&e点击选择"
       execute: "[voteEvent] potions"
+    13:
+      material: TNT
+      name: "&c末日打击"
+      lore:
+        - "&7每隔一段时间将会对中心岛进行轰炸！"
+        - ""
+        - "&7当前票数: &f{votes#doomsday_strike}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] doomsday_strike"
+    14:
+      material: EMERALD
+      name: "&a无限火力"
+      lore:
+        - "&7所有资源生成速度x2！"
+        - ""
+        - "&7当前票数: &f{votes#infinite_firepower}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] infinite_firepower"
+    15:
+      material: FURNACE
+      name: "&a全员低保"
+      lore:
+        - "&7熔炉每五分钟自动升级！"
+        - ""
+        - "&7当前票数: &f{votes#forge_leveling}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] forge_leveling"
+    16:
+      material: SPONGE
+      name: "&a幸运降临"
+      lore:
+        - "&7每隔五分钟将随机刷新幸运方块！"
+        - ""
+        - "&7当前票数: &f{votes#luck_advent}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] luck_advent"
+    19:
+      material: REDSTONE
+      name: "&c火力不足"
+      lore:
+        - "&7所有资源生成速度x0.5！"
+        - ""
+        - "&7当前票数: &f{votes#inadequate_firepower}"
+        - ""
+        - "&e点击选择"
+      execute: "[voteEvent] inadequate_firepower"
