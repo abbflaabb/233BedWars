@@ -77,7 +77,7 @@ public class GlobalEvents {
     }
 
     public static void initPlayer(Player player, IArena arena) {
-        setPlayerVote(player, default_event, false);
+        setPlayerVote(player, arena, default_event, false);
         giveItems(player, arena);
     }
 
@@ -122,8 +122,7 @@ public class GlobalEvents {
         player.openInventory(gui);
     }
 
-    public static void setPlayerVote(Player player, String event, boolean send_msg) {
-        IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+    public static void setPlayerVote(Player player, IArena arena, String event, boolean send_msg) {
         if (arena == null) {
             return;
         }
@@ -136,6 +135,7 @@ public class GlobalEvents {
                     .replace("{event_name}", eventInfo[0])
                     .replace("{event_description}", eventInfo[1])
             );
+            player.closeInventory();
         }
     }
 

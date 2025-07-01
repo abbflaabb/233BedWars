@@ -227,7 +227,8 @@ public class InteractEventHandler implements Listener {
                     return true;
                 }
                 if ("voteEvent".equals(execute[0])) {
-                    GlobalEvents.setPlayerVote(player, execute[1], true);
+                    IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+                    GlobalEvents.setPlayerVote(player, arena, execute[1], true);
                     return true;
                 }
                 break;
