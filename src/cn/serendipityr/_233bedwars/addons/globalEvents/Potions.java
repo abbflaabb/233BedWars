@@ -83,7 +83,7 @@ public class Potions {
                     int respawnTime = arena.getRespawnSessions().get(victim) * 20 + 5;
                     Collection<PotionEffect> effects = new ArrayList<>();
                     for (PotionEffect effect : old_effects) {
-                        effects.add(new PotionEffect(effect.getType(), effect.getDuration() - respawnTime, effect.getAmplifier(), effect.isAmbient()));
+                        effects.add(new PotionEffect(effect.getType(), Math.max(effect.getDuration() - respawnTime, 0), effect.getAmplifier(), effect.isAmbient()));
                     }
                     deathKeepMap.put(victim, effects);
                 }
