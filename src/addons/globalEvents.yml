@@ -74,7 +74,7 @@ events:
       title_fadeOut: 20
     explosives:
       # 轰炸中心点高度偏移
-      # 以 绿宝石生成点 确立X/Z轴平面
+      # 以 *绿宝石生成点* 为中心确立X/Z轴平面
       y_offset: 30
       # 轰炸区域半径
       radius: 20
@@ -90,6 +90,26 @@ events:
       summon_delay: 2
       # 保护中心岛资源不被炸毁
       protect_resources: true
+  infinite_firepower:
+    enable: true
+    # 资源点生成倍率，此项影响资源点产出时间
+    generator_ratio: 2.0
+    # 受影响的资源点
+    generators:
+      iron: true
+      gold: true
+      diamond: true
+      emerald: true
+  inadequate_firepower:
+    enable: true
+    # 资源点生成倍率，此项影响资源点产出时间
+    generator_ratio: 0.5
+    # 受影响的资源点
+    generators:
+      iron: true
+      gold: true
+      diamond: true
+      emerald: true
 
 Item:
   2:

@@ -1,13 +1,14 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.globalEvents.DoomsdayStrike;
-import cn.serendipityr._233bedwars.addons.globalEvents.Potions;
-import cn.serendipityr._233bedwars.addons.globalEvents.RandomEvent;
+import cn.serendipityr._233bedwars.addons.globalEvents.*;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.generator.IGenerator;
+import com.andrei1058.bedwars.api.arena.team.ITeam;
+import com.andrei1058.bedwars.api.upgrades.TeamUpgrade;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -78,6 +79,8 @@ public class GlobalEvents {
         RandomEvent.loadConfig(cfg);
         Potions.loadConfig(cfg);
         DoomsdayStrike.loadConfig(cfg);
+        InfiniteFirepower.loadConfig(cfg);
+        InadequateFirepower.loadConfig(cfg);
     }
 
     public static void initPlayer(Player player, IArena arena) {
@@ -178,6 +181,12 @@ public class GlobalEvents {
     }
 
     public static void resetArena(IArena arena) {
+        if (getApplyEvent(arena).equals("infinite_firepower")) {
+            InfiniteFirepower.resetArena(arena);
+        }
+        if (getApplyEvent(arena).equals("inadequate_firepower")) {
+            InadequateFirepower.resetArena(arena);
+        }
         apply_events.remove(arena);
     }
 
@@ -188,7 +197,7 @@ public class GlobalEvents {
     }
 
     public static boolean isEnableEvent(IArena arena) {
-        return apply_events.containsKey(arena) && !apply_events.get(arena).equals("none");
+        return !getApplyEvent(arena).equals("none");
     }
 
     public static String getApplyEvent(IArena arena) {
@@ -218,6 +227,24 @@ public class GlobalEvents {
         return false;
     }
 
+    public static void handleGeneratorUpgrade(IArena arena, IGenerator generator) {
+        if (getApplyEvent(arena).equals("infinite_firepower")) {
+            InfiniteFirepower.handleGeneratorUpdate(generator);
+        }
+        if (getApplyEvent(arena).equals("inadequate_firepower")) {
+            InadequateFirepower.handleGeneratorUpdate(generator);
+        }
+    }
+
+    public static void handleTeamUpgradeBuy(IArena arena, ITeam team, TeamUpgrade upgrade) {
+        if (getApplyEvent(arena).equals("infinite_firepower")) {
+            InfiniteFirepower.handleTeamUpgradeBuy(team, upgrade);
+        }
+        if (getApplyEvent(arena).equals("inadequate_firepower")) {
+            InadequateFirepower.handleTeamUpgradeBuy(team, upgrade);
+        }
+    }
+
     public static String[] getEventInfo(String event) {
         return event_info.get(event);
     }
@@ -229,6 +256,12 @@ public class GlobalEvents {
                 break;
             case "doomsday_strike":
                 DoomsdayStrike.initEvent(arena);
+                break;
+            case "infinite_firepower":
+                InfiniteFirepower.initEvent(arena);
+                break;
+            case "inadequate_firepower":
+                InadequateFirepower.initEvent(arena);
                 break;
         }
     }

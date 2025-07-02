@@ -6,11 +6,15 @@ import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.generator.IGenerator;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent;
+import com.andrei1058.bedwars.api.events.gameplay.GeneratorUpgradeEvent;
 import com.andrei1058.bedwars.api.events.player.*;
 import com.andrei1058.bedwars.api.events.shop.ShopBuyEvent;
+import com.andrei1058.bedwars.api.events.upgrades.UpgradeBuyEvent;
+import com.andrei1058.bedwars.api.upgrades.TeamUpgrade;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -160,6 +164,28 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_globalEvents) {
                 GlobalEvents.resetPlayer(arena, player);
             }
+        }
+    }
+
+    @EventHandler
+    public void onGeneratorUpgrade(GeneratorUpgradeEvent event) {
+        IGenerator generator = event.getGenerator();
+        IArena arena = generator.getArena();
+        if (ConfigManager.addon_globalEvents) {
+            GlobalEvents.handleGeneratorUpgrade(arena, generator);
+        }
+    }
+
+    @EventHandler
+    public void onTeamUpgradeBuy(UpgradeBuyEvent event) {
+        IArena arena = event.getArena();
+        ITeam team = event.getTeam();
+        TeamUpgrade upgrade = event.getTeamUpgrade();
+        if (event.isCancelled()) {
+            return;
+        }
+        if (ConfigManager.addon_globalEvents) {
+            GlobalEvents.handleTeamUpgradeBuy(arena, team, upgrade);
         }
     }
 }
