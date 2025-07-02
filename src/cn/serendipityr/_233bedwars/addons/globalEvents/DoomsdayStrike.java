@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.globalEvents;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
+import cn.serendipityr._233bedwars.utils.TitleUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.generator.GeneratorType;
@@ -11,10 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -27,6 +25,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class DoomsdayStrike {
     public static Boolean enable;
     static Integer interval;
+    static Integer notice_time;
+    static Integer notice_title_fadeIn;
+    static Integer notice_title_stay;
+    static Integer notice_title_fadeOut;
     static Integer explosives_y_offset;
     static Integer explosives_radius;
     static Integer explosives_amount;
@@ -35,6 +37,9 @@ public class DoomsdayStrike {
     static Boolean explosives_break_blocks;
     static Integer explosives_summon_delay;
     static Boolean explosives_protect_resources;
+    static String messages_prepare_msg;
+    static String messages_prepare_title;
+    static String messages_prepare_subtitle;
 
     public static List<Entity> entities = new CopyOnWriteArrayList<>();
 
@@ -44,6 +49,10 @@ public class DoomsdayStrike {
             GlobalEvents.enable_events.add("doomsday_strike");
         }
         interval = cfg.getInt("events.doomsday_strike.interval");
+        notice_time = cfg.getInt("events.doomsday_strike.notice.time");
+        notice_title_fadeIn = cfg.getInt("events.doomsday_strike.notice.title_fadeIn");
+        notice_title_stay = cfg.getInt("events.doomsday_strike.notice.title_stay");
+        notice_title_fadeOut = cfg.getInt("events.doomsday_strike.notice.title_fadeOut");
         explosives_y_offset = cfg.getInt("events.doomsday_strike.explosives.y_offset");
         explosives_radius = cfg.getInt("events.doomsday_strike.explosives.radius");
         explosives_amount = cfg.getInt("events.doomsday_strike.explosives.amount");
@@ -52,6 +61,9 @@ public class DoomsdayStrike {
         explosives_break_blocks = cfg.getBoolean("events.doomsday_strike.explosives.break_blocks");
         explosives_summon_delay = cfg.getInt("events.doomsday_strike.explosives.summon_delay");
         explosives_protect_resources = cfg.getBoolean("events.doomsday_strike.explosives.protect_resources");
+        messages_prepare_msg = cfg.getString("messages.doomsday_strike_prepare_msg").replace("&", "§").replace("{radiation}", "☢");
+        messages_prepare_title = cfg.getString("messages.doomsday_strike_prepare_title").replace("&", "§").replace("{radiation}", "☢");
+        messages_prepare_subtitle = cfg.getString("messages.doomsday_strike_prepare_subtitle").replace("&", "§").replace("{radiation}", "☢");
     }
 
     public static void initEvent(IArena arena) {
@@ -59,6 +71,7 @@ public class DoomsdayStrike {
         World world = arena.getWorld();
         new BukkitRunnable() {
             int i = 0;
+            boolean init = false;
 
             public void run() {
                 if (arena.getStatus() != GameState.playing) {
@@ -78,8 +91,26 @@ public class DoomsdayStrike {
 
                 i--;
 
+                if (i == notice_time) {
+                    for (Player p : arena.getPlayers()) {
+                        if (!messages_prepare_msg.trim().isEmpty()) {
+                            p.sendMessage(messages_prepare_msg.replace("{notice_time}", String.valueOf(notice_time)));
+                        }
+                        if (!(messages_prepare_title.trim().isEmpty() && messages_prepare_subtitle.trim().isEmpty())) {
+                            TitleUtil.send(p,
+                                    messages_prepare_title.replace("{notice_time}", String.valueOf(notice_time)),
+                                    messages_prepare_subtitle.replace("{notice_time}", String.valueOf(notice_time)),
+                                    notice_title_fadeIn, notice_title_stay, notice_title_fadeOut);
+                        }
+                    }
+                }
+
                 if (i <= 0) {
                     i = interval;
+                    if (!init) {
+                        init = true;
+                        return;
+                    }
                     resetEntitiesMap(world);
                     Random random = new Random();
                     for (int i = 0; i < explosives_amount; i++) {

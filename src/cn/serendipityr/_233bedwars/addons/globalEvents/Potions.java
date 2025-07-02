@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons.globalEvents;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -19,6 +20,7 @@ public class Potions {
     static List<String[]> potions = new ArrayList<>();
     static Boolean share_effect;
     static Boolean death_keep;
+    static String messages_potions_give;
 
     static ConcurrentHashMap<Player, Collection<PotionEffect>> deathKeepMap = new ConcurrentHashMap<>();
 
@@ -34,6 +36,7 @@ public class Potions {
         }
         share_effect = cfg.getBoolean("events.potions.share_effect");
         death_keep = cfg.getBoolean("events.potions.death_keep");
+        messages_potions_give = cfg.getString("messages.potions_give").replace("&", "§");
     }
 
     public static void initEvent(IArena arena) {
@@ -48,22 +51,38 @@ public class Potions {
                 if (i <= 0) {
                     i = interval;
                     if (share_effect) {
-                        PotionEffect potion = getRandomEffect();
+                        String[] effect = getRandomEffect();
+                        PotionEffect potion = getPotionEffect(effect);
                         for (Player p : arena.getPlayers()) {
                             if (arena.getRespawnSessions().containsKey(p)) {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
                             }
+                            if (messages_potions_give.trim().isEmpty()) {
+                                continue;
+                            }
+                            p.sendMessage(messages_potions_give
+                                    .replace("{effect_name}", effect[3])
+                                    .replace("{effect_level}", CombatDetails.intToRoman(Integer.parseInt(effect[1]) + 1))
+                            );
                         }
                     } else {
                         for (Player p : arena.getPlayers()) {
-                            PotionEffect potion = getRandomEffect();
+                            String[] effect = getRandomEffect();
+                            PotionEffect potion = getPotionEffect(effect);
                             if (arena.getRespawnSessions().containsKey(p)) {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
                             }
+                            if (messages_potions_give.trim().isEmpty()) {
+                                continue;
+                            }
+                            p.sendMessage(messages_potions_give
+                                    .replace("{effect_name}", effect[3])
+                                    .replace("{effect_level}", CombatDetails.intToRoman(Integer.parseInt(effect[1]) + 1))
+                            );
                         }
                     }
                 }
@@ -100,8 +119,11 @@ public class Potions {
         }
     }
 
-    private static PotionEffect getRandomEffect() {
-        String[] potion = potions.get(new Random().nextInt(potions.size()));
+    private static String[] getRandomEffect() {
+        return potions.get(new Random().nextInt(potions.size()));
+    }
+
+    private static PotionEffect getPotionEffect(String[] potion) {
         return new PotionEffect(PotionEffectType.getByName(potion[0]), interval * 20, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
     }
 }

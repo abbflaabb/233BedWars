@@ -28,6 +28,10 @@ messages:
     - "forge_leveling:&a全员低保:熔炉每五分钟自动升级"
     - "luck_advent:&a幸运降临:每隔五分钟将随机刷新幸运方块"
     - "inadequate_firepower:&c火力不足:所有资源生成速度x0.5"
+  potions_give: "&a你获得了 &6{effect_name} {effect_level} &a效果！"
+  doomsday_strike_prepare_msg: "&c中心岛将在 &e{notice_time}秒 &c后进行轰炸！"
+  doomsday_strike_prepare_title: "&c&l☢ 危险 ☢"
+  doomsday_strike_prepare_subtitle: "&7中心岛将在 &e{notice_time} 秒后进行轰炸！"
 
 events:
   random:
@@ -41,27 +45,33 @@ events:
     # 使所有人共享同一药水效果增益
     share_effect: false
     # 死亡后保持药水效果
-    death_keep: false
+    death_keep: true
     # 随机抽取的药水效果
     # [药水效果]:[等级]:[粒子效果]:[名称]
     potions:
-      - "FAST_DIGGING:0:true"      # 急迫
-      - "SPEED:0:true"             # 速度
-      - "INCREASE_DAMAGE:0:true"   # 力量
-      - "REGENERATION:0:true"      # 生命恢复
-      - "DAMAGE_RESISTANCE:0:true" # 抗性提升
-      - "FIRE_RESISTANCE:0:true"   # 火焰抗性
-      - "WATER_BREATHING:0:true"   # 水下呼吸
-      - "INVISIBILITY:0:true"      # 隐身
-      - "NIGHT_VISION:0:true"      # 夜视
-      - "JUMP:0:true"              # 跳跃提升
-      - "ABSORPTION:0:true"        # 伤害吸收
-      - "HEALTH_BOOST:0:true"      # 生命提升
-      - "SATURATION:0:true"        # 饱和
+      - "FAST_DIGGING:0:true:急迫"
+      - "SPEED:0:true:速度"
+      - "INCREASE_DAMAGE:0:true:力量"
+      - "REGENERATION:0:true:生命恢复"
+      - "DAMAGE_RESISTANCE:0:true:抗性提升"
+      - "FIRE_RESISTANCE:0:true:火焰抗性"
+      - "WATER_BREATHING:0:true:水下呼吸"
+      - "INVISIBILITY:0:true:隐身"
+      - "NIGHT_VISION:0:true:夜视"
+      - "JUMP:0:true:跳跃提升"
+      - "ABSORPTION:0:true:伤害吸收"
+      - "HEALTH_BOOST:0:true:生命提升"
+      - "SATURATION:0:true:饱和"
   doomsday_strike:
     enable: true
     # 轰炸时间间隔 (秒)
     interval: 60
+    # 在轰炸开始前提醒玩家
+    notice:
+      time: 5
+      title_fadeIn: 0
+      title_stay: 20
+      title_fadeOut: 0
     explosives:
       # 轰炸中心点高度偏移
       # 以 绿宝石生成点 确立X/Z轴平面
