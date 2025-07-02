@@ -8,7 +8,13 @@ import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.generator.IGenerator;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
+import com.andrei1058.bedwars.api.upgrades.MenuContent;
 import com.andrei1058.bedwars.api.upgrades.TeamUpgrade;
+import com.andrei1058.bedwars.api.upgrades.UpgradeAction;
+import com.andrei1058.bedwars.upgrades.UpgradesManager;
+import com.andrei1058.bedwars.upgrades.menu.MenuUpgrade;
+import com.andrei1058.bedwars.upgrades.menu.UpgradeTier;
+import com.andrei1058.bedwars.upgrades.upgradeaction.GeneratorEditAction;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -81,6 +87,7 @@ public class GlobalEvents {
         DoomsdayStrike.loadConfig(cfg);
         InfiniteFirepower.loadConfig(cfg);
         InadequateFirepower.loadConfig(cfg);
+        ForgeLeveling.loadConfig(cfg);
     }
 
     public static void initPlayer(Player player, IArena arena) {
@@ -238,15 +245,31 @@ public class GlobalEvents {
 
     public static void handleTeamUpgradeBuy(IArena arena, ITeam team, TeamUpgrade upgrade) {
         if (getApplyEvent(arena).equals("infinite_firepower")) {
-            InfiniteFirepower.handleTeamUpgradeBuy(team, upgrade);
+            InfiniteFirepower.handleTeamUpgradeBuy(arena, team, upgrade);
         }
         if (getApplyEvent(arena).equals("inadequate_firepower")) {
-            InadequateFirepower.handleTeamUpgradeBuy(team, upgrade);
+            InadequateFirepower.handleTeamUpgradeBuy(arena, team, upgrade);
         }
     }
 
     public static String[] getEventInfo(String event) {
         return event_info.get(event);
+    }
+
+    public static MenuUpgrade getForgeUpgrade(IArena arena) {
+        for (MenuContent mc : UpgradesManager.getMenuForArena(arena).getMenuContentBySlot().values()) {
+            if (mc instanceof MenuUpgrade) {
+                MenuUpgrade mu = (MenuUpgrade) mc;
+                for (UpgradeTier ut : mu.getTiers()) {
+                    for (UpgradeAction ua : ut.getUpgradeActions()) {
+                        if (ua instanceof GeneratorEditAction) {
+                            return mu;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private static void initEvent(IArena arena) {
@@ -262,6 +285,9 @@ public class GlobalEvents {
                 break;
             case "inadequate_firepower":
                 InadequateFirepower.initEvent(arena);
+                break;
+            case "forge_leveling":
+                ForgeLeveling.initEvent(arena);
                 break;
         }
     }

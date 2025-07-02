@@ -32,6 +32,9 @@ messages:
   doomsday_strike_prepare_msg: "&c中心岛将在 &e{notice_time}秒 &c后进行轰炸！"
   doomsday_strike_prepare_title: "&c&l{radiation} 危险 {radiation}"
   doomsday_strike_prepare_subtitle: "&7中心岛将在 &e{notice_time} &7秒后进行轰炸！"
+  # 如果不喜欢罗马数字，{tier}也是一个可选的占位符。
+  # forge_leveling_upgrade: "&a你所在团队的熔炉已经升至 &6{tier} &a级！"
+  forge_leveling_upgrade: "&a你所在团队的熔炉已经升至 &6{tier_roman} &a级！"
 
 events:
   random:
@@ -110,6 +113,12 @@ events:
       gold: true
       diamond: true
       emerald: true
+  forge_leveling:
+    enable: true
+    # 熔炉升级间隔时间 (秒)
+    interval: 300
+    # 最大升级等级
+    max_tier: 4
 
 Item:
   2:
@@ -147,7 +156,7 @@ GUI:
       material: POTION
       name: "&a随机药水"
       lore:
-        - "&7每隔五分钟随机获得一种正面药水效果！"
+        - "&7每隔45秒随机获得一种正面药水效果！"
         - ""
         - "&7当前票数: &f{votes#potions}"
         - ""

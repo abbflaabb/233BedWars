@@ -1,14 +1,17 @@
 package cn.serendipityr._233bedwars.addons.globalEvents;
 
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.generator.GeneratorType;
 import com.andrei1058.bedwars.api.arena.generator.IGenerator;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.upgrades.TeamUpgrade;
+import com.andrei1058.bedwars.upgrades.menu.MenuUpgrade;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InfiniteFirepower {
@@ -20,6 +23,7 @@ public class InfiniteFirepower {
     static Boolean generators_emerald;
 
     static List<IArena> arenas = new CopyOnWriteArrayList<>();
+    static ConcurrentHashMap<IArena, String> forge_upgrade_names = new ConcurrentHashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
         enable = cfg.getBoolean("events.infinite_firepower.enable");
@@ -43,6 +47,12 @@ public class InfiniteFirepower {
                 editGenerator(generator);
             }
         }
+        MenuUpgrade forge_upgrade = GlobalEvents.getForgeUpgrade(arena);
+        if (forge_upgrade != null) {
+            forge_upgrade_names.put(arena, forge_upgrade.getName());
+        } else {
+            LogUtil.consoleLog("&9233BedWars &3&l > &c游戏 &b" + arena.getArenaName() + "&7(" + arena.getGroup() + ") &c在应用全域事件时发生错误：获取锻炉团队升级失败。");
+        }
     }
 
     public static void resetArena(IArena arena) {
@@ -53,8 +63,8 @@ public class InfiniteFirepower {
         editGenerator(generator);
     }
 
-    public static void handleTeamUpgradeBuy(ITeam team, TeamUpgrade upgrade) {
-        if (upgrade.getName().equals("upgrade-forge")) {
+    public static void handleTeamUpgradeBuy(IArena arena, ITeam team, TeamUpgrade upgrade) {
+        if (upgrade.getName().equals(forge_upgrade_names.get(arena))) {
             for (IGenerator generator : team.getGenerators()) {
                 editGenerator(generator);
             }
