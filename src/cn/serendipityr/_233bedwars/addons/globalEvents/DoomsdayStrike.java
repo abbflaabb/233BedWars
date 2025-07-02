@@ -112,6 +112,9 @@ public class DoomsdayStrike {
                         return;
                     }
                     resetEntitiesMap(world);
+                    if (centers.isEmpty()) {
+                        return;
+                    }
                     Random random = new Random();
                     for (int i = 0; i < explosives_amount; i++) {
                         int finalI = i;

@@ -146,10 +146,10 @@ public class GlobalEvents {
             return;
         }
         if (!enable_events.contains(event) && !"none".equals(event)) {
-            event = "random";
-            if (send_msg) {
+            if (send_msg && !"random".equals(event)) {
                 player.sendMessage(vote_fail_msg);
             }
+            event = "random";
         }
         ConcurrentHashMap<Player, String> vote = getVoteMap(arena);
         vote.put(player, event);
@@ -227,7 +227,7 @@ public class GlobalEvents {
 
     public static void handlePlayerRespawn(IArena arena, Player player) {
         if (getApplyEvent(arena).equals("potions")) {
-            Potions.handlePlayerRespawn(player);
+            Potions.handlePlayerRespawn(arena, player);
         }
     }
 

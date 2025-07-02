@@ -3,8 +3,11 @@ package cn.serendipityr._233bedwars.addons.globalEvents;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.team.ITeam;
+import com.andrei1058.bedwars.api.events.player.PlayerInvisibilityPotionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -65,7 +68,7 @@ public class Potions {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
-                                callInvisibilityEvent(p, potion);
+                                callInvisibilityEvent(arena, p, potion);
                             }
                             if (messages_potions_give.trim().isEmpty()) {
                                 continue;
@@ -83,7 +86,7 @@ public class Potions {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
-                                callInvisibilityEvent(p, potion);
+                                callInvisibilityEvent(arena, p, potion);
                             }
                             if (messages_potions_give.trim().isEmpty()) {
                                 continue;
@@ -119,11 +122,11 @@ public class Potions {
         }.runTaskLater(_233BedWars.getInstance(), 5L);
     }
 
-    public static void handlePlayerRespawn(Player player) {
+    public static void handlePlayerRespawn(IArena arena, Player player) {
         if (deathKeepMap.containsKey(player)) {
             for (PotionEffect potion : deathKeepMap.get(player)) {
                 player.addPotionEffect(potion);
-                callInvisibilityEvent(player, potion);
+                callInvisibilityEvent(arena, player, potion);
             }
             deathKeepMap.remove(player);
         }
@@ -137,14 +140,16 @@ public class Potions {
         return new PotionEffect(PotionEffectType.getByName(potion[0]), interval * 20, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
     }
 
-    private static void callInvisibilityEvent(Player player, PotionEffect potion) {
+    private static void callInvisibilityEvent(IArena arena, Player player, PotionEffect potion) {
         if (potion.getType().equals(PotionEffectType.INVISIBILITY)) {
-            ItemStack p = new ItemStack(Material.POTION);
-            PotionMeta meta = (PotionMeta) p.getItemMeta();
-            meta.setMainEffect(potion.getType());
-            meta.addCustomEffect(potion, true);
-            p.setItemMeta(meta);
-            Bukkit.getPluginManager().callEvent(new PlayerItemConsumeEvent(player, p));
+            ITeam team = arena.getTeam(player);
+            for (Player p : arena.getPlayers()) {
+                if (!team.isMember(p)) {
+                    ProviderUtil.bw.getVersionSupport().hideArmor(player, p);
+                }
+            }
+            arena.getShowTime().put(player, potion.getDuration() / 20);
+            Bukkit.getPluginManager().callEvent(new PlayerInvisibilityPotionEvent(PlayerInvisibilityPotionEvent.Type.ADDED, team, player, arena));
         }
     }
 }

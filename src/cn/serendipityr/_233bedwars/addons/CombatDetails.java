@@ -176,8 +176,6 @@ public class CombatDetails {
             Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
             return (float) (Float) handle.getClass().getMethod("getAbsorptionHearts").invoke(handle);
         } catch (Exception e) {
-            LogUtil.consoleLog("&9233BedWars &3&l > &e[CombatDetails] &c发生致命错误！");
-            e.printStackTrace();
             return 0.0f;
         }
     }
