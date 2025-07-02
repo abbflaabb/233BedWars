@@ -30,8 +30,8 @@ messages:
     - "inadequate_firepower:&c火力不足:所有资源生成速度x0.5"
   potions_give: "&a你获得了 &6{effect_name} {effect_level} &a效果！"
   doomsday_strike_prepare_msg: "&c中心岛将在 &e{notice_time}秒 &c后进行轰炸！"
-  doomsday_strike_prepare_title: "&c&l☢ 危险 ☢"
-  doomsday_strike_prepare_subtitle: "&7中心岛将在 &e{notice_time} 秒后进行轰炸！"
+  doomsday_strike_prepare_title: "&c&l{radiation} 危险 {radiation}"
+  doomsday_strike_prepare_subtitle: "&7中心岛将在 &e{notice_time} &7秒后进行轰炸！"
 
 events:
   random:
@@ -60,18 +60,18 @@ events:
       - "NIGHT_VISION:0:true:夜视"
       - "JUMP:0:true:跳跃提升"
       - "ABSORPTION:0:true:伤害吸收"
-      - "HEALTH_BOOST:0:true:生命提升"
+      #- "HEALTH_BOOST:0:true:生命提升"
       - "SATURATION:0:true:饱和"
   doomsday_strike:
     enable: true
     # 轰炸时间间隔 (秒)
-    interval: 60
+    interval: 45
     # 在轰炸开始前提醒玩家
     notice:
       time: 5
-      title_fadeIn: 0
-      title_stay: 20
-      title_fadeOut: 0
+      title_fadeIn: 20
+      title_stay: 60
+      title_fadeOut: 20
     explosives:
       # 轰炸中心点高度偏移
       # 以 绿宝石生成点 确立X/Z轴平面

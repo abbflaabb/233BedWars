@@ -5,8 +5,13 @@ import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,6 +26,8 @@ public class Potions {
     static Boolean share_effect;
     static Boolean death_keep;
     static String messages_potions_give;
+
+    static Random random = new Random();
 
     static ConcurrentHashMap<Player, Collection<PotionEffect>> deathKeepMap = new ConcurrentHashMap<>();
 
@@ -51,13 +58,14 @@ public class Potions {
                 if (i <= 0) {
                     i = interval;
                     if (share_effect) {
-                        String[] effect = getRandomEffect();
+                        String[] effect = getRandomEffect(random);
                         PotionEffect potion = getPotionEffect(effect);
                         for (Player p : arena.getPlayers()) {
                             if (arena.getRespawnSessions().containsKey(p)) {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
+                                callInvisibilityEvent(p, potion);
                             }
                             if (messages_potions_give.trim().isEmpty()) {
                                 continue;
@@ -69,12 +77,13 @@ public class Potions {
                         }
                     } else {
                         for (Player p : arena.getPlayers()) {
-                            String[] effect = getRandomEffect();
+                            String[] effect = getRandomEffect(random);
                             PotionEffect potion = getPotionEffect(effect);
                             if (arena.getRespawnSessions().containsKey(p)) {
                                 deathKeepMap.put(p, List.of(potion));
                             } else {
                                 p.addPotionEffect(potion, true);
+                                callInvisibilityEvent(p, potion);
                             }
                             if (messages_potions_give.trim().isEmpty()) {
                                 continue;
@@ -114,16 +123,28 @@ public class Potions {
         if (deathKeepMap.containsKey(player)) {
             for (PotionEffect potion : deathKeepMap.get(player)) {
                 player.addPotionEffect(potion);
+                callInvisibilityEvent(player, potion);
             }
             deathKeepMap.remove(player);
         }
     }
 
-    private static String[] getRandomEffect() {
-        return potions.get(new Random().nextInt(potions.size()));
+    private static String[] getRandomEffect(Random random) {
+        return potions.get(random.nextInt(potions.size()));
     }
 
     private static PotionEffect getPotionEffect(String[] potion) {
         return new PotionEffect(PotionEffectType.getByName(potion[0]), interval * 20, Integer.parseInt(potion[1]), Boolean.getBoolean(potion[2]));
+    }
+
+    private static void callInvisibilityEvent(Player player, PotionEffect potion) {
+        if (potion.getType().equals(PotionEffectType.INVISIBILITY)) {
+            ItemStack p = new ItemStack(Material.POTION);
+            PotionMeta meta = (PotionMeta) p.getItemMeta();
+            meta.setMainEffect(potion.getType());
+            meta.addCustomEffect(potion, true);
+            p.setItemMeta(meta);
+            Bukkit.getPluginManager().callEvent(new PlayerItemConsumeEvent(player, p));
+        }
     }
 }

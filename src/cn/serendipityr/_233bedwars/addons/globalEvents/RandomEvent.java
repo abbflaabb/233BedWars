@@ -11,6 +11,8 @@ public class RandomEvent {
     public static Boolean enable;
     public static List<String> disable_events = new ArrayList<>();
 
+    static Random rand = new Random();
+
     public static void loadConfig(YamlConfiguration cfg) {
         enable = cfg.getBoolean("events.random.enable");
         disable_events = cfg.getStringList("events.random.disable_events");
@@ -22,6 +24,6 @@ public class RandomEvent {
         if (random.isEmpty()) {
             return "none";
         }
-        return random.get(new Random().nextInt(random.size()));
+        return random.get(rand.nextInt(random.size()));
     }
 }
