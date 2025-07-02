@@ -24,6 +24,8 @@ public class LuckyBlock {
     public static String messages_lucky_block_lucky;
     public static String messages_lucky_block_unlucky;
 
+    static Random random = new Random();
+
     public static void init(boolean enable, String material, String section) {
         lucky_block_material = material;
         lucky_block_section = section;
@@ -80,7 +82,7 @@ public class LuckyBlock {
 
     private static String random() {
         double totalWeight = settings_lucky_block_possibilities.values().stream().mapToDouble(Double::doubleValue).sum();
-        double randomValue = new Random().nextDouble() * totalWeight;
+        double randomValue = random.nextDouble() * totalWeight;
         double cumulativeWeight = 0.0;
         for (Map.Entry<String, Double> entry : settings_lucky_block_possibilities.entrySet()) {
             cumulativeWeight += entry.getValue();

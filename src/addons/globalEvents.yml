@@ -45,7 +45,7 @@ events:
   potions:
     enable: true
     # 药水效果给予间隔 (秒)
-    interval: 300
+    interval: 60
     # 使所有人共享同一药水效果增益
     share_effect: false
     # 死亡后保持药水效果
@@ -173,7 +173,7 @@ GUI:
       material: POTION
       name: "&a随机药水"
       lore:
-        - "&7每隔45秒随机获得一种正面药水效果！"
+        - "&7每隔60秒随机获得一种正面药水效果！"
         - ""
         - "&7当前票数: &f{votes#potions}"
         - ""

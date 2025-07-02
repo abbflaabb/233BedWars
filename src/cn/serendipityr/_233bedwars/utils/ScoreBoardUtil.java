@@ -1,6 +1,9 @@
 package cn.serendipityr._233bedwars.utils;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.config.ConfigManager;
+import com.andrei1058.bedwars.api.language.Language;
+import com.andrei1058.bedwars.api.language.Messages;
 import com.andrei1058.bedwars.api.sidebar.ISidebar;
 import com.andrei1058.bedwars.api.sidebar.ISidebarService;
 import com.andrei1058.bedwars.libs.sidebar.PlaceholderProvider;
@@ -19,6 +22,11 @@ public class ScoreBoardUtil {
 
     public static void init() {
         sms = ProviderUtil.bw.getScoreboardManager();
+        if (ConfigManager.addon_scoreBoardEditor) {
+            for (Language lang : Language.getLanguages()) {
+                lang.getYml().set(Messages.FORMATTING_SCOREBOARD_TEAM_GENERIC, "");
+            }
+        }
     }
 
     public static void setScoreBoardContent(Player player, List<String> titles, List<String> _lines) {
