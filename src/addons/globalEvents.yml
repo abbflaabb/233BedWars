@@ -35,6 +35,7 @@ messages:
   # 如果不喜欢罗马数字，{tier}也是一个可选的占位符。
   # forge_leveling_upgrade: "&a你所在团队的熔炉已经升至 &6{tier} &a级！"
   forge_leveling_upgrade: "&a你所在团队的熔炉已经升至 &6{tier_roman} &a级！"
+  luck_advent_refresh: "&e幸运方块已刷新！"
 
 events:
   random:
@@ -119,6 +120,22 @@ events:
     interval: 300
     # 最大升级等级
     max_tier: 4
+  luck_advent:
+    enable: true
+    # 幸运方块生成间隔
+    interval: 300
+    # 生成半径
+    # 以 *复活等待点* 为中心确立X/Z轴平面
+    radius: 100
+    # 尝试生成方块数量
+    amount: 200
+    # 最小生成Y轴
+    y_min: 45
+    # 最大生成Y轴
+    y_max: 100
+    # 每 tick 放置的方块数量
+    # [!] 过大的值可能导致瞬时卡顿
+    place_blocks_per_tick: 10
 
 Item:
   2:

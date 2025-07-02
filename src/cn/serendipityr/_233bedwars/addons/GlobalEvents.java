@@ -36,6 +36,7 @@ public class GlobalEvents {
     static HashMap<String, String> force_groups = new HashMap<>();
     static String default_event;
     static String vote_msg;
+    static String vote_fail_msg;
     static String vote_result;
     static String vote_result_none;
     static List<String> event_broadcast = new ArrayList<>();
@@ -59,6 +60,7 @@ public class GlobalEvents {
         }
         default_event = cfg.getString("settings.default_event");
         vote_msg = cfg.getString("messages.vote_msg").replace("&", "§");
+        vote_fail_msg = cfg.getString("messages.vote_fail_msg").replace("&", "§");
         vote_result = cfg.getString("messages.vote_result").replace("&", "§");
         vote_result_none = cfg.getString("messages.vote_result_none").replace("&", "§");
         event_broadcast = cfg.getStringList("messages.event_broadcast");
@@ -88,6 +90,7 @@ public class GlobalEvents {
         InfiniteFirepower.loadConfig(cfg);
         InadequateFirepower.loadConfig(cfg);
         ForgeLeveling.loadConfig(cfg);
+        LuckAdvent.loadConfig(cfg);
     }
 
     public static void initPlayer(Player player, IArena arena) {
@@ -144,6 +147,9 @@ public class GlobalEvents {
         }
         if (!enable_events.contains(event) && !"none".equals(event)) {
             event = "random";
+            if (send_msg) {
+                player.sendMessage(vote_fail_msg);
+            }
         }
         ConcurrentHashMap<Player, String> vote = getVoteMap(arena);
         vote.put(player, event);
@@ -179,6 +185,8 @@ public class GlobalEvents {
             if (isEnableEvent(arena)) {
                 Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> sendEventApplyMsg(arena), 20L);
                 initEvent(arena);
+            } else {
+                ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
             }
         } else {
             ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
@@ -288,6 +296,9 @@ public class GlobalEvents {
                 break;
             case "forge_leveling":
                 ForgeLeveling.initEvent(arena);
+                break;
+            case "luck_advent":
+                LuckAdvent.initEvent(arena);
                 break;
         }
     }

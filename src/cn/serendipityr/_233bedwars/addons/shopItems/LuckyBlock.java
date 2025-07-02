@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LuckyBlock {
     public static String lucky_block_material;
@@ -40,7 +41,7 @@ public class LuckyBlock {
         messages_lucky_block_unlucky = cfg.getString("messages.lucky_block_unlucky").replace("&", "§");
     }
 
-    static List<Block> blocks = new ArrayList<>();
+    static List<Block> blocks = new CopyOnWriteArrayList<>();
 
     public static boolean handleBlockPlace(Player player, Block block, ItemStack item) {
         if (isLuckyBlock(player, item)) {
@@ -61,6 +62,10 @@ public class LuckyBlock {
             return true;
         }
         return false;
+    }
+
+    public static List<Block> getPlacedLuckyBlocks() {
+        return blocks;
     }
 
     private static String[] separateString(String input) {
