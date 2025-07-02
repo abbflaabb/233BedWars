@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.addons.globalEvents.DoomsdayStrike;
 import cn.serendipityr._233bedwars.addons.globalEvents.Potions;
 import cn.serendipityr._233bedwars.addons.globalEvents.RandomEvent;
 import cn.serendipityr._233bedwars.config.ConfigManager;
@@ -8,7 +9,9 @@ import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -74,6 +77,7 @@ public class GlobalEvents {
         enable_events.clear();
         RandomEvent.loadConfig(cfg);
         Potions.loadConfig(cfg);
+        DoomsdayStrike.loadConfig(cfg);
     }
 
     public static void initPlayer(Player player, IArena arena) {
@@ -191,14 +195,6 @@ public class GlobalEvents {
         return apply_events.getOrDefault(arena, "none");
     }
 
-    public static void initEvent(IArena arena) {
-        switch (getApplyEvent(arena)) {
-            case "potions":
-                Potions.initEvent(arena);
-                break;
-        }
-    }
-
     public static void handlePlayerDeath(IArena arena, Player victim) {
         if (getApplyEvent(arena).equals("potions")) {
             Potions.handlePlayerDeath(arena, victim);
@@ -211,8 +207,30 @@ public class GlobalEvents {
         }
     }
 
+    public static void handleEntityExplode(Entity entity, List<Block> blocks) {
+        DoomsdayStrike.handleEntityExplode(entity, blocks);
+    }
+
+    public static boolean handleEntityDamageByEntity(Entity damager, Entity victim) {
+        if (DoomsdayStrike.handleEntityDamageByEntity(damager, victim)) {
+            return true;
+        }
+        return false;
+    }
+
     public static String[] getEventInfo(String event) {
         return event_info.get(event);
+    }
+
+    private static void initEvent(IArena arena) {
+        switch (getApplyEvent(arena)) {
+            case "potions":
+                Potions.initEvent(arena);
+                break;
+            case "doomsday_strike":
+                DoomsdayStrike.initEvent(arena);
+                break;
+        }
     }
 
     private static ConcurrentHashMap<Player, String> getVoteMap(IArena arena) {

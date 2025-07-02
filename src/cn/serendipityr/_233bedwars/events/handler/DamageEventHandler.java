@@ -11,9 +11,7 @@ import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -54,6 +52,16 @@ public class DamageEventHandler implements Listener {
                 if (ToxicBall.settings_toxic_ball_enable) {
                     if (damager instanceof Projectile) {
                         ToxicBall.onProjectileHit((Projectile) damager, (Player) victim);
+                    }
+                }
+            }
+        }
+        if (victim instanceof Item) {
+            Entity damager = event.getDamager();
+            if (damager != null) {
+                if (damager instanceof Fireball || damager instanceof TNTPrimed) {
+                    if (GlobalEvents.handleEntityDamageByEntity(damager, victim)) {
+                        event.setCancelled(true);
                     }
                 }
             }

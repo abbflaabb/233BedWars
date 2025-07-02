@@ -43,7 +43,7 @@ events:
     # 死亡后保持药水效果
     death_keep: false
     # 随机抽取的药水效果
-    # [药水效果]:[等级]:[粒子效果]
+    # [药水效果]:[等级]:[粒子效果]:[名称]
     potions:
       - "FAST_DIGGING:0:true"      # 急迫
       - "SPEED:0:true"             # 速度
@@ -58,6 +58,28 @@ events:
       - "ABSORPTION:0:true"        # 伤害吸收
       - "HEALTH_BOOST:0:true"      # 生命提升
       - "SATURATION:0:true"        # 饱和
+  doomsday_strike:
+    enable: true
+    # 轰炸时间间隔 (秒)
+    interval: 60
+    explosives:
+      # 轰炸中心点高度偏移
+      # 以 绿宝石生成点 确立X/Z轴平面
+      y_offset: 30
+      # 轰炸区域半径
+      radius: 20
+      # 每次轰炸尝试生成的爆炸物数量
+      amount: 120
+      # TNT爆炸时间 (ticks)
+      tnt_fuse_ticks: 60
+      # 爆炸威力
+      power: 3
+      # 方块破坏
+      break_blocks: true
+      # 爆炸物召唤间隔 (ticks)
+      summon_delay: 2
+      # 保护中心岛资源不被炸毁
+      protect_resources: true
 
 Item:
   2:
