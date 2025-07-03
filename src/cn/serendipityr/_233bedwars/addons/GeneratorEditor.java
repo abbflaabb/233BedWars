@@ -210,7 +210,7 @@ public class GeneratorEditor {
             item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
         }
 
-        double yaw_angle = (double) item.getMetadata("yaw_angle").get(0).value();
+        double move_yaw = (double) item.getMetadata("yaw_angle").get(0).value();
         double vertical_algebra = (double) item.getMetadata("vertical_algebra").get(0).value();
         double init_y = (double) item.getMetadata("init_y").get(0).value() + vertical_offset;
         boolean vertical_direction = (boolean) item.getMetadata("vertical_direction").get(0).value();
@@ -227,18 +227,17 @@ public class GeneratorEditor {
                 ? init_y - vertical_amplitude * vertical_sin
                 : init_y + vertical_amplitude * vertical_sin;
 
-        yaw_angle += 4 * horizontal_speed;
-        if (yaw_angle >= 360.0) {
-            yaw_angle -= 360.0;
+        move_yaw += 8 * horizontal_speed;
+        if (move_yaw >= 256.0) {
+            move_yaw -= 256.0;
         }
-        float move_yaw = (float) yaw_angle;
 
         Object teleportPacket = NMSUtil.getEntityTeleportPacket(
                 item.getEntityId(),
                 (int) (location.getX() * 32.0D),
                 (int) (move_y * 32.0D),
                 (int) (location.getZ() * 32.0D),
-                (byte) (move_yaw * 256.0f / 360.0f),
+                (byte) (move_yaw),
                 (byte) (location.getPitch() * 256.0f / 360.0f),
                 true
         );
@@ -249,7 +248,7 @@ public class GeneratorEditor {
             NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
         }
 
-        item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), yaw_angle));
+        item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), move_yaw));
         item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), vertical_algebra));
         item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
     }
