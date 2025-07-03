@@ -142,17 +142,19 @@ public class GeneratorEditor {
     public static void rotate(ArmorStand item) {
         Location location = item.getLocation();
 
-        if (!item.hasMetadata("temp")) {
-            Object[] temp = {item.getLocation().getY() + vertical_offset, 0D, 0D, true, true};
-            item.setMetadata("temp", new FixedMetadataValue(_233BedWars.getInstance(), temp));
+        if (!item.hasMetadata("init_y")) {
+            item.setMetadata("horizontal_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
+            item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
+            item.setMetadata("init_y", new FixedMetadataValue(_233BedWars.getInstance(), location.getY()));
+            item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
+            item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
         }
 
-        Object[] temp = (Object[]) item.getMetadata("temp").get(0).value();
-        double init_y = (double) temp[0];
-        double horizontal_algebra = (double) temp[1];
-        double vertical_algebra = (double) temp[2];
-        boolean horizontal_direction = (boolean) temp[3];
-        boolean vertical_direction = (boolean) temp[4];
+        double horizontal_algebra = (double) item.getMetadata("horizontal_algebra").get(0).value();
+        double vertical_algebra = (double) item.getMetadata("vertical_algebra").get(0).value();
+        double init_y = (double) item.getMetadata("init_y").get(0).value() + vertical_offset;
+        boolean horizontal_direction = (boolean) item.getMetadata("horizontal_direction").get(0).value();
+        boolean vertical_direction = (boolean) item.getMetadata("vertical_direction").get(0).value();
 
         if (vertical_algebra >= period) {
             vertical_algebra = 0;
@@ -192,8 +194,10 @@ public class GeneratorEditor {
             NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
         }
 
-        Object[] _temp = {init_y ,horizontal_algebra, vertical_algebra, horizontal_direction, vertical_direction};
-        item.setMetadata("temp", new FixedMetadataValue(_233BedWars.getInstance(), _temp));
+        item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), vertical_algebra));
+        item.setMetadata("horizontal_algebra", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_algebra));
+        item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
+        item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_direction));
     }
 
     public static void resetArena(IArena arena) {
@@ -206,7 +210,6 @@ public class GeneratorEditor {
     public static void rotateGenerators() {
         for (ArmorStand item : rotations) {
             rotate(item);
-            // rotate_new(item);
         }
     }
 

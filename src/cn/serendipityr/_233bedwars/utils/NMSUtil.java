@@ -1,7 +1,6 @@
 package cn.serendipityr._233bedwars.utils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -11,7 +10,6 @@ import java.lang.reflect.Method;
 public class NMSUtil {
     public static String nmsVersion;
     private static Method CACHE_PLAYER_GET_HANDLE;
-    private static Method CACHE_WORLD_GET_HANDLE;
     private static Field CACHE_PLAYER_PLAYER_CONNECTION;
     private static Method CACHE_SEND_PACKET;
     private static Class<?> CACHE_ENTITY_TELEPORT;
@@ -33,19 +31,6 @@ public class NMSUtil {
             return CACHE_PLAYER_GET_HANDLE.invoke(player);
         } catch (Exception e) {
             LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMSPlayer时发生错误！&7(" + nmsVersion + ")");
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Object getNMSWorld(World world) {
-        try {
-            if (CACHE_WORLD_GET_HANDLE == null) {
-                CACHE_WORLD_GET_HANDLE = world.getClass().getMethod("getHandle");
-            }
-            return CACHE_WORLD_GET_HANDLE.invoke(world);
-        } catch (Exception e) {
-            LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMSWorld时发生错误！&7(" + nmsVersion + ")");
             e.printStackTrace();
             return null;
         }
