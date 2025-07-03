@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -87,8 +88,12 @@ public class Landmine {
         return false;
     }
 
-    public static boolean handleBlockDestroy(Block block) {
+    public static boolean handleBlockDestroy(Player player, Block block) {
         if (landmineMap.containsKey(block)) {
+            IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+            if (arena != null && arena.isReSpawning(player)) {
+                return true;
+            }
             block.setType(Material.AIR);
             Player placer = landmineMap.get(block);
             placer.sendMessage(messages_landmine_remove);

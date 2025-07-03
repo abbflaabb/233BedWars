@@ -139,7 +139,7 @@ public class ShopItemAddon {
             return false;
         }
 
-        if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockDestroy(block)) {
+        if ((Landmine.settings_landmine_enable || Landmine.settings_light_landmine_enable) && Landmine.handleBlockDestroy(player, block)) {
             return true;
         }
 

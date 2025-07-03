@@ -1,6 +1,8 @@
 package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import com.andrei1058.bedwars.api.arena.IArena;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -58,6 +60,10 @@ public class LuckyBlock {
 
     public static boolean handleBlockDestroy(Player player, Block block) {
         if (blocks.contains(block)) {
+            IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
+            if (arena != null && arena.isReSpawning(player)) {
+                return true;
+            }
             block.setType(Material.AIR);
             parseExecute(random(), player, block.getLocation());
             blocks.remove(block);
