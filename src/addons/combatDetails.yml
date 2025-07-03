@@ -2,6 +2,14 @@
 
 damageMsg: "&a对&e{victim}&a造成了{formatted_damage}&a伤害，他还剩{formatted_health}{resistance}{regeneration}{formatted_extra_health}{protection_max}{death}"
 
+damageTitle: ""
+
+damageSubtitle: "{health_color}{health}"
+
+arrowDamageTitle: ""
+
+arrowDamageSubtitle: "{health_color}{health} &7{unicode_arrow}{left_arrows}"
+
 damageInfo:
   - "&f基准伤害: &7{base_damage}"
   - "&f抵御伤害: &7{reduction}"
@@ -10,6 +18,11 @@ damageInfo:
   - "{formatted_protection}"
 
 damageFormat: "&c{unicode_heart}&4&l[{final_damage}]"
+
+healthColor:
+  - "10:&a"
+  - "5:&e"
+  - "0:&c"
 
 healthFormat: "&c{unicode_heart}&4&l[{health}]"
 
