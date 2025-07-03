@@ -204,7 +204,7 @@ public class XpResMode {
         }
     }
 
-    private static Double roundDouble(double num, int scale) {
+    public static Double roundDouble(double num, int scale) {
         double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
         if (num > 0 && rounded == 0) {
             return 0.1D;

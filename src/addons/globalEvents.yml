@@ -22,7 +22,7 @@ messages:
   event_info:
     - "none:&c无:将不启用任何事件"
     - "random:&c随机:将随机使用全域事件"
-    - "potions:&a随机药水:每隔五分钟随机获得一种正面药水效果"
+    - "potions:&a随机药水:每隔60秒随机获得一种正面药水效果"
     - "doomsday_strike:&c末日打击:每隔一段时间将会对中心岛进行轰炸"
     - "infinite_firepower:&a无限火力:所有资源生成速度x2"
     - "forge_leveling:&a全员低保:熔炉每五分钟自动升级"

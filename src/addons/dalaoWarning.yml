@@ -10,6 +10,12 @@ averageLevelDifference: 20
 
 highLevelRange: 50
 
+# 可用占位符
+# {tColor} - 队伍颜色
+# {tName} - 队伍名称
+# {highestLevel} - 队内最高等级
+# {highestPlayer} - 对内最高等级玩家
+# {avgLevel} - 队伍平均等级
 warningMsg:
   - "&c&l[DALAO-WARNING/大佬警告]"
   - "&e本局游戏建议先打大佬队伍qwq: {tColor}{tName}"

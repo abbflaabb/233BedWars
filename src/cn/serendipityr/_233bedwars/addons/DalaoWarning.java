@@ -35,19 +35,19 @@ public class DalaoWarning {
     private static ITeam getEliteTeam(IArena arena) {
         switch (flag) {
             case "average":
-                Map<Integer, ITeam> avgLevelMap = new HashMap<>();
+                Map<Double, ITeam> avgLevelMap = new HashMap<>();
                 for (ITeam team : arena.getTeams()) {
                     avgLevelMap.put(getAverageLevel(team), team);
                 }
                 if (avgLevelMap.size() >= 2) {
-                    List<Integer> sortedKeys = avgLevelMap.keySet().stream()
+                    List<Double> sortedKeys = avgLevelMap.keySet().stream()
                             .sorted(Comparator.reverseOrder())
                             .collect(Collectors.toList());
-                    Integer firstKey = sortedKeys.get(0);
-                    Integer secondKey = sortedKeys.get(1);
-                    int diff = firstKey - secondKey;
+                    double avg_first = sortedKeys.get(0);
+                    double avg_all = sortedKeys.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                    double diff = avg_first - avg_all;
                     if (diff > averageLevelDifference) {
-                        return avgLevelMap.get(firstKey);
+                        return avgLevelMap.get(avg_first);
                     }
                 }
                 break;
@@ -66,19 +66,19 @@ public class DalaoWarning {
                 break;
             case "both":
             default:
-                Map<Integer, ITeam> avgMap = new HashMap<>();
+                Map<Double, ITeam> avgMap = new HashMap<>();
                 for (ITeam team : arena.getTeams()) {
                     avgMap.put(getAverageLevel(team), team);
                 }
-                List<Integer> sortedAvgKeys = avgMap.keySet().stream()
+                List<Double> sortedAvgKeys = avgMap.keySet().stream()
                         .sorted(Comparator.reverseOrder())
                         .collect(Collectors.toList());
                 if (sortedAvgKeys.size() <= 1) {
                     return null;
                 }
-                Integer avg_first = sortedAvgKeys.get(0);
-                Integer avg_second = sortedAvgKeys.get(1);
-                int diff = avg_first - avg_second;
+                Double avg_first = sortedAvgKeys.get(0);
+                Double avg_all = sortedAvgKeys.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                double diff = avg_first - avg_all;
                 if (diff > averageLevelDifference) {
                     Map<Integer, ITeam> highLevelMap = new HashMap<>();
                     for (ITeam team : arena.getTeams()) {
@@ -115,24 +115,45 @@ public class DalaoWarning {
         return highest;
     }
 
-    private static Integer getAverageLevel(ITeam team) {
+    private static Player getHighestLevelPlayer(ITeam team) {
         if (team.getMembers().isEmpty()) {
-            return 0;
+            return null;
         }
-        int totalLevel = 0;
+        Player p = null;
+        int highest = 0;
+        for (Player player : team.getMembers()) {
+            int level = ProviderUtil.bw.getLevelsUtil().getPlayerLevel(player);
+            if (level > highest) {
+                highest = level;
+                p = player;
+            }
+        }
+        return p;
+    }
+
+    private static Double getAverageLevel(ITeam team) {
+        if (team.getMembers().isEmpty()) {
+            return 0D;
+        }
+        double totalLevel = 0;
         for (Player player : team.getMembers()) {
             totalLevel += ProviderUtil.bw.getLevelsUtil().getPlayerLevel(player);
         }
-        return totalLevel / team.getMembers().size();
+        return XpResMode.roundDouble(totalLevel / team.getMembers().size(), 2);
     }
 
-    private static void sendMsg(IArena arena, ITeam dalao) {
+    private static void sendMsg(IArena arena, ITeam eliteTeam) {
+        Player highest_player = getHighestLevelPlayer(eliteTeam);
         for (Player player : arena.getPlayers()) {
             for (String s : warningMsg) {
                 player.sendMessage(s
                         .replace("&", "§")
-                        .replace("{tColor}", PlaceholderUtil.getTeamColor(dalao))
-                        .replace("{tName}", PlaceholderUtil.getTeamName(dalao, player)));
+                        .replace("{tColor}", PlaceholderUtil.getTeamColor(eliteTeam))
+                        .replace("{tName}", PlaceholderUtil.getTeamName(eliteTeam, player))
+                        .replace("{highestLevel}", String.valueOf(getHighestLevel(eliteTeam)))
+                        .replace("{highestPlayer}", highest_player == null ? "" : highest_player.getDisplayName())
+                        .replace("{avgLevel}", String.valueOf(getAverageLevel(eliteTeam)))
+                );
             }
         }
     }
