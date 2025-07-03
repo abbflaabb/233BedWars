@@ -1,10 +1,10 @@
 package cn.serendipityr._233bedwars.addons.globalEvents;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
-import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.MathUtil;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
@@ -75,9 +75,9 @@ public class ForgeLeveling {
                 editAction.onBuy(null, team);
             }
         }
-        ShopItemAddon.sendTeamMessage(team, message_forge_leveling_upgrade
+        ProviderUtil.sendTeamMessage(team, message_forge_leveling_upgrade
                 .replace("{tier}", String.valueOf(tier + 1))
-                .replace("{tier_roman}", CombatDetails.intToRoman(tier + 1))
+                .replace("{tier_roman}", MathUtil.intToRoman(tier + 1))
         );
     }
 }

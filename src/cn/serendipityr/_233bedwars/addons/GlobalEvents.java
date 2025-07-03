@@ -171,12 +171,12 @@ public class GlobalEvents {
                 .entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
         if (filter != null) {
             if (filter.getKey().equals("none")) {
-                ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
+                ProviderUtil.sendGlobalMessage(arena, vote_result_none);
                 vote_map.remove(arena);
                 apply_events.put(arena, "none");
                 return;
             }
-            ShopItemAddon.sendGlobalMessage(arena, vote_result
+            ProviderUtil.sendGlobalMessage(arena, vote_result
                     .replace("{final_event}", getEventInfo(filter.getKey())[0])
                     .replace("{final_votes}", String.valueOf(filter.getValue()))
             );
@@ -186,10 +186,10 @@ public class GlobalEvents {
                 Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> sendEventApplyMsg(arena), 20L);
                 initEvent(arena);
             } else {
-                ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
+                ProviderUtil.sendGlobalMessage(arena, vote_result_none);
             }
         } else {
-            ShopItemAddon.sendGlobalMessage(arena, vote_result_none);
+            ProviderUtil.sendGlobalMessage(arena, vote_result_none);
             vote_map.remove(arena);
             apply_events.put(arena, "none");
         }
@@ -310,7 +310,7 @@ public class GlobalEvents {
     private static void sendEventApplyMsg(IArena arena) {
         for (String s : event_broadcast) {
             String[] event_info = getEventInfo(getApplyEvent(arena));
-            ShopItemAddon.sendGlobalMessage(arena, s
+            ProviderUtil.sendGlobalMessage(arena, s
                     .replace("{event_name}", event_info[0])
                     .replace("{event_description}", event_info[1])
             );

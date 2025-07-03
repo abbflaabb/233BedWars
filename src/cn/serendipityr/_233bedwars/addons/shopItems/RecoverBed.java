@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
@@ -75,9 +76,9 @@ public class RecoverBed {
     public static void handleBedDestroy(IArena arena, ITeam team) {
         Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
             if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60) && (!limit_use_map.containsKey(team) || limit_use_map.get(team) < settings_recover_bed_use_count_limit)) {
-                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_destroy_tips);
+                ProviderUtil.sendTeamMessage(team, messages_recover_bed_destroy_tips);
             } else {
-                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_invalid_msg);
+                ProviderUtil.sendTeamMessage(team, messages_recover_bed_invalid_msg);
             }
         }, 1L);
     }
@@ -170,21 +171,21 @@ public class RecoverBed {
                 }
             }
             if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60)) {
-                ShopItemAddon.sendTeamMessage(team, messages_recover_bed_success_msg);
-                ShopItemAddon.sendTeamTitle(team,
+                ProviderUtil.sendTeamMessage(team, messages_recover_bed_success_msg);
+                ProviderUtil.sendTeamTitle(team,
                         messages_recover_bed_success_title
                                 .replace("{player}", player.getDisplayName()),
                         messages_recover_bed_success_subtitle
                                 .replace("{player}", player.getDisplayName()),
                         settings_recover_bed_title_stay * 20);
                 for (String msg : messages_recover_bed_success_broadcast) {
-                    ShopItemAddon.sendGlobalMessage(arena, msg
+                    ProviderUtil.sendGlobalMessage(arena, msg
                             .replace("{player}", player.getDisplayName())
                             .replace("{tColor}", PlaceholderUtil.getTeamColor(team))
                             .replace("{tName}", PlaceholderUtil.getTeamName(team, player)));
                 }
                 String[] _sound = settings_recover_bed_recover_sound.split(":");
-                ShopItemAddon.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
+                ProviderUtil.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
                 placeBed(team);
                 ShopItemAddon.consumeItem(player, item, 1);
                 ShopItemAddon.setCooling(player, "recover_bed");

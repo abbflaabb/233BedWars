@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
+import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -139,7 +140,7 @@ public class DalaoWarning {
         for (Player player : team.getMembers()) {
             totalLevel += ProviderUtil.bw.getLevelsUtil().getPlayerLevel(player);
         }
-        return XpResMode.roundDouble(totalLevel / team.getMembers().size(), 2);
+        return MathUtil.roundDouble(totalLevel / team.getMembers().size(), 2);
     }
 
     private static void sendMsg(IArena arena, ITeam eliteTeam) {

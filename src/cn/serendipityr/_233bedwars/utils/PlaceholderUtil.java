@@ -18,8 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -298,7 +296,7 @@ public class PlaceholderUtil {
     }
 
     public static Double getTeamDistance(ITeam team, Player player) {
-        return roundDouble(team.getSpawn().distance(player.getLocation()), 1);
+        return MathUtil.roundDouble(team.getSpawn().distance(player.getLocation()), 1);
     }
 
     public static String getTeamIndicator(ITeam team, Player player) {
@@ -406,15 +404,6 @@ public class PlaceholderUtil {
     public static void resetArenaRiskyTeams(IArena arena) {
         for (ITeam team : arena.getTeams()) {
             riskyTeams.remove(team);
-        }
-    }
-
-    private static Double roundDouble(double num, int scale) {
-        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
-        if (num > 0 && rounded == 0) {
-            return 0.1D;
-        } else {
-            return rounded;
         }
     }
 }

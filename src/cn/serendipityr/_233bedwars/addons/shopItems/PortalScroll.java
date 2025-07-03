@@ -79,7 +79,7 @@ public class PortalScroll {
         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
         ITeam team = arena.getTeam(player);
         String broadcast = PlaceholderUtil.formatText(player, arena, team, messages_portal_scroll_broadcast).replace("{player}", player.getDisplayName());
-        ShopItemAddon.sendGlobalMessage(arena, broadcast);
+        ProviderUtil.sendGlobalMessage(arena, broadcast);
         player.setMetadata("portal_scroll", new FixedMetadataValue(_233BedWars.getInstance(), ""));
         new BukkitRunnable() {
             int delay = settings_portal_scroll_portal_time;

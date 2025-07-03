@@ -2,7 +2,7 @@ package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
-import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -14,8 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,11 +62,11 @@ public class CombatDetails {
     }
 
     public static void sendDamageMsg(Player damager, Player victim, double damage, double finalDamage) {
-        double roundedDamage = roundDouble(damage, 1);
-        double roundedFinalDamage = roundDouble(finalDamage, 1);
-        double roundedReduction = roundDouble(damage - finalDamage, 1);
-        double roundedExtraHealth = roundDouble(Math.max(0, getExtraHealth(victim) - damage), 1);
-        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
+        double roundedDamage = MathUtil.roundDouble(damage, 1);
+        double roundedFinalDamage = MathUtil.roundDouble(finalDamage, 1);
+        double roundedReduction = MathUtil.roundDouble(damage - finalDamage, 1);
+        double roundedExtraHealth = MathUtil.roundDouble(Math.max(0, getExtraHealth(victim) - damage), 1);
+        double roundedHealth = MathUtil.roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
 
         TextComponent msg = new TextComponent(damageMsg
                 .replace("{formatted_protection}", protectionFormat)
@@ -155,23 +153,9 @@ public class CombatDetails {
         damager.sendMessage(msg);
     }
 
-    private static Double roundDouble(double num, int scale) {
-        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
-        if (num > 0 && rounded == 0) {
-            return 0.1D;
-        } else {
-            return rounded;
-        }
-    }
-
-    private static String getServerVersion() {
-        String packageName = org.bukkit.Bukkit.getServer().getClass().getPackage().getName();
-        return packageName.substring(packageName.lastIndexOf('.') + 1);
-    }
-
     public static float getExtraHealth(Player player) {
         try {
-            Class<?> craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".entity.CraftPlayer");
+            Class<?> craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + ProviderUtil.getServerVersion() + ".entity.CraftPlayer");
             Object craftPlayer = craftPlayerClass.cast(player);
             Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
             return (float) (Float) handle.getClass().getMethod("getAbsorptionHearts").invoke(handle);
@@ -215,7 +199,7 @@ public class CombatDetails {
         for (PotionEffect potionEffect : victim.getActivePotionEffects()) {
             if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
                 if (!strengthEffectMap.containsKey(damager) || !strengthEffectMap.get(damager).equals(victim)) {
-                    String level = intToRoman(potionEffect.getAmplifier() + 1);
+                    String level = MathUtil.intToRoman(potionEffect.getAmplifier() + 1);
                     damager.sendMessage(strengthEffectHint.replace("{level}", level).replace("&", "§"));
                     strengthEffectMap.put(damager, victim);
                     Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
@@ -226,21 +210,6 @@ public class CombatDetails {
                 }
             }
         }
-    }
-
-    public static String intToRoman(int num) {
-        String[] thousands = {"", "M", "MM", "MMM"};
-        String[] hundreds = {"", "C", "CC", "CCC", "CD", "D",
-                "DC", "DCC", "DCCC", "CM"};
-        String[] tens = {"", "X", "XX", "XXX", "XL", "L",
-                "LX", "LXX", "LXXX", "XC"};
-        String[] ones = {"", "I", "II", "III", "IV", "V",
-                "VI", "VII", "VIII", "IX"};
-
-        return thousands[num / 1000] +
-                hundreds[(num % 1000) / 100] +
-                tens[(num % 100) / 10] +
-                ones[num % 10];
     }
 
     private static String getProtectionMax(Player player) {
@@ -265,7 +234,7 @@ public class CombatDetails {
     }
 
     public static void checkPlayerKillDistance(Player killer, Player victim) {
-        killDistance.put(victim, roundDouble(killer.getLocation().toVector().distance(victim.getLocation().toVector()), 2));
+        killDistance.put(victim, MathUtil.roundDouble(killer.getLocation().toVector().distance(victim.getLocation().toVector()), 2));
     }
 
     private static int getProtectionLevel(Player player) {

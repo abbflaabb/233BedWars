@@ -1,20 +1,16 @@
 package cn.serendipityr._233bedwars.addons.globalEvents;
 
 import cn.serendipityr._233bedwars._233BedWars;
-import cn.serendipityr._233bedwars.addons.CombatDetails;
 import cn.serendipityr._233bedwars.addons.GlobalEvents;
+import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.events.player.PlayerInvisibilityPotionEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -75,7 +71,7 @@ public class Potions {
                             }
                             p.sendMessage(messages_potions_give
                                     .replace("{effect_name}", effect[3])
-                                    .replace("{effect_level}", CombatDetails.intToRoman(Integer.parseInt(effect[1]) + 1))
+                                    .replace("{effect_level}", MathUtil.intToRoman(Integer.parseInt(effect[1]) + 1))
                             );
                         }
                     } else {
@@ -93,7 +89,7 @@ public class Potions {
                             }
                             p.sendMessage(messages_potions_give
                                     .replace("{effect_name}", effect[3])
-                                    .replace("{effect_level}", CombatDetails.intToRoman(Integer.parseInt(effect[1]) + 1))
+                                    .replace("{effect_level}", MathUtil.intToRoman(Integer.parseInt(effect[1]) + 1))
                             );
                         }
                     }

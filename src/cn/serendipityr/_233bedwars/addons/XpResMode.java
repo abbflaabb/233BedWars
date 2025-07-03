@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.events.handler.InteractEventHandler;
+import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -16,8 +17,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -187,7 +186,7 @@ public class XpResMode {
         if (kill_reclaim_exp == 0) {
             return;
         }
-        double roundedHealth = roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
+        double roundedHealth = MathUtil.roundDouble(Math.max(0, victim.getHealth() - finalDamage), 1);
         if (roundedHealth <= 0) {
             int claimExp = Math.round(victim.getLevel() * ((float) kill_reclaim_exp / 100));
             if (claimExp == 0) {
@@ -201,15 +200,6 @@ public class XpResMode {
                     .replace("{vtColor}", PlaceholderUtil.getTeamColor(arena.getTeam(victim)))
                     .replace("{victim}", victim.getName())
                     .replace("{exp}", String.valueOf(claimExp)));
-        }
-    }
-
-    public static Double roundDouble(double num, int scale) {
-        double rounded = new BigDecimal(num).setScale(scale, RoundingMode.HALF_UP).doubleValue();
-        if (num > 0 && rounded == 0) {
-            return 0.1D;
-        } else {
-            return rounded;
         }
     }
 }

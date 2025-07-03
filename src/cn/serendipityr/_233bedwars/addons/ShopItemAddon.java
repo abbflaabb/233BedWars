@@ -5,7 +5,6 @@ import cn.serendipityr._233bedwars.addons.shopItems.*;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
-import cn.serendipityr._233bedwars.utils.TitleUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
@@ -24,7 +23,6 @@ import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -336,30 +334,6 @@ public class ShopItemAddon {
 
     public static boolean isBeforeInstant(Instant instant, long seconds) {
         return Instant.now().isBefore(instant.plusSeconds(seconds));
-    }
-
-    public static void sendGlobalMessage(IArena arena, String msg) {
-        for (Player arenaPlayer : arena.getPlayers()) {
-            arenaPlayer.sendMessage(msg);
-        }
-    }
-
-    public static void sendTeamMessage(ITeam team, String msg) {
-        for (Player teamPlayer : team.getMembers()) {
-            teamPlayer.sendMessage(msg);
-        }
-    }
-
-    public static void sendTeamTitle(ITeam team, String title, String subTitle, int stay) {
-        for (Player teamPlayer : team.getMembers()) {
-            TitleUtil.send(teamPlayer, title, subTitle, 0, stay, 0);
-        }
-    }
-
-    public static void playTeamSound(ITeam team, Sound sound, float volume, float pitch) {
-        for (Player teamPlayer : team.getMembers()) {
-            teamPlayer.playSound(teamPlayer.getLocation(), sound, volume, pitch);
-        }
     }
 
     public static boolean compareAddonItem(Player player, ItemStack itemStack, String section) {
