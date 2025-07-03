@@ -131,14 +131,13 @@ public class CombatDetails {
             if (!(arrowDamageTitle.trim().isEmpty() && arrowDamageSubTitle.trim().isEmpty())) {
                 String title = setPlaceHolder(arrowDamageTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth);
                 String subtitle = setPlaceHolder(arrowDamageSubTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth);
-                TitleUtil.send(damager, title, subtitle, 5, 100, 5);
+                TitleUtil.send(damager, title, subtitle, 0, 20, 0);
             }
         } else {
             if (!(damageTitle.trim().isEmpty() && damageSubTitle.trim().isEmpty())) {
-                TitleUtil.send(damager,
-                        setPlaceHolder(damageTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth),
-                        setPlaceHolder(damageSubTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth),
-                        5, 100, 5);
+                String title = setPlaceHolder(damageTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth);
+                String subtitle = setPlaceHolder(damageSubTitle, damager, victim, roundedHealth, roundedReduction, roundedDamage, roundedFinalDamage, roundedExtraHealth);
+                TitleUtil.send(damager, title, subtitle, 0, 20, 0);
             }
         }
     }
