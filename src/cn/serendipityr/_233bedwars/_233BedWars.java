@@ -16,7 +16,13 @@ public class _233BedWars extends JavaPlugin {
     public void onEnable() {
         instance = this;
         LogUtil.consoleLog("&3&l&m--------&9 233BedWars &fby &6SerendipityR &3&l&m--------");
+        NMSUtil.init();
+        LogUtil.consoleLog("&3 > &e当前NMS版本: " + NMSUtil.getServerVersion());
         LogUtil.consoleLog("&3 > &e插件装载中...");
+        LogUtil.consoleLog("&3 > &eHooking BedWars1058...");
+        ProviderUtil.bw = (BedWars) ProviderUtil.hookPlugin("BedWars1058", BedWars.class);
+        LogUtil.consoleLog("&3 > &eHooking PlaceholderAPI...");
+        ProviderUtil.hookPlaceHolderAPI();
         LogUtil.consoleLog("&3 > &e正在加载配置...");
         try {
             ConfigManager.loadConfig();
@@ -27,10 +33,6 @@ public class _233BedWars extends JavaPlugin {
             disablePlugin();
             return;
         }
-        LogUtil.consoleLog("&3 > &eHooking BedWars1058...");
-        ProviderUtil.bw = (BedWars) ProviderUtil.hookPlugin("BedWars1058", BedWars.class);
-        LogUtil.consoleLog("&3 > &eHooking PlaceholderAPI...");
-        PlaceholderUtil.hookPlaceHolderAPI();
         LogUtil.consoleLog("&3 > &e正在注册命令...");
         new CommandManager().regCommands();
         LogUtil.consoleLog("&3 > &e正在注册事件...");

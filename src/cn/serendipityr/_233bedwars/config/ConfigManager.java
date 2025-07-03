@@ -88,7 +88,7 @@ public class ConfigManager {
             InteractEventHandler.executes.put(item, execute);
             return item;
         } catch (Exception e) {
-            LogUtil.consoleLog("&9233BedWars &3&l > &c无法解析物品: (Material: " + material + " | Amount: " + amount + ")");
+            LogUtil.consoleLog("&9233BedWars &3&l> &c无法解析物品: (Material: " + material + " | Amount: " + amount + ")");
             e.printStackTrace();
             return new ItemStack(Material.AIR);
         }

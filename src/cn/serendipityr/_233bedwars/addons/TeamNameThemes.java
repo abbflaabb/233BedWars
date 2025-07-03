@@ -40,9 +40,9 @@ public class TeamNameThemes {
                     player.sendMessage(applyThemeMsg.replace("{tTheme}", randomTheme));
                 }
             }
-            LogUtil.consoleLog("&9233BedWars &3&l > &c为游戏 &b" + arenaName + "&7(" + group + ") &c应用了队伍名称主题: &a&l" + randomTheme);
+            LogUtil.consoleLog("&9233BedWars &3&l> &c为游戏 &b" + arenaName + "&7(" + group + ") &c应用了队伍名称主题: &a&l" + randomTheme);
         } else {
-            LogUtil.consoleLog("&9233BedWars &3&l > &c没有为游戏 &b" + arenaName + "&7(" + group + ") &c配置正确的队伍名称主题。");
+            LogUtil.consoleLog("&9233BedWars &3&l> &c没有为游戏 &b" + arenaName + "&7(" + group + ") &c配置正确的队伍名称主题。");
         }
     }
 }

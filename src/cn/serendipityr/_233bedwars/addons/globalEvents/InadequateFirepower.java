@@ -51,7 +51,7 @@ public class InadequateFirepower {
         if (forge_upgrade != null) {
             forge_upgrade_names.put(arena, forge_upgrade.getName());
         } else {
-            LogUtil.consoleLog("&9233BedWars &3&l > &c游戏 &b" + arena.getArenaName() + "&7(" + arena.getGroup() + ") &c在应用全域事件时发生错误：获取锻炉团队升级失败。");
+            LogUtil.consoleLog("&9233BedWars &3&l> &c游戏 &b" + arena.getArenaName() + "&7(" + arena.getGroup() + ") &c在应用全域事件时发生错误：获取锻炉团队升级失败。");
         }
     }
 

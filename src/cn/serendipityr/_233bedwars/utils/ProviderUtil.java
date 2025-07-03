@@ -32,6 +32,15 @@ public class ProviderUtil {
         }
     }
 
+    public static void hookPlaceHolderAPI() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderUtil.placeholderAPISupport().register();
+            LogUtil.consoleLog("&3 > &aHooked PlaceholderAPI.");
+        } else {
+            LogUtil.consoleLog("&3 > &c未找到PlaceholderAPI。");
+        }
+    }
+
     public static String getServerVersion() {
         String packageName = org.bukkit.Bukkit.getServer().getClass().getPackage().getName();
         return packageName.substring(packageName.lastIndexOf('.') + 1);

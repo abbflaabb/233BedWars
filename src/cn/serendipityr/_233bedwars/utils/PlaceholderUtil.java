@@ -9,7 +9,6 @@ import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -162,20 +161,11 @@ public class PlaceholderUtil {
                     return getFormattedTeamInfo(_team, p).replace("&", "§");
                 }
             } catch (Exception e) {
-                LogUtil.consoleLog("&9233BedWars &3&l > &c调用PlaceholderAPI时发生错误，可能存在异常的占位符引用。");
+                LogUtil.consoleLog("&9233BedWars &3&l> &c调用PlaceholderAPI时发生错误，可能存在异常的占位符引用。");
                 e.printStackTrace();
                 return "发生错误";
             }
             return null;
-        }
-    }
-
-    public static void hookPlaceHolderAPI() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new placeholderAPISupport().register();
-            LogUtil.consoleLog("&3 > &aHooked PlaceholderAPI.");
-        } else {
-            LogUtil.consoleLog("&3 > &c未找到PlaceholderAPI。");
         }
     }
 

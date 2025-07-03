@@ -404,7 +404,7 @@ public class ShopItemAddon {
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
-                LogUtil.consoleLog("&9233BedWars &3&l > &e[ShopItemAddon] &c发生致命错误！(无法获取头颅材质)");
+                LogUtil.consoleLog("&9233BedWars &3&l> &e[ShopItemAddon] &c发生致命错误！(无法获取头颅材质)");
             }
         }
 
@@ -421,7 +421,7 @@ public class ShopItemAddon {
             quickBuyButtonField.set(shopIndex, new QuickBuyButton(slot, button, Messages.SHOP_QUICK_BUY_NAME, Messages.SHOP_QUICK_BUY_LORE));
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtil.consoleLog("&9233BedWars &3&l > &e[ShopItemAddon] &c发生致命错误！");
+            LogUtil.consoleLog("&9233BedWars &3&l> &e[ShopItemAddon] &c发生致命错误！");
         }
     }
 
@@ -432,7 +432,7 @@ public class ShopItemAddon {
             shopCategorySlot.set(shopCategory, slot);
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtil.consoleLog("&9233BedWars &3&l > &e[ShopItemAddon] &c发生致命错误！");
+            LogUtil.consoleLog("&9233BedWars &3&l> &e[ShopItemAddon] &c发生致命错误！");
         }
     }
 

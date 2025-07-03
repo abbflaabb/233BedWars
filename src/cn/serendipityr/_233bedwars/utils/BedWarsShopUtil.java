@@ -50,7 +50,7 @@ public class BedWarsShopUtil {
             categoryField = CategoryContent.class.getDeclaredField("father");
             categoryField.setAccessible(true);
         } catch (Exception e) {
-            LogUtil.consoleLog("&9233BedWars &3&l > &e[BedWarsShopUtil] &c发生致命错误！");
+            LogUtil.consoleLog("&9233BedWars &3&l> &e[BedWarsShopUtil] &c发生致命错误！");
             e.printStackTrace();
         }
     }

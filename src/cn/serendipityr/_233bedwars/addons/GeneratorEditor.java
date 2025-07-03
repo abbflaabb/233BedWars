@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.NMSUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -36,6 +37,7 @@ public class GeneratorEditor {
     public static CopyOnWriteArrayList<IGenerator> oreGenerators = new CopyOnWriteArrayList<>();
     static Boolean gen_split;
     static Boolean gen_split_backup;
+    static Boolean rotate_gen_backup;
     static double period;
     static double horizontal_speed;
     static double vertical_speed;
@@ -51,27 +53,36 @@ public class GeneratorEditor {
         vertical_amplitude = cfg.getDouble("vertical_amplitude");
         vertical_offset = cfg.getDouble("vertical_offset");
         text_holograms_offset = cfg.getDouble("text_holograms_offset");
+
         if (gen_split_backup != null) {
+            ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, gen_split_backup);
+        } else {
+            gen_split_backup = ProviderUtil.bw.getConfigs().getMainConfig().getYml().getBoolean(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT);
+        }
+
+        if (rotate_gen_backup != null) {
+            ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_PERFORMANCE_ROTATE_GEN, rotate_gen_backup);
+        } else {
+            rotate_gen_backup = ProviderUtil.bw.getConfigs().getMainConfig().getYml().getBoolean(ConfigPath.GENERAL_CONFIGURATION_PERFORMANCE_ROTATE_GEN);
+        }
+
+        if (ConfigManager.addon_generatorEditor) {
+            ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_PERFORMANCE_ROTATE_GEN, false);
             if (gen_split) {
                 ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, false);
-            } else {
-                ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, gen_split_backup);
             }
-        }
-        for (IGenerator generator : oreGenerators) {
-            if (gen_split) {
-                generator.setStack(false);
-            } else {
-                generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
+            for (IGenerator generator : oreGenerators) {
+                if (gen_split) {
+                    generator.setStack(false);
+                } else {
+                    generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
+                }
+                setTextHologramsOffset(generator);
             }
-            setTextHologramsOffset(generator);
         }
     }
 
     public static void initGame(IArena arena) {
-        if (gen_split_backup == null) {
-            gen_split_backup = ProviderUtil.bw.getConfigs().getMainConfig().getYml().getBoolean(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT);
-        }
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
             List<IGenerator> generators = new ArrayList<>(arena.getOreGenerators());
             for (IGenerator generator : generators) {
@@ -122,28 +133,26 @@ public class GeneratorEditor {
                 name_loc.setY(baseY + 2.4);
                 name.teleport(name_loc);
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                LogUtil.consoleLog("&9233BedWars &3&l > &e[GeneratorEditor] &c发生致命错误！");
+                LogUtil.consoleLog("&9233BedWars &3&l> &e[GeneratorEditor] &c发生致命错误！");
                 e.printStackTrace();
             }
         }
     }
 
     public static void rotate(ArmorStand item) {
-        if (!item.hasMetadata("init_y")) {
-            item.setMetadata("horizontal_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
-            item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
-            item.setMetadata("init_y", new FixedMetadataValue(_233BedWars.getInstance(), item.getLocation().getY()));
-            item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
-            item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
+        Location location = item.getLocation();
+
+        if (!item.hasMetadata("temp")) {
+            Object[] temp = {item.getLocation().getY() + vertical_offset, 0D, 0D, true, true};
+            item.setMetadata("temp", new FixedMetadataValue(_233BedWars.getInstance(), temp));
         }
 
-        double horizontal_algebra = (double) item.getMetadata("horizontal_algebra").get(0).value();
-        double vertical_algebra = (double) item.getMetadata("vertical_algebra").get(0).value();
-        double init_y = (double) item.getMetadata("init_y").get(0).value() + vertical_offset;
-        boolean horizontal_direction = (boolean) item.getMetadata("horizontal_direction").get(0).value();
-        boolean vertical_direction = (boolean) item.getMetadata("vertical_direction").get(0).value();
-
-        Location location = item.getLocation();
+        Object[] temp = (Object[]) item.getMetadata("temp").get(0).value();
+        double init_y = (double) temp[0];
+        double horizontal_algebra = (double) temp[1];
+        double vertical_algebra = (double) temp[2];
+        boolean horizontal_direction = (boolean) temp[3];
+        boolean vertical_direction = (boolean) temp[4];
 
         if (vertical_algebra >= period) {
             vertical_algebra = 0;
@@ -176,14 +185,15 @@ public class GeneratorEditor {
             move_yaw = (float) horizontal_sin * 360;
         }
 
-        location.setY(move_y);
-        location.setYaw(move_yaw);
-        item.teleport(location);
+        Object teleportPacket = NMSUtil.getEntityTeleportPacket(item.getEntityId(), (int) (location.getX() * 32.0D), (int) (move_y * 32.0D), (int) (location.getZ() * 32.0D), (byte) (move_yaw * 256.0f / 360.0f), (byte) (location.getPitch() * 256.0f / 360.0f), true);
+        for (Player p : location.getWorld().getPlayers()) {
+            Object nmsPlayer = NMSUtil.getNMSPlayer(p);
+            Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
+            NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
+        }
 
-        item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), vertical_algebra));
-        item.setMetadata("horizontal_algebra", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_algebra));
-        item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
-        item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_direction));
+        Object[] _temp = {init_y ,horizontal_algebra, vertical_algebra, horizontal_direction, vertical_direction};
+        item.setMetadata("temp", new FixedMetadataValue(_233BedWars.getInstance(), _temp));
     }
 
     public static void resetArena(IArena arena) {
@@ -196,6 +206,7 @@ public class GeneratorEditor {
     public static void rotateGenerators() {
         for (ArmorStand item : rotations) {
             rotate(item);
+            // rotate_new(item);
         }
     }
 
