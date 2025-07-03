@@ -3,14 +3,17 @@ package cn.serendipityr._233bedwars.utils;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ActionBar;
 import cn.serendipityr._233bedwars.addons.GeneratorEditor;
-import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TaskUtil {
     public static void initOneTickTask() {
-        Bukkit.getScheduler().runTaskTimer(_233BedWars.getInstance(), () -> {
-            GeneratorEditor.rotateGenerators();
-            PlaceholderUtil.updateTeamHeart();
-            ActionBar.sendActionBar();
-        }, 120L, 1L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                GeneratorEditor.rotateGenerators();
+                PlaceholderUtil.updateTeamHeart();
+                ActionBar.sendActionBar();
+            }
+        }.runTaskTimer(_233BedWars.getInstance(), 120L, 1L);
     }
 }

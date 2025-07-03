@@ -139,7 +139,7 @@ public class GeneratorEditor {
         }
     }
 
-    public static void rotate(ArmorStand item) {
+    /*public static void rotate(ArmorStand item) {
         Location location = item.getLocation();
 
         if (!item.hasMetadata("init_y")) {
@@ -198,7 +198,62 @@ public class GeneratorEditor {
         item.setMetadata("horizontal_algebra", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_algebra));
         item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
         item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_direction));
+    }*/
+
+    public static void rotate(ArmorStand item) {
+        Location location = item.getLocation();
+
+        if (!item.hasMetadata("init_y")) {
+            item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
+            item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
+            item.setMetadata("init_y", new FixedMetadataValue(_233BedWars.getInstance(), location.getY()));
+            item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
+        }
+
+        double yaw_angle = (double) item.getMetadata("yaw_angle").get(0).value();
+        double vertical_algebra = (double) item.getMetadata("vertical_algebra").get(0).value();
+        double init_y = (double) item.getMetadata("init_y").get(0).value() + vertical_offset;
+        boolean vertical_direction = (boolean) item.getMetadata("vertical_direction").get(0).value();
+
+        if (vertical_algebra >= period) {
+            vertical_algebra = 0;
+            vertical_direction = !vertical_direction;
+        } else {
+            vertical_algebra += vertical_speed;
+        }
+
+        double vertical_sin = Math.sin(Math.PI * vertical_algebra / period);
+        double move_y = vertical_direction
+                ? init_y - vertical_amplitude * vertical_sin
+                : init_y + vertical_amplitude * vertical_sin;
+
+        yaw_angle += 4 * horizontal_speed;
+        if (yaw_angle >= 360.0) {
+            yaw_angle -= 360.0;
+        }
+        float move_yaw = (float) yaw_angle;
+
+        Object teleportPacket = NMSUtil.getEntityTeleportPacket(
+                item.getEntityId(),
+                (int) (location.getX() * 32.0D),
+                (int) (move_y * 32.0D),
+                (int) (location.getZ() * 32.0D),
+                (byte) (move_yaw * 256.0f / 360.0f),
+                (byte) (location.getPitch() * 256.0f / 360.0f),
+                true
+        );
+
+        for (Player p : location.getWorld().getPlayers()) {
+            Object nmsPlayer = NMSUtil.getNMSPlayer(p);
+            Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
+            NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
+        }
+
+        item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), yaw_angle));
+        item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), vertical_algebra));
+        item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
     }
+
 
     public static void resetArena(IArena arena) {
         for (IGenerator generator : arena.getOreGenerators()) {
