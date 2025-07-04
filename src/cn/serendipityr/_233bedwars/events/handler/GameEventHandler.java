@@ -27,6 +27,9 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         // 游戏开局时
         if (state.equals(GameState.playing)) {
+            if (ConfigManager.addon_gameStartAnimation) {
+                GameStartAnimation.initArena(arena);
+            }
             if (ConfigManager.addon_balancedAdjustments) {
                 BalancedAdjustments.initArena(arena);
             }

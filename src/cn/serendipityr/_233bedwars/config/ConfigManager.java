@@ -28,6 +28,7 @@ public class ConfigManager {
     public static Boolean addon_shopItemAddon;
     public static Boolean addon_globalEvents;
     public static Boolean addon_xpResMode;
+    public static Boolean addon_gameStartAnimation;
 
     public static void loadConfig() {
         cfg = YamlConfiguration.loadConfiguration(getCfgFile("config.yml"));
@@ -44,6 +45,7 @@ public class ConfigManager {
         addon_shopItemAddon = cfg.getBoolean("addons.ShopItemAddon");
         addon_xpResMode = cfg.getBoolean("addons.XpResMode");
         addon_globalEvents = cfg.getBoolean("addons.GlobalEvents");
+        addon_gameStartAnimation = cfg.getBoolean("addons.GameStartAnimation");
         loadAddonsCfg();
     }
 
@@ -68,6 +70,7 @@ public class ConfigManager {
         ShopItemAddon.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/shopItemAddon.yml")));
         XpResMode.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/xpResMode.yml")));
         GlobalEvents.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/globalEvents.yml")));
+        GameStartAnimation.loadConfig(YamlConfiguration.loadConfiguration(getCfgFile("addons/gameStartAnimation.yml")));
     }
 
     public static ItemStack parseItem(ConfigurationSection section) {

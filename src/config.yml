@@ -31,3 +31,5 @@ addons:
   XpResMode: true
   # 全域游戏事件
   GlobalEvents: true
+  # 游戏开始动画
+  GameStartAnimation: true
