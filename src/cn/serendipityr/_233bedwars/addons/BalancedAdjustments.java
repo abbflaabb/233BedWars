@@ -292,6 +292,9 @@ public class BalancedAdjustments {
                 addExp = 0;
                 for (ItemStack itemStack : items) {
                     addExp += XpResMode.calcExpLevel(itemStack.getType(), itemStack.getAmount(), false);
+                    if (itemStack.getType().equals(Material.DIAMOND) && !XpResMode.replace_upgrade_shop) {
+                        player.getInventory().addItem(itemStack);
+                    }
                 }
             }
             player.giveExpLevels(addExp);

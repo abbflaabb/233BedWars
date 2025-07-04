@@ -102,7 +102,7 @@ public class NMSUtil {
         if (CACHE_ENTITY_TELEPORT == null) {
             Class<?> packetClass = findClass(teleport);
             if (packetClass == null) {
-                LogUtil.consoleLog("&9Pilgrimage &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
+                LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
                 return null;
             }
             CACHE_ENTITY_TELEPORT = packetClass;
@@ -112,7 +112,7 @@ public class NMSUtil {
             Constructor<?> packetConstructor = CACHE_ENTITY_TELEPORT.getConstructor(entity.getClass().getSuperclass().getSuperclass());
             return packetConstructor.newInstance(entity);
         } catch (Exception e) {
-            LogUtil.consoleLog("&9Pilgrimage &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
+            LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
             e.printStackTrace();
             return null;
         }
