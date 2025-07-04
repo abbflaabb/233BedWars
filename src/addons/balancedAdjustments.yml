@@ -1,2 +1,96 @@
 # 平衡性调整
 
+# 开局挖床保护
+# From KKCraft(mc.163mc.cn)
+BeginningBedProtect:
+  enable: true
+  # 保护持续时间
+  duration: 120
+  # 仅当队伍中存在新手玩家时挖床保护生效
+  only_newbies: true
+  # 判定队伍中存在新手玩家的最低等级
+  newbies_level_max: 10
+  title_settings:
+    fade_in: 20
+    stay: 20
+    fade_out: 20
+  messages:
+    beginning_tips: ""
+    beginning_title: "&b&l新手保护"
+    beginning_subtitle: "&f床将进入2分钟保护阶段"
+    end_tips: ""
+    end_title: "&c&l保护结束"
+    end_subtitle: "&f队伍床可以被破坏了"
+    bed_break_tips: "&c开局2分钟内禁止挖床！"
+    newbies_broadcast: "{tColor}{tName} &d萌新开局床保护"
+
+# 队伍人数补助
+TeamMembersBenefit:
+  enable: true
+  # 人数补助加成等级
+  # 按照队伍缺失人数计算加成等级
+  benefits:
+    1:
+      # 资源补助
+      resources:
+        enable: true
+        normal:
+          - "iron:64"
+        # 设置为 -1 自动转换经验等级
+        exp: -1
+      # 药水效果补助
+      effects:
+        # 玩家死亡后保留药水效果
+        death_keep: true
+        # 持续时间，设置为 -1 禁用药水效果补助
+        duration: 300
+        # [药水效果]:[等级]:[粒子效果]
+        content:
+          - "SPEED:0:true"
+          - "FAST_DIGGING:0:true"
+      resources_description:
+        normal: "&f铁锭x64"
+        exp: "&6{exp} &e等级"
+      effect_description: "&6速度I 快速挖掘I"
+    2:
+      resources:
+        enable: true
+        normal:
+          - "iron:64"
+          - "gold:6"
+        exp: -1
+      effects:
+        death_keep: true
+        duration: 300
+        content:
+          - "SPEED:0:true"
+          - "FAST_DIGGING:0:true"
+      resources_description:
+        normal: "&f铁锭x64 &6金锭x6"
+        exp: "&6{exp} &e等级"
+      effect_description: "&6速度I 快速挖掘I"
+    3:
+      resources:
+        enable: true
+        normal:
+          - "iron:64"
+          - "gold:6"
+          - "emerald:1"
+          - "diamond:5"
+        exp: -1
+      effects:
+        death_keep: true
+        duration: 300
+        content:
+          - "SPEED:0:true"
+          - "FAST_DIGGING:0:true"
+      resources_description:
+        normal: "&f铁锭x64 &6金锭x12 &a绿宝石x1 &b钻石x5"
+        exp: "&6{exp} &e等级"
+      effect_description: "&6速度I 快速挖掘I"
+  messages:
+    self_team_tips: "&e&l队伍人数较少，将获得额外的加成奖励，你所在队伍目前加成等级为：{benefit_level}"
+    self_team_benefit_effects_tips: "&a&l你获得了 {effects_description}"
+    self_team_benefit_resources_tips: "&e你收到了人数补助物资，获得了 {resources_description}"
+    self_team_benefit_effects_expired: "&c人数补助奖励药水效果已过期！"
+    benefit_broadcast: "{tColor}{tName} &e获得人数补助加成(级别：{benefit_level})"

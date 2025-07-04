@@ -67,12 +67,17 @@ public class InteractEventHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDestroyBlock(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         if (ConfigManager.addon_shopItemAddon && ShopItemAddon.handleBlockDestroy(player, block)) {
             event.setCancelled(true);
+        }
+        if (ConfigManager.addon_balancedAdjustments) {
+            if (BalancedAdjustments.handleBedBreak(player, block)) {
+                event.setCancelled(true);
+            }
         }
     }
 

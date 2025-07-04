@@ -58,9 +58,9 @@ public class ProviderUtil {
         }
     }
 
-    public static void sendTeamTitle(ITeam team, String title, String subTitle, int stay) {
+    public static void sendTeamTitle(ITeam team, String title, String subTitle,int fadeIn, int stay, int fadeOut) {
         for (Player teamPlayer : team.getMembers()) {
-            TitleUtil.send(teamPlayer, title, subTitle, 0, stay, 0);
+            TitleUtil.send(teamPlayer, title, subTitle, fadeIn, stay, fadeOut);
         }
     }
 

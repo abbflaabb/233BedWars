@@ -121,7 +121,7 @@ public class Potions {
     public static void handlePlayerRespawn(IArena arena, Player player) {
         if (deathKeepMap.containsKey(player)) {
             for (PotionEffect potion : deathKeepMap.get(player)) {
-                player.addPotionEffect(potion);
+                player.addPotionEffect(potion, true);
                 callInvisibilityEvent(arena, player, potion);
             }
             deathKeepMap.remove(player);

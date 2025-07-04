@@ -177,7 +177,7 @@ public class RecoverBed {
                                 .replace("{player}", player.getDisplayName()),
                         messages_recover_bed_success_subtitle
                                 .replace("{player}", player.getDisplayName()),
-                        settings_recover_bed_title_stay * 20);
+                        0, settings_recover_bed_title_stay * 20, 0);
                 for (String msg : messages_recover_bed_success_broadcast) {
                     ProviderUtil.sendGlobalMessage(arena, msg
                             .replace("{player}", player.getDisplayName())

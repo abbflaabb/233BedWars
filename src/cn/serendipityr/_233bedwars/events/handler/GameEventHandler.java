@@ -27,6 +27,9 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         // 游戏开局时
         if (state.equals(GameState.playing)) {
+            if (ConfigManager.addon_balancedAdjustments) {
+                BalancedAdjustments.initArena(arena);
+            }
             if (ConfigManager.addon_globalEvents) {
                 GlobalEvents.applyEvent(arena);
             }
@@ -50,6 +53,9 @@ public class GameEventHandler implements Listener {
         }
         // 游戏结束时
         if (state.equals(GameState.restarting)) {
+            if (ConfigManager.addon_balancedAdjustments) {
+                BalancedAdjustments.resetArena(arena);
+            }
             if (ConfigManager.addon_globalEvents) {
                 GlobalEvents.resetArena(arena);
             }
@@ -82,6 +88,9 @@ public class GameEventHandler implements Listener {
         }
         if (ConfigManager.addon_globalEvents) {
             GlobalEvents.handlePlayerRespawn(arena, player);
+        }
+        if (ConfigManager.addon_balancedAdjustments) {
+            BalancedAdjustments.handlePlayerRespawn(arena, player);
         }
     }
 
@@ -134,6 +143,9 @@ public class GameEventHandler implements Listener {
         }
         if (ConfigManager.addon_globalEvents) {
             GlobalEvents.handlePlayerDeath(arena, victim);
+        }
+        if (ConfigManager.addon_balancedAdjustments) {
+            BalancedAdjustments.handlePlayerDeath(arena, victim);
         }
     }
 
