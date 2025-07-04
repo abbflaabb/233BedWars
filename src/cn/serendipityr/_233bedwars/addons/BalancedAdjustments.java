@@ -106,6 +106,9 @@ public class BalancedAdjustments {
         if (arena == null) {
             return false;
         }
+        if (!block.getType().toString().contains("BED")) {
+            return false;
+        }
         ITeam victim = getBedTeam(arena, block);
         if (victim == null) {
             return false;
