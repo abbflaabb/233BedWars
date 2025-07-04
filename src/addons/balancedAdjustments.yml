@@ -7,8 +7,10 @@ BeginningBedProtect:
   # 保护持续时间
   duration: 120
   # 仅当队伍中存在新手玩家时挖床保护生效
+  # 不开启此项时，所有队伍都能获得开局床保护
   only_newbies: true
-  # 判定队伍中存在新手玩家的最低等级
+  # 判定队伍中存在新手玩家的最高等级
+  # **仅新手玩家生效**选项开启后，队伍内的新手玩家将使此队伍获得开局床保护
   newbies_level_max: 10
   title_settings:
     fade_in: 20
