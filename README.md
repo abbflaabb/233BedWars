@@ -3,7 +3,7 @@
 #### 基于BedWars1058的国内优质高原创起床战争玩法拓展插件(复刻版)
 #### 相关代码开源于[Github](https://github.com/SerendipityR-2022/233BedWars/)，遵循GPLv3协议。
 #### 娱乐插件，不保证更新~
-#### <details><summary>...?</summary>一年前，lz的号被此服反作弊莫名封禁100年，此插件应运而生。</details>
+#### <details><summary>...?</summary>一年前，lz的号被此服反作弊莫名封禁1000年，此插件应运而生。</details>
 #### 授权发布：
 #### https://www.minebbs.com/resources/233bedwars.10504
 #### https://www.tinksp.com/resources/233bedwars.2226/
