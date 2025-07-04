@@ -53,18 +53,27 @@ public class ProviderUtil {
     }
 
     public static void sendTeamMessage(ITeam team, String msg) {
+        if (team == null) {
+            return;
+        }
         for (Player teamPlayer : team.getMembers()) {
             teamPlayer.sendMessage(msg);
         }
     }
 
     public static void sendTeamTitle(ITeam team, String title, String subTitle,int fadeIn, int stay, int fadeOut) {
+        if (team == null) {
+            return;
+        }
         for (Player teamPlayer : team.getMembers()) {
             TitleUtil.send(teamPlayer, title, subTitle, fadeIn, stay, fadeOut);
         }
     }
 
     public static void playTeamSound(ITeam team, Sound sound, float volume, float pitch) {
+        if (team == null) {
+            return;
+        }
         for (Player teamPlayer : team.getMembers()) {
             teamPlayer.playSound(teamPlayer.getLocation(), sound, volume, pitch);
         }
