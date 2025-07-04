@@ -228,19 +228,20 @@ public class GeneratorEditor {
                 : init_y + vertical_amplitude * vertical_sin;
 
         move_yaw += 8 * horizontal_speed;
-        if (move_yaw >= 256.0) {
-            move_yaw -= 256.0;
+        if (move_yaw >= 360.0) {
+            move_yaw -= 360.0;
         }
 
-        Object teleportPacket = NMSUtil.getEntityTeleportPacket(
-                item.getEntityId(),
-                (int) (location.getX() * 32.0D),
-                (int) (move_y * 32.0D),
-                (int) (location.getZ() * 32.0D),
-                (byte) (move_yaw),
-                (byte) (location.getPitch() * 256.0f / 360.0f),
-                true
-        );
+        Object nmsArmorStand = NMSUtil.getNMSArmorStand(item);
+        Object teleportPacket;
+        if (NMSUtil.getServerVersion().equals("v1_8_R3")) {
+            teleportPacket = NMSUtil.getEntityTeleportPacket(item.getEntityId(), (int) (location.getX() * 32.0D), (int) (move_y * 32.0D), (int) (location.getZ() * 32.0D), (byte) (move_yaw * 256.0f / 360.0f), (byte) (location.getPitch() * 256.0f / 360.0f), true);
+        } else {
+            location.setY(move_y);
+            location.setYaw((float) move_yaw);
+            item.teleport(location);
+            teleportPacket = NMSUtil.getEntityTeleportPacket(nmsArmorStand);
+        }
 
         for (Player p : location.getWorld().getPlayers()) {
             Object nmsPlayer = NMSUtil.getNMSPlayer(p);

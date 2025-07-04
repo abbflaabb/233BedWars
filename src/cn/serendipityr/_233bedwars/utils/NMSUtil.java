@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -10,6 +11,7 @@ import java.lang.reflect.Method;
 public class NMSUtil {
     public static String nmsVersion;
     private static Method CACHE_PLAYER_GET_HANDLE;
+    private static Method CACHE_ARMOR_STAND_GET_HANDLE;
     private static Field CACHE_PLAYER_PLAYER_CONNECTION;
     private static Method CACHE_SEND_PACKET;
     private static Class<?> CACHE_ENTITY_TELEPORT;
@@ -36,6 +38,19 @@ public class NMSUtil {
         }
     }
 
+    public static Object getNMSArmorStand(ArmorStand armorStand) {
+        try {
+            if (CACHE_ARMOR_STAND_GET_HANDLE == null) {
+                CACHE_ARMOR_STAND_GET_HANDLE = armorStand.getClass().getMethod("getHandle");
+            }
+            return CACHE_ARMOR_STAND_GET_HANDLE.invoke(armorStand);
+        } catch (Exception e) {
+            LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMSArmorStand时发生错误！&7(" + nmsVersion + ")");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static Object getNMSPlayerConnection(Object nmsPlayer) {
         try {
             if (CACHE_PLAYER_PLAYER_CONNECTION == null) {
@@ -48,10 +63,17 @@ public class NMSUtil {
                     CACHE_PLAYER_PLAYER_CONNECTION = nmsPlayer.getClass().getField("b");
                 }
                 return CACHE_PLAYER_PLAYER_CONNECTION.get(nmsPlayer);
-            } catch (Exception e) {
-                LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMSPlayerConnection时发生错误！&7(" + nmsVersion + ")");
-                e.printStackTrace();
-                return null;
+            } catch (Exception b) {
+                try {
+                    if (CACHE_PLAYER_PLAYER_CONNECTION == null) {
+                        CACHE_PLAYER_PLAYER_CONNECTION = nmsPlayer.getClass().getField("c");
+                    }
+                    return CACHE_PLAYER_PLAYER_CONNECTION.get(nmsPlayer);
+                } catch (Exception c) {
+                    LogUtil.consoleLog("&9233BedWars &3&l> &c获取NMSPlayerConnection时发生错误！&7(" + nmsVersion + ")");
+                    c.printStackTrace();
+                    return null;
+                }
             }
         }
     }
@@ -72,6 +94,27 @@ public class NMSUtil {
                 LogUtil.consoleLog("&9233BedWars &3&l> &c发送NMS数据包时发生错误！&7(" + nmsVersion + ")");
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static Object getEntityTeleportPacket(Object entity) {
+        String[] teleport = {"PacketPlayOutEntityTeleport", "ClientboundTeleportEntityPacket"};
+        if (CACHE_ENTITY_TELEPORT == null) {
+            Class<?> packetClass = findClass(teleport);
+            if (packetClass == null) {
+                LogUtil.consoleLog("&9Pilgrimage &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
+                return null;
+            }
+            CACHE_ENTITY_TELEPORT = packetClass;
+        }
+
+        try {
+            Constructor<?> packetConstructor = CACHE_ENTITY_TELEPORT.getConstructor(entity.getClass().getSuperclass().getSuperclass());
+            return packetConstructor.newInstance(entity);
+        } catch (Exception e) {
+            LogUtil.consoleLog("&9Pilgrimage &3&l> &c获取NMS数据包时发生错误：实体传送。&7(" + nmsVersion + ")");
+            e.printStackTrace();
+            return null;
         }
     }
 

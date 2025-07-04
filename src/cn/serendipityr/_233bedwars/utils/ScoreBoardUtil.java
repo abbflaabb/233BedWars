@@ -40,7 +40,7 @@ public class ScoreBoardUtil {
                 int desiredLineCount = lines.size();
 
                 for (int i = currentLineCount; i < desiredLineCount; i++) {
-                    handle.addLine(new BwSidebarLine("", null));
+                    handle.addLine(new BwSidebarLine("", ""));
                 }
 
                 for (int i = currentLineCount - 1; i >= desiredLineCount; i--) {
@@ -54,7 +54,7 @@ public class ScoreBoardUtil {
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);
-                    BwSidebarLine content = new BwSidebarLine(line, null);
+                    BwSidebarLine content = new BwSidebarLine(line, "");
                     handle.setLine(content, i);
                 }
             }, 5L);
