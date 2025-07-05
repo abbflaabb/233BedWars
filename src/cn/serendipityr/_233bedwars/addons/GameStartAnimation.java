@@ -33,10 +33,8 @@ public class GameStartAnimation {
             int ticks = (int) Math.ceil((double) stay_ms / 50);
             total += ticks;
         }
-        if (total_ticks == 0) {
-            int last = Integer.parseInt(animation_content.get(animation_content.size() - 1).split("#")[4]);
-            total_ticks = total + last;
-        }
+        int last = Integer.parseInt(animation_content.get(animation_content.size() - 1).split("#")[4]);
+        total_ticks = total + last;
     }
 
     public static void initArena(IArena arena) {
