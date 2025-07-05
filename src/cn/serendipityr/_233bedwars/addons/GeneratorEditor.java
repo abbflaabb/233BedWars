@@ -3,6 +3,7 @@ package cn.serendipityr._233bedwars.addons;
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.config.ConfigManager;
 import cn.serendipityr._233bedwars.utils.LogUtil;
+import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.NMSUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.BedWars;
@@ -12,24 +13,25 @@ import com.andrei1058.bedwars.api.arena.generator.IGenHolo;
 import com.andrei1058.bedwars.api.arena.generator.IGenerator;
 import com.andrei1058.bedwars.api.configuration.ConfigPath;
 import com.andrei1058.bedwars.api.language.Language;
+import com.andrei1058.bedwars.api.language.Messages;
 import com.andrei1058.bedwars.arena.OreGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GeneratorEditor {
@@ -44,6 +46,29 @@ public class GeneratorEditor {
     static double vertical_amplitude;
     static double vertical_offset;
     static double text_holograms_offset;
+    static Boolean edit_holograms_texts_enable;
+    static Boolean edit_holograms_texts_tier_enable;
+    static String edit_holograms_texts_tier;
+    static Boolean edit_holograms_texts_timer_enable;
+    static String edit_holograms_texts_timer;
+    static Boolean edit_holograms_texts_name_enable;
+    static String edit_holograms_texts_name;
+    static String edit_holograms_place_holders_non_full;
+    static String edit_holograms_place_holders_full;
+    static int edit_holograms_place_holders_progress_length;
+    static String edit_holograms_place_holders_progress_unit;
+    static String edit_holograms_place_holders_color_current;
+    static String edit_holograms_place_holders_color_left;
+
+    static Class<?> IGENHOLO_CLASS;
+    static Class<?> IGENERATOR_CLASS;
+    static Field TIER_FIELD;
+    static Field TIMER_FIELD;
+    static Field NAME_FIELD;
+    static Field UPGRADE_STAGE_FIELD;
+
+    static ConcurrentHashMap<IGenerator, ArmorStand> timer_holograms = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<IGenerator, ArmorStand> name_holograms = new ConcurrentHashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
         gen_split = cfg.getBoolean("gen_split");
@@ -53,6 +78,20 @@ public class GeneratorEditor {
         vertical_amplitude = cfg.getDouble("vertical_amplitude");
         vertical_offset = cfg.getDouble("vertical_offset");
         text_holograms_offset = cfg.getDouble("text_holograms_offset");
+
+        edit_holograms_texts_enable = cfg.getBoolean("edit_holograms_text.enable");
+        edit_holograms_texts_tier_enable = cfg.getBoolean("edit_holograms_text.texts.tier.enable");
+        edit_holograms_texts_tier = cfg.getString("edit_holograms_text.texts.tier.content").replace("&", "§");
+        edit_holograms_texts_timer_enable = cfg.getBoolean("edit_holograms_text.texts.timer.enable");
+        edit_holograms_texts_timer = cfg.getString("edit_holograms_text.texts.timer.content").replace("&", "§");
+        edit_holograms_texts_name_enable = cfg.getBoolean("edit_holograms_text.texts.name.enable");
+        edit_holograms_texts_name = cfg.getString("edit_holograms_text.texts.name.content").replace("&", "§");
+        edit_holograms_place_holders_non_full = cfg.getString("edit_holograms_text.place_holders.seconds_or_full.non_full").replace("&", "§");
+        edit_holograms_place_holders_full = cfg.getString("edit_holograms_text.place_holders.seconds_or_full.full").replace("&", "§");
+        edit_holograms_place_holders_progress_length = cfg.getInt("edit_holograms_text.place_holders.progress.length");
+        edit_holograms_place_holders_progress_unit = cfg.getString("edit_holograms_text.place_holders.progress.unit");
+        edit_holograms_place_holders_color_current = cfg.getString("edit_holograms_text.place_holders.progress.color_current").replace("&", "§");
+        edit_holograms_place_holders_color_left = cfg.getString("edit_holograms_text.place_holders.progress.color_left").replace("&", "§");
 
         if (gen_split_backup != null) {
             ProviderUtil.bw.getConfigs().getMainConfig().getYml().set(ConfigPath.GENERAL_CONFIGURATION_ENABLE_GEN_SPLIT, gen_split_backup);
@@ -79,10 +118,15 @@ public class GeneratorEditor {
                 }
                 setTextHologramsOffset(generator);
             }
+            if (edit_holograms_texts_enable && edit_holograms_texts_timer_enable) {
+                for (Language lang : Language.getLanguages()) {
+                    lang.getYml().set(Messages.GENERATOR_HOLOGRAM_TIMER, "§f");
+                }
+            }
         }
     }
 
-    public static void initGame(IArena arena) {
+    public static void initArena(IArena arena) {
         Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
             List<IGenerator> generators = new ArrayList<>(arena.getOreGenerators());
             for (IGenerator generator : generators) {
@@ -103,21 +147,32 @@ public class GeneratorEditor {
         }, 65L);
     }
 
+    public static void resetArena(IArena arena) {
+        for (IGenerator generator : arena.getOreGenerators()) {
+            rotations.remove(generator.getHologramHolder());
+            oreGenerators.remove(generator);
+            timer_holograms.remove(generator);
+        }
+    }
+
     public static void setTextHologramsOffset(IGenerator generator) {
         for (Language lang : Language.getLanguages()) {
             String iso = lang.getIso();
-            IGenHolo armorstands = generator.getLanguageHolograms().get(iso);
+            IGenHolo armor_stands = generator.getLanguageHolograms().get(iso);
             try {
-                Class<?> cls = armorstands.getClass();
-                Field tierField = cls.getDeclaredField("tier");
-                Field timerField = cls.getDeclaredField("timer");
-                Field nameField = cls.getDeclaredField("name");
-                tierField.setAccessible(true);
-                timerField.setAccessible(true);
-                nameField.setAccessible(true);
-                ArmorStand tier = (ArmorStand) tierField.get(armorstands);
-                ArmorStand timer = (ArmorStand) timerField.get(armorstands);
-                ArmorStand name = (ArmorStand) nameField.get(armorstands);
+                if (IGENHOLO_CLASS == null) {
+                    IGENHOLO_CLASS = armor_stands.getClass();
+                    TIER_FIELD = IGENHOLO_CLASS.getDeclaredField("tier");
+                    TIER_FIELD.setAccessible(true);
+                    TIMER_FIELD = IGENHOLO_CLASS.getDeclaredField("timer");
+                    TIMER_FIELD.setAccessible(true);
+                    NAME_FIELD = IGENHOLO_CLASS.getDeclaredField("name");
+                    NAME_FIELD.setAccessible(true);
+                }
+
+                ArmorStand tier = (ArmorStand) TIER_FIELD.get(armor_stands);
+                ArmorStand timer = (ArmorStand) TIMER_FIELD.get(armor_stands);
+                ArmorStand name = (ArmorStand) NAME_FIELD.get(armor_stands);
 
                 double baseY = generator.getLocation().getY() + text_holograms_offset;
 
@@ -126,11 +181,19 @@ public class GeneratorEditor {
                 tier.teleport(tier_loc);
 
                 Location timer_loc = timer.getLocation();
-                timer_loc.setY(baseY + 2.7);
+                if (edit_holograms_texts_enable && edit_holograms_texts_timer_enable) {
+                    timer_loc.setY(baseY + 256);
+                } else {
+                    timer_loc.setY(baseY + 2.7);
+                }
                 timer.teleport(timer_loc);
 
                 Location name_loc = name.getLocation();
-                name_loc.setY(baseY + 2.4);
+                if (edit_holograms_texts_enable && edit_holograms_texts_name_enable) {
+                    name_loc.setY(baseY + 256);
+                } else {
+                    name_loc.setY(baseY + 2.4);
+                }
                 name.teleport(name_loc);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 LogUtil.consoleLog("&9233BedWars &3&l> &e[GeneratorEditor] &c发生致命错误！");
@@ -257,18 +320,86 @@ public class GeneratorEditor {
         item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
     }
 
-
-    public static void resetArena(IArena arena) {
-        for (IGenerator generator : arena.getOreGenerators()) {
-            rotations.remove(generator.getHologramHolder());
-            oreGenerators.remove(generator);
-        }
-    }
-
     public static void rotateGenerators() {
         for (ArmorStand item : rotations) {
             rotate(item);
         }
+    }
+
+    public static void updateGeneratorTexts() {
+        if (!edit_holograms_texts_enable) {
+            return;
+        }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (IGenerator generator : oreGenerators) {
+                    try {
+                        if (IGENERATOR_CLASS == null) {
+                            IGENERATOR_CLASS = generator.getClass();
+                            UPGRADE_STAGE_FIELD = IGENERATOR_CLASS.getDeclaredField("upgradeStage");
+                            UPGRADE_STAGE_FIELD.setAccessible(true);
+                        }
+
+                        Integer upgrade_stage = (Integer) UPGRADE_STAGE_FIELD.get(generator);
+
+                        for (Language lang : Language.getLanguages()) {
+                            String iso = lang.getIso();
+                            IGenHolo holo = generator.getLanguageHolograms().get(iso);
+
+                            if (IGENHOLO_CLASS == null) {
+                                IGENHOLO_CLASS = holo.getClass();
+                                NAME_FIELD = IGENHOLO_CLASS.getDeclaredField("name");
+                                NAME_FIELD.setAccessible(true);
+                            }
+
+                            if (edit_holograms_texts_tier_enable) {
+                                holo.setTierName(setPlaceHolders(edit_holograms_texts_tier, generator, holo, upgrade_stage));
+                            }
+                            if (edit_holograms_texts_timer_enable) {
+                                String timer_name = setPlaceHolders(edit_holograms_texts_timer, generator, holo, upgrade_stage);
+                                if (timer_holograms.containsKey(generator)) {
+                                    timer_holograms.get(generator).setCustomName(timer_name);
+                                } else {
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            if (timer_holograms.containsKey(generator)) {
+                                                return;
+                                            }
+                                            ArmorStand timer_new = createArmorStand(timer_name, generator.getLocation().clone().add(0.0, 2.7 + text_holograms_offset, 0.0));
+                                            timer_holograms.put(generator, timer_new);
+                                        }
+                                    }.runTask(_233BedWars.getInstance());
+                                }
+                            }
+                            if (edit_holograms_texts_name_enable) {
+                                String name = setPlaceHolders(edit_holograms_texts_name, generator, holo, upgrade_stage);
+                                if (name_holograms.containsKey(generator)) {
+                                    name_holograms.get(generator).setCustomName(name);
+                                    ((ArmorStand) NAME_FIELD.get(holo)).setCustomName("§f");
+                                } else {
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            if (name_holograms.containsKey(generator)) {
+                                                return;
+                                            }
+                                            ArmorStand name_new = createArmorStand(name, generator.getLocation().clone().add(0.0, 2.4 + text_holograms_offset, 0.0));
+                                            name_holograms.put(generator, name_new);
+                                        }
+                                    }.runTask(_233BedWars.getInstance());
+                                }
+                            }
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        LogUtil.consoleLog("&9233BedWars &3&l> &e[GeneratorEditor] &c发生致命错误！");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskAsynchronously(_233BedWars.getInstance());
     }
 
     public static void markThrownItem(Player player, Item item) {
@@ -316,5 +447,63 @@ public class GeneratorEditor {
                 }
             }
         }
+    }
+
+    private static String setPlaceHolders(String text, IGenerator generator, IGenHolo holo, int upgrade_stage) {
+        return text
+                .replace("{seconds_or_full}", getSecondsOrFull(generator))
+                .replace("{progress}", getProgress(generator))
+                .replace("{name}", getIHoloName(holo.getIso(), generator.getOre().getType()))
+                .replace("{tier_int}", String.valueOf(upgrade_stage))
+                .replace("{tier_roman}", MathUtil.intToRoman(upgrade_stage))
+                .replace("{seconds}", String.valueOf(generator.getNextSpawn()))
+                .replace("{unicode_right_arrow}", "➤");
+    }
+
+    private static String getIHoloName(String iso, Material type) {
+        return Language.getLang(iso).m(type == Material.DIAMOND ? Messages.GENERATOR_HOLOGRAM_TYPE_DIAMOND : Messages.GENERATOR_HOLOGRAM_TYPE_EMERALD);
+    }
+
+    private static String getSecondsOrFull(IGenerator generator) {
+        int ore_count = 0;
+        Location loc = generator.getLocation();
+        for (Entity entity : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)) {
+            if (entity.getType() == EntityType.DROPPED_ITEM) {
+                Item item = (Item) entity;
+                if (item.getItemStack().getType() == generator.getOre().getType()) {
+                    ore_count += item.getItemStack().getAmount();
+                    if (ore_count >= generator.getSpawnLimit()) {
+                        return edit_holograms_place_holders_full;
+                    }
+                }
+            }
+        }
+        return edit_holograms_place_holders_non_full;
+    }
+
+    private static String getProgress(IGenerator generator) {
+        int current = Math.round((float) generator.getNextSpawn() / generator.getDelay() * edit_holograms_place_holders_progress_length);
+        int left = edit_holograms_place_holders_progress_length - current;
+        if (left < 0) {
+            left = 0;
+        }
+        return edit_holograms_place_holders_color_current + String.join("", Collections.nCopies(left, edit_holograms_place_holders_progress_unit)) + edit_holograms_place_holders_color_left + String.join("", Collections.nCopies(current, edit_holograms_place_holders_progress_unit));
+    }
+
+    private static ArmorStand createArmorStand(String name, Location l) {
+        ArmorStand a = (ArmorStand) l.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
+        a.setGravity(false);
+        if (name != null) {
+            a.setCustomName(name);
+            a.setCustomNameVisible(true);
+        }
+
+        a.setRemoveWhenFarAway(false);
+        a.setVisible(false);
+        a.setCanPickupItems(false);
+        a.setArms(false);
+        a.setBasePlate(false);
+        a.setMarker(true);
+        return a;
     }
 }

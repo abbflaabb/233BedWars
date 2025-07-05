@@ -11,6 +11,7 @@ public class TaskUtil {
             @Override
             public void run() {
                 GeneratorEditor.rotateGenerators();
+                GeneratorEditor.updateGeneratorTexts();
                 PlaceholderUtil.updateTeamHeart();
                 ActionBar.sendActionBar();
             }

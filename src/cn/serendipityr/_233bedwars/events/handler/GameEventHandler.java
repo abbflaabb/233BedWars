@@ -43,7 +43,7 @@ public class GameEventHandler implements Listener {
                 DalaoWarning.initGame(arena);
             }
             if (ConfigManager.addon_generatorEditor) {
-                GeneratorEditor.initGame(arena);
+                GeneratorEditor.initArena(arena);
             }
             if (ConfigManager.addon_shopItemAddon) {
                 ShopItemAddon.initGame(arena);

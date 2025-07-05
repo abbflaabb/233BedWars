@@ -13,3 +13,33 @@ vertical_amplitude: 0.50
 vertical_offset: 0.5
 
 text_holograms_offset: -2.0
+
+# 编辑资源点全息图文本
+edit_holograms_text:
+  enable: true
+  # 可用占位符
+  # {name} - 资源点名称
+  # {tier_int} - 资源点等级 (数字)
+  # {tier_roman} - 资源点等级 (罗马数字)
+  # {seconds} - 资源点生成时间
+  # {seconds_or_full} - 资源点生成时间 & 生成点已满提示
+  # {progress} - 资源点生成进度
+  texts:
+    tier:
+      enable: true
+      content: "&l{name} &r&e等级 &c{tier}"
+    timer:
+      enable: true
+      content: "{seconds_or_full}"
+    name:
+      enable: true
+      content: "&e[&r{progress}&e]"
+  place_holders:
+    seconds_or_full:
+      non_full: "&e将在&c{seconds}&e秒后刷新"
+      full: "&c满啦(*/ω＼*)"
+    progress:
+      length: 10
+      unit: "{unicode_right_arrow}"
+      color_current: "&a"
+      color_left: "&7"
