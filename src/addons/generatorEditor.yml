@@ -27,7 +27,7 @@ edit_holograms_text:
   texts:
     tier:
       enable: true
-      content: "&l{name} &r&e等级 &c{tier}"
+      content: "&l{name} &r&e等级 &c{tier_roman}"
     timer:
       enable: true
       content: "{seconds_or_full}"
