@@ -118,12 +118,29 @@ public class Landmine {
 
     public static void onBlockRedstone(Block block, int old_state, int new_state) {
         if (landmineMap.containsKey(block) && old_state == 0 && new_state != 0) {
-            for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 1, 1, 1)) {
-                if (entity.getType() == EntityType.DROPPED_ITEM) {
-                    Player placer = landmineMap.get(block);
-                    placer.sendMessage(messages_landmine_fuse);
-                    fuse(block);
-                    break;
+            if (block.getType().toString().equals(landmine_material) || block.getType().toString().equals(landmine_material.replace("LEGACY_", ""))) {
+                for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 1, 1, 1)) {
+                    if (entity.getType() == EntityType.PLAYER) {
+                        Player player = (Player) entity;
+                        Player placer = landmineMap.get(block);
+                        IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(placer);
+                        if (arena.getTeam(placer) == arena.getTeam(player)) {
+                            continue;
+                        }
+                        placer.sendMessage(messages_landmine_fuse);
+                        fuse(block);
+                        break;
+                    }
+                }
+            }
+            if (block.getType().toString().equals(light_landmine_material) || block.getType().toString().equals(light_landmine_material.replace("LEGACY_", ""))) {
+                for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 1, 1, 1)) {
+                    if (entity.getType() == EntityType.DROPPED_ITEM) {
+                        Player placer = landmineMap.get(block);
+                        placer.sendMessage(messages_landmine_fuse);
+                        fuse(block);
+                        break;
+                    }
                 }
             }
         }
