@@ -11,10 +11,16 @@ public class TaskUtil {
             @Override
             public void run() {
                 GeneratorEditor.rotateGenerators();
+            }
+        }.runTaskTimer(_233BedWars.getInstance(), 120L, 1L);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
                 GeneratorEditor.updateGeneratorTexts();
                 PlaceholderUtil.updateTeamHeart();
                 ActionBar.sendActionBar();
             }
-        }.runTaskTimer(_233BedWars.getInstance(), 120L, 1L);
+        }.runTaskTimerAsynchronously(_233BedWars.getInstance(), 120L, 1L);
     }
 }

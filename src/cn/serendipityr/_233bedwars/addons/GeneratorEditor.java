@@ -263,20 +263,25 @@ public class GeneratorEditor {
         item.setMetadata("horizontal_direction", new FixedMetadataValue(_233BedWars.getInstance(), horizontal_direction));
     }*/
 
+    static ConcurrentHashMap<ArmorStand, Double> yaw_angle_map = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<ArmorStand, Double> vertical_algebra_map = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<ArmorStand, Double> init_y_map = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<ArmorStand, Boolean> vertical_direction_map = new ConcurrentHashMap<>();
+
     public static void rotate(ArmorStand item) {
         Location location = item.getLocation().clone();
 
-        if (!item.hasMetadata("init_y")) {
-            item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
-            item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), 0D));
-            item.setMetadata("init_y", new FixedMetadataValue(_233BedWars.getInstance(), location.getY()));
-            item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), true));
+        if (!init_y_map.containsKey(item)) {
+            yaw_angle_map.put(item, 0D);
+            vertical_algebra_map.put(item, 0D);
+            init_y_map.put(item, location.getY());
+            vertical_direction_map.put(item, true);
         }
 
-        double move_yaw = (double) item.getMetadata("yaw_angle").get(0).value();
-        double vertical_algebra = (double) item.getMetadata("vertical_algebra").get(0).value();
-        double init_y = (double) item.getMetadata("init_y").get(0).value() + vertical_offset;
-        boolean vertical_direction = (boolean) item.getMetadata("vertical_direction").get(0).value();
+        double move_yaw = yaw_angle_map.get(item);
+        double vertical_algebra = vertical_algebra_map.get(item);
+        double init_y = init_y_map.get(item) + vertical_offset;
+        boolean vertical_direction = vertical_direction_map.get(item);
 
         if (vertical_algebra >= period) {
             vertical_algebra = 0;
@@ -315,9 +320,9 @@ public class GeneratorEditor {
             NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
         }
 
-        item.setMetadata("yaw_angle", new FixedMetadataValue(_233BedWars.getInstance(), move_yaw));
-        item.setMetadata("vertical_algebra", new FixedMetadataValue(_233BedWars.getInstance(), vertical_algebra));
-        item.setMetadata("vertical_direction", new FixedMetadataValue(_233BedWars.getInstance(), vertical_direction));
+        yaw_angle_map.put(item, move_yaw);
+        vertical_algebra_map.put(item, vertical_algebra);
+        vertical_direction_map.put(item, vertical_direction);
     }
 
     public static void rotateGenerators() {
@@ -408,8 +413,8 @@ public class GeneratorEditor {
             if (arena == null) {
                 return;
             }
-            item.setMetadata("thrown_item", new FixedMetadataValue(_233BedWars.getInstance(), true));
         }
+        item.setMetadata("thrown_item", new FixedMetadataValue(_233BedWars.getInstance(), true));
     }
 
     public static void handlePickUp(Player player, Item item) {
@@ -471,6 +476,9 @@ public class GeneratorEditor {
             if (entity.getType() == EntityType.DROPPED_ITEM) {
                 Item item = (Item) entity;
                 if (item.getItemStack().getType() == generator.getOre().getType()) {
+                    if (item.hasMetadata("thrown_item")) {
+                        continue;
+                    }
                     ore_count += item.getItemStack().getAmount();
                     if (ore_count >= generator.getSpawnLimit()) {
                         return edit_holograms_place_holders_full;
