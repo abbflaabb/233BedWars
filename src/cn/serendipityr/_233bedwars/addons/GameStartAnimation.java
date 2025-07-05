@@ -12,6 +12,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 
 public class GameStartAnimation {
+    public static Integer total_ticks = 0;
+
     static Boolean animation_enable;
     static List<String> animation_content;
     static Boolean sound_enable;
@@ -23,6 +25,18 @@ public class GameStartAnimation {
         animation_content.replaceAll(s -> s.replace("&", "§"));
         sound_enable = cfg.getBoolean("gameStartSound.enable");
         sound_content = cfg.getString("gameStartSound.sound").split(":");
+
+        int total = 0;
+        for (String s : animation_content) {
+            String[] animation = s.split("#");
+            long stay_ms = Integer.parseInt(animation[3]);
+            int ticks = (int) Math.ceil((double) stay_ms / 50);
+            total += ticks;
+        }
+        if (total_ticks == 0) {
+            int last = Integer.parseInt(animation_content.get(animation_content.size() - 1).split("#")[4]);
+            total_ticks = total + last;
+        }
     }
 
     public static void initArena(IArena arena) {
@@ -48,8 +62,9 @@ public class GameStartAnimation {
                     int fadeIn = Integer.parseInt(animation[2]);
                     long stay_ms = Integer.parseInt(animation[3]);
                     int fadeOut = Integer.parseInt(animation[4]);
+                    int ticks = (int) Math.ceil((double) stay_ms / 50);
                     for (Player player : arena.getPlayers()) {
-                        TitleUtil.send(player, animation[0], animation[1], fadeIn, (int) Math.ceil((double) stay_ms / 50), fadeOut);
+                        TitleUtil.send(player, animation[0], animation[1], fadeIn, ticks, fadeOut);
                     }
                     try {
                         Thread.sleep(stay_ms);
