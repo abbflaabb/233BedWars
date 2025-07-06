@@ -84,7 +84,7 @@ public class RecoverBed {
                     ProviderUtil.sendTeamMessage(team, messages_recover_bed_invalid_msg);
                 }
             }
-        }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 1L);
+        }.runTaskLater(_233BedWars.getInstance(), 1L);
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {

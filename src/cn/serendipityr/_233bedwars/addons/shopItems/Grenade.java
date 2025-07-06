@@ -55,7 +55,7 @@ public class Grenade {
             public void run() {
                 snowball.setShooter(null);
             }
-        }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 2L);
+        }.runTaskLater(_233BedWars.getInstance(), 2L);
     }
 
     public static void onProjectileHit(Projectile projectile) {

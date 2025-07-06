@@ -34,7 +34,7 @@ public class DalaoWarning {
                 public void run() {
                     sendMsg(arena, eliteTeam);
                 }
-            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 20L);
+            }.runTaskLater(_233BedWars.getInstance(), 20L);
         }
     }
 

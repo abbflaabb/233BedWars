@@ -192,7 +192,7 @@ public class GlobalEvents {
                     public void run() {
                         sendEventApplyMsg(arena);
                     }
-                }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 20L);
+                }.runTaskLater(_233BedWars.getInstance(), 20L);
                 initEvent(arena);
             } else {
                 ProviderUtil.sendGlobalMessage(arena, vote_result_none);

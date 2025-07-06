@@ -185,7 +185,7 @@ public class BalancedAdjustments {
                             ProviderUtil.sendTeamTitle(team, messages_bed_protect_beginning_title, messages_bed_protect_beginning_subtitle, bed_protect_title_fadeIn, bed_protect_title_fadeStay, bed_protect_title_fadeOut);
                         }
                     }
-                }.runTaskLater(_233BedWars.getInstance(), GameStartAnimation.total_ticks);
+                }.runTaskLaterAsynchronously(_233BedWars.getInstance(), GameStartAnimation.total_ticks);
 
                 if (!messages_bed_protect_beginning_tips.trim().isEmpty()) {
                     ProviderUtil.sendTeamMessage(team, messages_bed_protect_beginning_tips);
