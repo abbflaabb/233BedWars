@@ -84,7 +84,7 @@ public class BridgeCat {
                 if (block.getLocation().equals(start.getBlock().getLocation())) {
                     return;
                 }
-                if (blocksPlaced >= settings_bridge_cat_max_blocks || start.getBlock().getType() != Material.AIR || arena.isProtected(start) || cat.isDead()) {
+                if (blocksPlaced >= settings_bridge_cat_max_blocks || arena.isProtected(start) || cat.isDead()) {
                     cat.setHealth(0);
                     completeExplosion(start);
                     this.cancel();

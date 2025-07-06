@@ -102,7 +102,7 @@ public class BridgeChicken {
                     return;
                 }
 
-                if (start.getBlock().getType() != Material.AIR || blocksPlaced >= settings_bridge_chicken_max_blocks || arena.isProtected(start) || chicken.isDead()) {
+                if (blocksPlaced >= settings_bridge_chicken_max_blocks || arena.isProtected(start) || chicken.isDead()) {
                     chicken.setHealth(0);
                     completeExplosion(start);
                     this.cancel();
