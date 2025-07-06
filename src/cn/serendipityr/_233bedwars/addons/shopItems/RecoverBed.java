@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,13 +75,16 @@ public class RecoverBed {
     }
 
     public static void handleBedDestroy(IArena arena, ITeam team) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
-            if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60) && (!limit_use_map.containsKey(team) || limit_use_map.get(team) < settings_recover_bed_use_count_limit)) {
-                ProviderUtil.sendTeamMessage(team, messages_recover_bed_destroy_tips);
-            } else {
-                ProviderUtil.sendTeamMessage(team, messages_recover_bed_invalid_msg);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (ShopItemAddon.isBeforeInstant(arena.getStartTime(), settings_recover_bed_valid_minutes * 60) && (!limit_use_map.containsKey(team) || limit_use_map.get(team) < settings_recover_bed_use_count_limit)) {
+                    ProviderUtil.sendTeamMessage(team, messages_recover_bed_destroy_tips);
+                } else {
+                    ProviderUtil.sendTeamMessage(team, messages_recover_bed_invalid_msg);
+                }
             }
-        }, 1L);
+        }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 1L);
     }
 
     public static boolean handleShopBuy(Player player, IArena arena, ICategoryContent content) {

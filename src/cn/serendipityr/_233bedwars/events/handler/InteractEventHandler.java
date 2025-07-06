@@ -7,7 +7,6 @@ import cn.serendipityr._233bedwars.utils.BedWarsShopUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -25,6 +24,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -182,7 +182,12 @@ public class InteractEventHandler implements Listener {
         String title = event.getView().getTitle();
         if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
             BedWarsShopUtil.handleShopOpen(player, inventory, title);
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> BedWarsShopUtil.handleUpgradeShopOpen(player, inventory), 1L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    BedWarsShopUtil.handleUpgradeShopOpen(player, inventory);
+                }
+            }.runTaskLater(_233BedWars.getInstance(), 1L);
         }
     }
 

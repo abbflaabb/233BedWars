@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,11 +177,14 @@ public class CombatDetails {
                     }
                 });
             }
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                if (killStreak.get(killer).equals(kills)) {
-                    killStreak.remove(killer);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (killStreak.get(killer).equals(kills)) {
+                        killStreak.remove(killer);
+                    }
                 }
-            }, killStreakKeepTime * 20L);
+            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), killStreakKeepTime * 20L);
         }
     }
 
@@ -191,11 +195,14 @@ public class CombatDetails {
                     String level = MathUtil.intToRoman(potionEffect.getAmplifier() + 1);
                     damager.sendMessage(strengthEffectHint.replace("{level}", level).replace("&", "§"));
                     strengthEffectMap.put(damager, victim);
-                    Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                        if (strengthEffectMap.get(damager).equals(victim)) {
-                            strengthEffectMap.remove(damager);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (strengthEffectMap.get(damager).equals(victim)) {
+                                strengthEffectMap.remove(damager);
+                            }
                         }
-                    }, 300L);
+                    }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 300L);
                 }
             }
         }

@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ToxicBall {
     public static String toxic_ball_material;
@@ -53,7 +53,12 @@ public class ToxicBall {
     private static void toxicBall(Player player) {
         Snowball snowball = player.launchProjectile(Snowball.class);
         snowball.setMetadata("toxic_ball", new FixedMetadataValue(_233BedWars.getInstance(), ""));
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> snowball.setShooter(null), 2L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                snowball.setShooter(null);
+            }
+        }.runTaskLater(_233BedWars.getInstance(), 2L);
     }
 
     public static void onProjectileHit(Projectile projectile, Player victim) {

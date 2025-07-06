@@ -127,24 +127,27 @@ public class GeneratorEditor {
     }
 
     public static void initArena(IArena arena) {
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-            List<IGenerator> generators = new ArrayList<>(arena.getOreGenerators());
-            for (IGenerator generator : generators) {
-                if (gen_split) {
-                    generator.setStack(false);
-                } else {
-                    generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
-                }
-                if (!generator.getType().equals(GeneratorType.IRON) && !generator.getType().equals(GeneratorType.GOLD)) {
-                    OreGenerator.getRotation().remove((OreGenerator) generator);
-                    ArmorStand item = generator.getHologramHolder();
-                    item.setHeadPose(new EulerAngle(0, 0, 0));
-                    setTextHologramsOffset(generator);
-                    rotations.add(item);
-                    oreGenerators.add(generator);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                List<IGenerator> generators = new ArrayList<>(arena.getOreGenerators());
+                for (IGenerator generator : generators) {
+                    if (gen_split) {
+                        generator.setStack(false);
+                    } else {
+                        generator.setStack(BedWars.getGeneratorsCfg().getBoolean("stack-items"));
+                    }
+                    if (!generator.getType().equals(GeneratorType.IRON) && !generator.getType().equals(GeneratorType.GOLD)) {
+                        OreGenerator.getRotation().remove((OreGenerator) generator);
+                        ArmorStand item = generator.getHologramHolder();
+                        item.setHeadPose(new EulerAngle(0, 0, 0));
+                        setTextHologramsOffset(generator);
+                        rotations.add(item);
+                        oreGenerators.add(generator);
+                    }
                 }
             }
-        }, 65L);
+        }.runTaskLater(_233BedWars.getInstance(), 65L);
     }
 
     public static void resetArena(IArena arena) {
@@ -472,20 +475,23 @@ public class GeneratorEditor {
     private static String getSecondsOrFull(IGenerator generator) {
         int ore_count = 0;
         Location loc = generator.getLocation();
-        for (Entity entity : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)) {
-            if (entity.getType() == EntityType.DROPPED_ITEM) {
-                Item item = (Item) entity;
-                if (item.getItemStack().getType() == generator.getOre().getType()) {
-                    if (item.hasMetadata("thrown_item")) {
-                        continue;
-                    }
-                    ore_count += item.getItemStack().getAmount();
-                    if (ore_count >= generator.getSpawnLimit()) {
-                        return edit_holograms_place_holders_full;
+        // Bukkit内部类有时会抛出NoSuchElementException
+        try {
+            for (Entity entity : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)) {
+                if (entity.getType() == EntityType.DROPPED_ITEM) {
+                    Item item = (Item) entity;
+                    if (item.getItemStack().getType() == generator.getOre().getType()) {
+                        if (item.hasMetadata("thrown_item")) {
+                            continue;
+                        }
+                        ore_count += item.getItemStack().getAmount();
+                        if (ore_count >= generator.getSpawnLimit()) {
+                            return edit_holograms_place_holders_full;
+                        }
                     }
                 }
             }
-        }
+        } catch (Exception ignored) {}
         return edit_holograms_place_holders_non_full;
     }
 

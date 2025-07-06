@@ -2,12 +2,12 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Grenade {
     public static String grenade_material;
@@ -50,13 +50,23 @@ public class Grenade {
     private static void grenade(Player player) {
         Snowball snowball = player.launchProjectile(Snowball.class);
         snowball.setMetadata("grenade", new FixedMetadataValue(_233BedWars.getInstance(), ""));
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> snowball.setShooter(null), 2L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                snowball.setShooter(null);
+            }
+        }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 2L);
     }
 
     public static void onProjectileHit(Projectile projectile) {
         if (projectile instanceof Snowball && projectile.hasMetadata("grenade")) {
             Location loc = projectile.getLocation();
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_grenade_explosion_damage, settings_grenade_set_fire, settings_grenade_break_block), settings_grenade_fuse_delay * 20L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_grenade_explosion_damage, settings_grenade_set_fire, settings_grenade_break_block);
+                }
+            }.runTaskLater(_233BedWars.getInstance(), settings_grenade_fuse_delay * 20L);
         }
     }
 }

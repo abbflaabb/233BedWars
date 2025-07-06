@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -274,26 +275,29 @@ public class ShopItemAddon {
     public static void setCooling(Player player, String identity) {
         if (cooling_items.containsKey(identity)) {
             player.setMetadata(identity, new FixedMetadataValue(_233BedWars.getInstance(), ""));
-            Bukkit.getScheduler().runTaskAsynchronously(_233BedWars.getInstance(), () -> {
-                int total = cooling_items.get(identity) * 10;
-                int cooling = total;
-                while (cooling > 0) {
-                    cooling--;
-                    int current = Math.round((float) cooling / total * cooling_progress_length);
-                    int left = cooling_progress_length - current;
-                    String progress = cooling_progress_color_current + String.join("", Collections.nCopies(left, cooling_progress_unit)) + cooling_progress_color_left + String.join("", Collections.nCopies(current, cooling_progress_unit));
-                    String msg = cooling_actionbar
-                            .replace("{progress}", progress)
-                            .replace("{cooling_time}", String.valueOf((double) cooling / 10))
-                            .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name").replace("{color}", "§e"));
-                    ActionBarUtil.send(player, msg);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ignored) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    int total = cooling_items.get(identity) * 10;
+                    int cooling = total;
+                    while (cooling > 0) {
+                        cooling--;
+                        int current = Math.round((float) cooling / total * cooling_progress_length);
+                        int left = cooling_progress_length - current;
+                        String progress = cooling_progress_color_current + String.join("", Collections.nCopies(left, cooling_progress_unit)) + cooling_progress_color_left + String.join("", Collections.nCopies(current, cooling_progress_unit));
+                        String msg = cooling_actionbar
+                                .replace("{progress}", progress)
+                                .replace("{cooling_time}", String.valueOf((double) cooling / 10))
+                                .replace("{item}", Language.getMsg(player, sectionMap.get(identity) + "-name").replace("{color}", "§e"));
+                        ActionBarUtil.send(player, msg);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ignored) {
+                        }
                     }
+                    player.removeMetadata(identity, _233BedWars.getInstance());
                 }
-                player.removeMetadata(identity, _233BedWars.getInstance());
-            });
+            }.runTaskAsynchronously(_233BedWars.getInstance());
         }
     }
 

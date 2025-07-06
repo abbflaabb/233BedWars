@@ -5,7 +5,6 @@ import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.TeamColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,6 +13,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class MagicalWool {
     public static String magical_wool_material;
@@ -77,13 +77,16 @@ public class MagicalWool {
                     (loc.getBlockY() == playerLoc.getBlockY() || loc.getBlockY() == playerLoc.getBlockY() + 1)) {
                 break;
             }
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                replace.setType(wool);
-                arena.addPlacedBlock(replace);
-                String[] _sound = settings_magical_wool_place_sound.split(":");
-                player.playSound(playerLoc, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
-                ProviderUtil.bw.getVersionSupport().setBlockTeamColor(replace, teamColor);
-            }, (long) i * settings_magical_wool_expand_delay);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    replace.setType(wool);
+                    arena.addPlacedBlock(replace);
+                    String[] _sound = settings_magical_wool_place_sound.split(":");
+                    player.playSound(playerLoc, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
+                    ProviderUtil.bw.getVersionSupport().setBlockTeamColor(replace, teamColor);
+                }
+            }.runTaskLater(_233BedWars.getInstance(), (long) i * settings_magical_wool_expand_delay);
         }
     }
 }

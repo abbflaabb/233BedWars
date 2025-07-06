@@ -5,7 +5,6 @@ import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,6 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 
@@ -153,7 +153,12 @@ public class Landmine {
         } else {
             loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_landmine_explosion_damage, settings_landmine_set_fire, settings_landmine_break_block);
         }
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> block.setType(Material.AIR), 2L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                block.setType(Material.AIR);
+            }
+        }.runTaskLater(_233BedWars.getInstance(), 2L);
         landmineMap.remove(block);
         landmineTeamMap.remove(block);
     }

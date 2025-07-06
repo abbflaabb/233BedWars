@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class GameEventHandler implements Listener {
     @EventHandler
@@ -48,11 +49,14 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_shopItemAddon) {
                 ShopItemAddon.initGame(arena);
             }
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                for (Player player : arena.getPlayers()) {
-                    FastCommands.giveItems(player);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Player player : arena.getPlayers()) {
+                        FastCommands.giveItems(player);
+                    }
                 }
-            }, 20L);
+            }.runTaskLater(_233BedWars.getInstance(), 20L);
         }
         // 游戏结束时
         if (state.equals(GameState.restarting)) {
@@ -85,7 +89,12 @@ public class GameEventHandler implements Listener {
     public void onPlayerRespawn(PlayerReSpawnEvent event) {
         IArena arena = event.getArena();
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> FastCommands.giveItems(player), 20L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                FastCommands.giveItems(player);
+            }
+        }.runTaskLater(_233BedWars.getInstance(), 20L);
         if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(player)) {
             player.setLevel(0);
         }
@@ -102,7 +111,12 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         Player player = event.getPlayer();
         if (ConfigManager.addon_scoreBoardEditor) {
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ScoreboardEditor.editScoreBoard(arena, player);
+                }
+            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 5L);
         }
         if (arena.getStatus() == GameState.playing) {
             return;
@@ -124,7 +138,12 @@ public class GameEventHandler implements Listener {
         IArena arena = event.getArena();
         Player player = event.getPlayer();
         if (ConfigManager.addon_scoreBoardEditor) {
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> ScoreboardEditor.editScoreBoard(arena, player), 5L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ScoreboardEditor.editScoreBoard(arena, player);
+                }
+            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 5L);
         }
         if (ConfigManager.addon_xpResMode && XpResMode.isExpMode(player)) {
             player.setLevel(0);

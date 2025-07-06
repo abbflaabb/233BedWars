@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,11 +103,14 @@ public class GlobalEvents {
         if (force_groups.containsKey(arena.getGroup())) {
             return;
         }
-        Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
-            for (Integer slot : items.keySet()) {
-                player.getInventory().setItem(slot, items.get(slot));
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Integer slot : items.keySet()) {
+                    player.getInventory().setItem(slot, items.get(slot));
+                }
             }
-        }, 16L);
+        }.runTaskLater(_233BedWars.getInstance(), 16L);
     }
 
     public static void openGUI(Player player) {
@@ -183,7 +187,12 @@ public class GlobalEvents {
             apply_events.put(arena, filter.getKey().equals("random") ? RandomEvent.getRandomEvent() : filter.getKey());
             vote_map.remove(arena);
             if (isEnableEvent(arena)) {
-                Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> sendEventApplyMsg(arena), 20L);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        sendEventApplyMsg(arena);
+                    }
+                }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 20L);
                 initEvent(arena);
             } else {
                 ProviderUtil.sendGlobalMessage(arena, vote_result_none);

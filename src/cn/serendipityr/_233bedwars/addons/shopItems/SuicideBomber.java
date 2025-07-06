@@ -2,7 +2,6 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SuicideBomber {
     public static String suicide_bomber_material;
@@ -57,11 +57,14 @@ public class SuicideBomber {
         player.playSound(player.getLocation(), Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
         player.getInventory().setHelmet(new ItemStack(Material.TNT));
         player.setMetadata("suicide_bomber", new FixedMetadataValue(_233BedWars.getInstance(), ""));
-        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-            if (isCarryBomb(player)) {
-                fuseBomb(player);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isCarryBomb(player)) {
+                    fuseBomb(player);
+                }
             }
-        }, settings_suicide_bomber_active_time * 20L);
+        }.runTaskLater(_233BedWars.getInstance(), settings_suicide_bomber_active_time * 20L);
     }
 
     private static boolean isSuicideBomber(Player player, ItemStack item) {

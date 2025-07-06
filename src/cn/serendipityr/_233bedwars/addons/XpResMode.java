@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,11 +108,14 @@ public class XpResMode {
             if (force_groups.containsKey(arena.getGroup())) {
                 return;
             }
-            Bukkit.getScheduler().runTaskLaterAsynchronously(_233BedWars.getInstance(), () -> {
-                for (Integer slot : items.keySet()) {
-                    player.getInventory().setItem(slot, items.get(slot));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Integer slot : items.keySet()) {
+                        player.getInventory().setItem(slot, items.get(slot));
+                    }
                 }
-            }, 16L);
+            }.runTaskLater(_233BedWars.getInstance(), 16L);
         }
     }
 

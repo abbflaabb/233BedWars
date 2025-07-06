@@ -4,13 +4,13 @@ import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ObsidianBreaker {
     public static String obsidian_breaker_material;
@@ -54,13 +54,16 @@ public class ObsidianBreaker {
 
     private static void obsidianBreaker(IArena arena, Block block) {
         if (block.getType().toString().contains("OBSIDIAN") && !arena.isProtected(block.getLocation())) {
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                if (settings_obsidian_breaker_complete_explosion) {
-                    Location loc = block.getLocation();
-                    block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_obsidian_breaker_explosion_damage, settings_obsidian_breaker_set_fire, settings_obsidian_breaker_break_block);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (settings_obsidian_breaker_complete_explosion) {
+                        Location loc = block.getLocation();
+                        block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), settings_obsidian_breaker_explosion_damage, settings_obsidian_breaker_set_fire, settings_obsidian_breaker_break_block);
+                    }
+                    block.setType(Material.getMaterial(settings_obsidian_breaker_replace_block));
                 }
-                block.setType(Material.getMaterial(settings_obsidian_breaker_replace_block));
-            }, settings_obsidian_breaker_convert_time * 20);
+            }.runTaskLater(_233BedWars.getInstance(), settings_obsidian_breaker_convert_time * 20L);
         }
     }
 

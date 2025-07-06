@@ -6,9 +6,9 @@ import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +29,12 @@ public class DalaoWarning {
     public static void initGame(IArena arena) {
         ITeam eliteTeam = getEliteTeam(arena);
         if (eliteTeam != null) {
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> sendMsg(arena, eliteTeam), 20L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sendMsg(arena, eliteTeam);
+                }
+            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 20L);
         }
     }
 

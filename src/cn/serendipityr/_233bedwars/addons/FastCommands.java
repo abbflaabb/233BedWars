@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ public class FastCommands {
     static String gui_title;
     static HashMap<Integer, ItemStack> items = new HashMap<>();
     static HashMap<Integer, ItemStack> gui_items = new HashMap<>();
-    static List<Player> remindingPlayers = new CopyOnWriteArrayList<>();
+    static List<ITeam> remindingTeams = new CopyOnWriteArrayList<>();
     static ConcurrentHashMap<Player, Integer> remindingThreshold = new ConcurrentHashMap<>();
 
     public static void loadConfig(YamlConfiguration cfg) {
@@ -71,13 +72,16 @@ public class FastCommands {
         if (player.getLocation().getPitch() <= -80) {
             int threshold = remindingThreshold.containsKey(player) ? remindingThreshold.get(player) + 1 : 1;
             remindingThreshold.put(player, threshold);
-            Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                if (remindingThreshold.containsKey(player) && remindingThreshold.get(player) == threshold) {
-                    remindingThreshold.remove(player);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (remindingThreshold.containsKey(player) && remindingThreshold.get(player) == threshold) {
+                        remindingThreshold.remove(player);
+                    }
                 }
-            }, (long) quick_reminding_threshold_timeout * 20);
-            if (!remindingPlayers.contains(player) && threshold >= quick_reminding_threshold) {
-                ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
+            }.runTaskLaterAsynchronously(_233BedWars.getInstance(), (long) quick_reminding_threshold_timeout * 20);
+            ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
+            if (!remindingTeams.contains(team) && threshold >= quick_reminding_threshold) {
                 if (team == null) {
                     player.sendMessage(error_died);
                     return;
@@ -86,18 +90,21 @@ public class FastCommands {
                     player.sendMessage(error_bed_destroyed);
                     return;
                 }
-                remindingPlayers.add(player);
+                remindingTeams.add(team);
                 for (Player p : team.getMembers()) {
                     for (int i = 0; i < quick_reminding_count; i++) {
                         int finalI = i;
-                        Bukkit.getScheduler().runTaskLater(_233BedWars.getInstance(), () -> {
-                            TitleUtil.send(p, "", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0);
-                            p.playSound(p.getLocation(), Sound.valueOf(quick_reminding_sound[0]), Float.parseFloat(quick_reminding_sound[1]), Float.parseFloat(quick_reminding_sound[2]));
-                            if (finalI == quick_reminding_count - 1) {
-                                remindingThreshold.remove(player);
-                                remindingPlayers.remove(player);
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                TitleUtil.send(p, "", quick_reminding.replace("{tColor}", team.getColor().chat().toString()).replace("{player}", player.getDisplayName()), 0, quick_reminding_title_stay, 0);
+                                p.playSound(p.getLocation(), Sound.valueOf(quick_reminding_sound[0]), Float.parseFloat(quick_reminding_sound[1]), Float.parseFloat(quick_reminding_sound[2]));
+                                if (finalI == quick_reminding_count - 1) {
+                                    remindingThreshold.remove(player);
+                                    remindingTeams.remove(team);
+                                }
                             }
-                        }, (long) i * quick_reminding_delay);
+                        }.runTaskLaterAsynchronously(_233BedWars.getInstance(), (long) i * quick_reminding_delay);
                     }
                 }
             }
