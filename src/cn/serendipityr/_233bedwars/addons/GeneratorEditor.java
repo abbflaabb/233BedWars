@@ -15,7 +15,6 @@ import com.andrei1058.bedwars.api.configuration.ConfigPath;
 import com.andrei1058.bedwars.api.language.Language;
 import com.andrei1058.bedwars.api.language.Messages;
 import com.andrei1058.bedwars.arena.OreGenerator;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -155,6 +154,7 @@ public class GeneratorEditor {
             rotations.remove(generator.getHologramHolder());
             oreGenerators.remove(generator);
             timer_holograms.remove(generator);
+            name_holograms.remove(generator);
         }
     }
 
