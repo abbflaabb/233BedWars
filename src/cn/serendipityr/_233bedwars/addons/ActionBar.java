@@ -6,6 +6,8 @@ import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.api.arena.GameState;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
+import com.andrei1058.bedwars.api.language.Language;
+import com.andrei1058.bedwars.api.language.Messages;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -26,6 +28,11 @@ public class ActionBar {
         actionBar_waiting = cfg.getString("actionBar.waiting");
         actionBar_playing = cfg.getString("actionBar.playing");
         tips = cfg.getStringList("tips");
+        if (ConfigManager.addon_actionBar) {
+            for (Language lang : Language.getLanguages()) {
+                lang.getYml().set(Messages.FORMATTING_ACTION_BAR_TRACKING, "");
+            }
+        }
     }
 
     public static void initGame(IArena arena, boolean check) {
