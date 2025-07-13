@@ -18,7 +18,7 @@ text_holograms_offset: -2.0
 # 数据包是一把双刃剑，在低版本的服务器上，它可以保证更加平滑的动画
 # 但在高版本下可能引发一些问题，导致完全相反的结果。
 # [!] 推荐在**1.8_R3以外**的服务器上启用此项
-disable_nms_packet: true
+disable_nms_packet: false
 
 # 编辑资源点全息图文本
 edit_holograms_text:
