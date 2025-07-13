@@ -45,6 +45,7 @@ public class GeneratorEditor {
     static double vertical_amplitude;
     static double vertical_offset;
     static double text_holograms_offset;
+    static Boolean disable_nms_packet;
     static Boolean edit_holograms_texts_enable;
     static Boolean edit_holograms_texts_tier_enable;
     static String edit_holograms_texts_tier;
@@ -77,6 +78,7 @@ public class GeneratorEditor {
         vertical_amplitude = cfg.getDouble("vertical_amplitude");
         vertical_offset = cfg.getDouble("vertical_offset");
         text_holograms_offset = cfg.getDouble("text_holograms_offset");
+        disable_nms_packet = cfg.getBoolean("disable_nms_packet");
 
         edit_holograms_texts_enable = cfg.getBoolean("edit_holograms_text.enable");
         edit_holograms_texts_tier_enable = cfg.getBoolean("edit_holograms_text.texts.tier.enable");
@@ -302,7 +304,7 @@ public class GeneratorEditor {
 
         Object nmsArmorStand = NMSUtil.getNMSArmorStand(item);
         Object teleportPacket;
-        if (NMSUtil.getServerVersion().equals("v1_8_R3")) {
+        if (NMSUtil.getServerVersion().equals("v1_8_R3") && !disable_nms_packet) {
             if (move_yaw >= 256.0) {
                 move_yaw -= 256.0;
             }
@@ -317,10 +319,12 @@ public class GeneratorEditor {
             teleportPacket = NMSUtil.getEntityTeleportPacket(nmsArmorStand);
         }
 
-        for (Player p : location.getWorld().getPlayers()) {
-            Object nmsPlayer = NMSUtil.getNMSPlayer(p);
-            Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
-            NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
+        if (!disable_nms_packet) {
+            for (Player p : location.getWorld().getPlayers()) {
+                Object nmsPlayer = NMSUtil.getNMSPlayer(p);
+                Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
+                NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
+            }
         }
 
         yaw_angle_map.put(item, move_yaw);
