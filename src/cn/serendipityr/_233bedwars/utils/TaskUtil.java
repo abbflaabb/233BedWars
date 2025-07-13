@@ -11,6 +11,7 @@ public class TaskUtil {
             @Override
             public void run() {
                 GeneratorEditor.rotateGenerators();
+                PlaceholderUtil.updateTeamHeart();
             }
         }.runTaskTimer(_233BedWars.getInstance(), 120L, 1L);
 
@@ -18,7 +19,6 @@ public class TaskUtil {
             @Override
             public void run() {
                 GeneratorEditor.updateGeneratorTexts();
-                PlaceholderUtil.updateTeamHeart();
                 ActionBar.sendActionBar();
             }
         }.runTaskTimerAsynchronously(_233BedWars.getInstance(), 120L, 1L);

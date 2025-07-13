@@ -62,7 +62,7 @@ settings:
     # EFFECT - 药水效果:效果等级:持续时间:粒子效果:强制覆盖
     # EXPLOSION - 爆炸威力:生成火焰:破坏方块
     # TELEPORT - X轴增量:Y轴增量:Z轴增量
-    # COMMANDS - 以控制台执行具体指令 (变量: %player_name%)
+    # COMMAND - 以控制台执行具体指令 (变量: %player_name%)
     # SAY - 以玩家身份发送消息 (变量: %player_name%)
     possibilities:
       - "0.1:LUCKY:ITEM:&b幸运的钻石头盔:&a描述1#&6描述2#&c描述3:DIAMOND_HELMET:1:PROTECTION_ENVIRONMENTAL.4#DURABILITY.3"
