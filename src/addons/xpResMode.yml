@@ -37,6 +37,11 @@ kill_reclaim_exp: 100
 
 kill_reclaim_message: "&a你杀死 {vtColor}{victim} &a获得了 &6&l{exp} &a点经验"
 
+# 指定特定商店物品售价
+# [商店物品特征值:经验售价]
+special_item_cost:
+  - "recover_bed:500"
+
 Item:
   1:
     material: PAPER

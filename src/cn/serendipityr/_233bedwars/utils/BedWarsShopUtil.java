@@ -148,7 +148,7 @@ public class BedWarsShopUtil {
             }
             if (tiers.size() - 1 > tier) {
                 UpgradeTier ut = tiers.get(tier + 1);
-                int cost = XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost(), true);
+                int cost = XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost(), true, null);
                 if (player.getLevel() < cost) {
                     Sounds.playSound("shop-insufficient-money", player);
                     player.sendMessage(Language.getMsg(player, Messages.SHOP_INSUFFICIENT_MONEY).replace("{currency}", XpResMode.currency).replace("{amount}", String.valueOf(cost - player.getLevel())));
@@ -311,7 +311,7 @@ public class BedWarsShopUtil {
                 }
                 UpgradeTier ut = tiers.get(tier);
                 boolean highest = tiers.size() == tier + 1 && team.getTeamUpgradeTiers().containsKey(name);
-                boolean afford = isAffordable(player, XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost(), true));
+                boolean afford = isAffordable(player, XpResMode.calcExpLevel(ut.getCurrency(), ut.getCost(), true, null));
                 String color;
                 if (!highest) {
                     if (afford) {
@@ -332,7 +332,7 @@ public class BedWarsShopUtil {
                             tierColor = Messages.FORMAT_UPGRADE_TIER_UNLOCKED;
                         }
                         UpgradeTier upgradeTier = tiers.get(Integer.parseInt(result)-1);
-                        lore.add(s.replace("{tier_" + result + "_cost}", String.valueOf(XpResMode.calcExpLevel(upgradeTier.getCurrency(), upgradeTier.getCost(), true)))
+                        lore.add(s.replace("{tier_" + result + "_cost}", String.valueOf(XpResMode.calcExpLevel(upgradeTier.getCurrency(), upgradeTier.getCost(), true, null)))
                                 .replace("{tier_" + result + "_currency}", currencyMsg)
                                 .replace("{tier_" + result + "_color}", Language.getMsg(player, tierColor)));
 
@@ -397,7 +397,7 @@ public class BedWarsShopUtil {
             }
             cost += team.getActiveTraps().size() * multiplier;
         }
-        cost = XpResMode.calcExpLevel(Material.getMaterial(curr.toUpperCase()), cost, true);
+        cost = XpResMode.calcExpLevel(Material.getMaterial(curr.toUpperCase()), cost, true, null);
         return cost;
     }
 
@@ -500,7 +500,7 @@ public class BedWarsShopUtil {
     private static Integer getCategoryContentPrice(ShopCache shopCache, CategoryContent content) {
         int tier = shopCache.getContentTier(content.getIdentifier());
         IContentTier contentTier = content.getContentTiers().get(tier - 1);
-        return XpResMode.calcExpLevel(contentTier.getCurrency(), contentTier.getPrice(), true);
+        return XpResMode.calcExpLevel(contentTier.getCurrency(), contentTier.getPrice(), true, content);
     }
 
     private static CategoryContent getCategoryContentFromQuickBuy(PlayerQuickBuyCache quickBuyCache, int slot) {

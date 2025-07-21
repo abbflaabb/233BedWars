@@ -7,6 +7,7 @@ import cn.serendipityr._233bedwars.utils.MathUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import com.andrei1058.bedwars.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.shop.main.CategoryContent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -41,6 +42,7 @@ public class XpResMode {
     public static Boolean replace_upgrade_shop;
     static Integer gui_size;
     static String gui_title;
+    static HashMap<String, Integer> special_item_cost = new HashMap<>();
     public static HashMap<String, String> force_groups = new HashMap<>();
     static HashMap<Integer, ItemStack> items = new HashMap<>();
     static HashMap<Integer, ItemStack> gui_items = new HashMap<>();
@@ -66,6 +68,11 @@ public class XpResMode {
         kill_reclaim_exp = cfg.getInt("kill_reclaim_exp");
         kill_reclaim_message = cfg.getString("kill_reclaim_message").replace("&", "§");
         replace_upgrade_shop = cfg.getBoolean("replace_upgrade_shop");
+        special_item_cost.clear();
+        for (String kv : cfg.getStringList("special_item_cost")) {
+            String[] _kv = kv.split(":");
+            special_item_cost.put(_kv[0], Integer.parseInt(_kv[1]));
+        }
         gui_size = cfg.getInt("GUI.size");
         gui_title = cfg.getString("GUI.title").replace("&", "§");
         items.clear();
@@ -121,7 +128,7 @@ public class XpResMode {
 
     public static boolean handlePickUp(Player player, Item item) {
         ItemStack itemStack = item.getItemStack();
-        int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount(), false);
+        int giveLevels = calcExpLevel(itemStack.getType(), itemStack.getAmount(), false, null);
         if (playerResType.get(player.getUniqueId())) {
             if (giveLevels != -1) {
                 item.remove();
@@ -149,7 +156,13 @@ public class XpResMode {
         return playerResType.getOrDefault(player.getUniqueId(), false);
     }
 
-    public static int calcExpLevel(Material material, int amount, boolean shop) {
+    public static int calcExpLevel(Material material, int amount, boolean shop, CategoryContent content) {
+        if (content != null) {
+            String id = content.getIdentifier().split("\\.")[2];
+            if (special_item_cost.containsKey(id)) {
+                return special_item_cost.get(id);
+            }
+        }
         int giveLevels = -1;
         if (shop) {
             Material iron_ingot = BedWars.getAPI().getShopUtil().getCurrency("iron");

@@ -431,7 +431,7 @@ public class GeneratorEditor {
             if (item.hasMetadata("thrown_item")) {
                 return;
             }
-            int giveLevels = XpResMode.calcExpLevel(itemStack.getType(), itemStack.getAmount(), false);
+            int giveLevels = XpResMode.calcExpLevel(itemStack.getType(), itemStack.getAmount(), false, null);
             IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
             if (arena == null) {
                 return;
