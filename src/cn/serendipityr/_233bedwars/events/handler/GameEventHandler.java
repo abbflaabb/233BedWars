@@ -15,7 +15,6 @@ import com.andrei1058.bedwars.api.events.player.*;
 import com.andrei1058.bedwars.api.events.shop.ShopBuyEvent;
 import com.andrei1058.bedwars.api.events.upgrades.UpgradeBuyEvent;
 import com.andrei1058.bedwars.api.upgrades.TeamUpgrade;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -161,6 +160,16 @@ public class GameEventHandler implements Listener {
                     CombatDetails.checkPlayerKillDistance(killer, victim);
                     CombatDetails.calcKillStreak(arena, killer, victim);
                 }
+            }
+        }
+        if (ConfigManager.addon_scoreBoardEditor) {
+            if (event.getVictimTeam().isBedDestroyed()) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        ScoreboardEditor.editScoreBoard(arena, victim);
+                    }
+                }.runTaskLaterAsynchronously(_233BedWars.getInstance(), 5L);
             }
         }
         if (ConfigManager.addon_globalEvents) {

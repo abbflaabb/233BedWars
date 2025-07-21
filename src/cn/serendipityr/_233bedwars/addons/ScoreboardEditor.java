@@ -1,5 +1,6 @@
 package cn.serendipityr._233bedwars.addons;
 
+import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import cn.serendipityr._233bedwars.utils.ScoreBoardUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
@@ -47,7 +48,20 @@ public class ScoreboardEditor {
             case playing:
                 List<String> in_game_lines = new ArrayList<>(ScoreboardEditor.in_game_lines);
                 replaceElementWithElements(in_game_lines, "{allTeams}", getAllTeamsInfo(arena));
-                ScoreBoardUtil.setScoreBoardContent(player, ScoreboardEditor.in_game_title, in_game_lines);
+                ITeam exTeam = arena.getExTeam(player.getUniqueId());
+                if (arena.isSpectator(player) && exTeam != null) {
+                    in_game_lines.replaceAll(s -> s
+                            .replace("{tHeart}", PlaceholderUtil.getTeamHeart(exTeam))
+                            .replace("{tColor}", PlaceholderUtil.getTeamColor(exTeam))
+                            .replace("{tName}", PlaceholderUtil.getTeamName(exTeam, player))
+                            .replace("{tDanger}", PlaceholderUtil.getTeamDanger(exTeam))
+                            .replace("{tDangerF}", PlaceholderUtil.getTeamDangerFull(exTeam))
+                            .replace("{tAlive}", String.valueOf(PlaceholderUtil.getTeamAlive(exTeam)))
+                            .replace("{tDistance}", String.valueOf(PlaceholderUtil.getTeamDistance(exTeam, player)))
+                            .replace("{tIndicator}", PlaceholderUtil.getTeamIndicator(exTeam, player))
+                    );
+                }
+                ScoreBoardUtil.setScoreBoardContent(player, in_game_title, in_game_lines);
                 break;
             case restarting:
                 List<String> restarting_lines = new ArrayList<>(ScoreboardEditor.restarting_lines);
@@ -57,7 +71,7 @@ public class ScoreboardEditor {
         }
     }
 
-    private static void replaceElementWithElements(List<String> list, String elementToReplace, List<String> newElements) {
+    static void replaceElementWithElements(List<String> list, String elementToReplace, List<String> newElements) {
         int index = list.indexOf(elementToReplace);
         if (index != -1) {
             // 移除找到的元素
@@ -67,7 +81,7 @@ public class ScoreboardEditor {
         }
     }
 
-    private static List<String> getAllTeamsInfo(IArena arena) {
+    static List<String> getAllTeamsInfo(IArena arena) {
         List<String> allTeamsInfo = new ArrayList<>();
         List<ITeam> teams = arena.getTeams();
 
