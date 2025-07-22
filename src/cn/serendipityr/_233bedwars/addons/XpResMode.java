@@ -88,7 +88,16 @@ public class XpResMode {
     }
 
     public static void initPlayer(Player player, IArena arena) {
+        player.setLevel(0);
         playerResType.put(player.getUniqueId(), force_groups.getOrDefault(arena.getGroup(), "exp").equals("exp"));
+    }
+
+    public static void resetArena(IArena arena) {
+        for (Player p : arena.getWorld().getPlayers()) {
+            if (isExpMode(p)) {
+                p.setLevel(0);
+            }
+        }
     }
 
     public static void openGUI(Player player) {

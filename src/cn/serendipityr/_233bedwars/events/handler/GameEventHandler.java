@@ -72,6 +72,9 @@ public class GameEventHandler implements Listener {
             if (ConfigManager.addon_shopItemAddon) {
                 ShopItemAddon.resetGame(arena);
             }
+            if (ConfigManager.addon_xpResMode) {
+                XpResMode.resetArena(arena);
+            }
         }
         // 每当游戏状态改变时
         if (ConfigManager.addon_scoreBoardEditor) {
