@@ -69,6 +69,10 @@ public class GeneratorEditor {
 
     static ConcurrentHashMap<IGenerator, ArmorStand> timer_holograms = new ConcurrentHashMap<>();
     static ConcurrentHashMap<IGenerator, ArmorStand> name_holograms = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<IGenerator, Boolean> generator_full_check = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<IGenHolo, String> holo_name_map = new ConcurrentHashMap<>();
+    static int spawn_check_ticks = 20;
+    static int current_check_ticks = 0;
 
     public static void loadConfig(YamlConfiguration cfg) {
         gen_split = cfg.getBoolean("gen_split");
@@ -157,6 +161,10 @@ public class GeneratorEditor {
             oreGenerators.remove(generator);
             timer_holograms.remove(generator);
             name_holograms.remove(generator);
+            generator_full_check.remove(generator);
+            for (IGenHolo holo : generator.getLanguageHolograms().values()) {
+                holo_name_map.remove(holo);
+            }
         }
     }
 
@@ -343,22 +351,51 @@ public class GeneratorEditor {
             return;
         }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (IGenerator generator : oreGenerators) {
+        boolean check_spawn = false;
+        current_check_ticks++;
+        if (current_check_ticks >= spawn_check_ticks) {
+            current_check_ticks = 0;
+            check_spawn = true;
+        }
+
+        for (IGenerator generator : oreGenerators) {
+            if (check_spawn) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        generator_full_check.put(generator, checkFull(generator));
+                    }
+                }.runTask(_233BedWars.getInstance());
+            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
                     try {
                         if (IGENERATOR_CLASS == null) {
                             IGENERATOR_CLASS = generator.getClass();
+                        }
+
+                        if (UPGRADE_STAGE_FIELD == null) {
                             UPGRADE_STAGE_FIELD = IGENERATOR_CLASS.getDeclaredField("upgradeStage");
                             UPGRADE_STAGE_FIELD.setAccessible(true);
                         }
 
+                        if (!UPGRADE_STAGE_FIELD.canAccess(generator)) {
+                            return;
+                        }
+
                         Integer upgrade_stage = (Integer) UPGRADE_STAGE_FIELD.get(generator);
+                        Boolean full_check = generator_full_check.getOrDefault(generator, false);
 
                         for (Language lang : Language.getLanguages()) {
                             String iso = lang.getIso();
                             IGenHolo holo = generator.getLanguageHolograms().get(iso);
+
+                            if (!holo_name_map.containsKey(holo)) {
+                                holo_name_map.put(holo, getIHoloName(iso, generator.getOre().getType()));
+                            }
+
+                            String display_name = holo_name_map.get(holo);
 
                             if (IGENHOLO_CLASS == null) {
                                 IGENHOLO_CLASS = holo.getClass();
@@ -367,10 +404,11 @@ public class GeneratorEditor {
                             }
 
                             if (edit_holograms_texts_tier_enable) {
-                                holo.setTierName(setPlaceHolders(edit_holograms_texts_tier, generator, holo, upgrade_stage));
+                                holo.setTierName(setPlaceHolders(edit_holograms_texts_tier, generator, upgrade_stage, display_name, full_check));
                             }
+
                             if (edit_holograms_texts_timer_enable) {
-                                String timer_name = setPlaceHolders(edit_holograms_texts_timer, generator, holo, upgrade_stage);
+                                String timer_name = setPlaceHolders(edit_holograms_texts_timer, generator, upgrade_stage, display_name, full_check);
                                 if (timer_holograms.containsKey(generator)) {
                                     timer_holograms.get(generator).setCustomName(timer_name);
                                 } else {
@@ -386,8 +424,9 @@ public class GeneratorEditor {
                                     }.runTask(_233BedWars.getInstance());
                                 }
                             }
+
                             if (edit_holograms_texts_name_enable) {
-                                String name = setPlaceHolders(edit_holograms_texts_name, generator, holo, upgrade_stage);
+                                String name = setPlaceHolders(edit_holograms_texts_name, generator, upgrade_stage, display_name, full_check);
                                 if (name_holograms.containsKey(generator)) {
                                     name_holograms.get(generator).setCustomName(name);
                                     ((ArmorStand) NAME_FIELD.get(holo)).setCustomName("§f");
@@ -406,12 +445,12 @@ public class GeneratorEditor {
                             }
                         }
                     } catch (NoSuchFieldException | IllegalAccessException e) {
-                        LogUtil.consoleLog("&9233BedWars &3&l> &e[GeneratorEditor] &c发生致命错误！");
+                        LogUtil.consoleLog("&9233BedWars &3&l> &e[GeneratorEditor#INIT] &c发生致命错误！");
                         e.printStackTrace();
                     }
                 }
-            }
-        }.runTaskAsynchronously(_233BedWars.getInstance());
+            }.runTaskAsynchronously(_233BedWars.getInstance());
+        }
     }
 
     public static void markThrownItem(Player player, Item item) {
@@ -461,11 +500,11 @@ public class GeneratorEditor {
         }
     }
 
-    private static String setPlaceHolders(String text, IGenerator generator, IGenHolo holo, int upgrade_stage) {
+    private static String setPlaceHolders(String text, IGenerator generator, int upgrade_stage, String displayName, Boolean isFull) {
         return text
-                .replace("{seconds_or_full}", getSecondsOrFull(generator))
+                .replace("{seconds_or_full}", isFull ? edit_holograms_place_holders_full : edit_holograms_place_holders_non_full)
                 .replace("{progress}", getProgress(generator))
-                .replace("{name}", getIHoloName(holo.getIso(), generator.getOre().getType()))
+                .replace("{name}", displayName)
                 .replace("{tier_int}", String.valueOf(upgrade_stage))
                 .replace("{tier_roman}", MathUtil.intToRoman(upgrade_stage))
                 .replace("{seconds}", String.valueOf(generator.getNextSpawn()))
@@ -476,27 +515,25 @@ public class GeneratorEditor {
         return Language.getLang(iso).m(type == Material.DIAMOND ? Messages.GENERATOR_HOLOGRAM_TYPE_DIAMOND : Messages.GENERATOR_HOLOGRAM_TYPE_EMERALD);
     }
 
-    private static String getSecondsOrFull(IGenerator generator) {
+
+    private static Boolean checkFull(IGenerator generator) {
         int ore_count = 0;
         Location loc = generator.getLocation();
-        // Bukkit内部类有时会抛出NoSuchElementException
-        try {
-            for (Entity entity : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)) {
-                if (entity.getType() == EntityType.DROPPED_ITEM) {
-                    Item item = (Item) entity;
-                    if (item.getItemStack().getType() == generator.getOre().getType()) {
-                        if (item.hasMetadata("thrown_item")) {
-                            continue;
-                        }
-                        ore_count += item.getItemStack().getAmount();
-                        if (ore_count >= generator.getSpawnLimit()) {
-                            return edit_holograms_place_holders_full;
-                        }
+        for (Entity entity : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)) {
+            if (entity.getType() == EntityType.DROPPED_ITEM) {
+                Item item = (Item) entity;
+                if (item.getItemStack().getType() == generator.getOre().getType()) {
+                    if (item.hasMetadata("thrown_item")) {
+                        continue;
+                    }
+                    ore_count += item.getItemStack().getAmount();
+                    if (ore_count >= generator.getSpawnLimit()) {
+                        return true;
                     }
                 }
             }
-        } catch (Exception ignored) {}
-        return edit_holograms_place_holders_non_full;
+        }
+        return false;
     }
 
     private static String getProgress(IGenerator generator) {
