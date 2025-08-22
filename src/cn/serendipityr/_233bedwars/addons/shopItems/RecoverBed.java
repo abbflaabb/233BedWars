@@ -2,6 +2,7 @@ package cn.serendipityr._233bedwars.addons.shopItems;
 
 import cn.serendipityr._233bedwars._233BedWars;
 import cn.serendipityr._233bedwars.addons.ShopItemAddon;
+import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
@@ -10,19 +11,22 @@ import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.shop.IContentTier;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.language.Language;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -128,41 +132,57 @@ public class RecoverBed {
 
     static HashMap<ITeam, Integer> limit_use_map = new HashMap<>();
 
-    static HashMap<Location, MaterialData> beds = new HashMap<>();
+    static HashMap<ITeam, List<Object>> beds = new HashMap<>();
 
     public static void initArena(IArena arena) {
-        for (ITeam team : arena.getTeams()) {
-            Location bed_loc = team.getBed();
-            beds.put(bed_loc, bed_loc.getBlock().getState().getData().clone());
-            Location[] directions = {
-                    bed_loc.clone().add(1, 0, 0),  // East
-                    bed_loc.clone().add(-1, 0, 0), // West
-                    bed_loc.clone().add(0, 0, 1),  // South
-                    bed_loc.clone().add(0, 0, -1)  // North
-            };
-            for (Location loc : directions) {
-                if (loc.getBlock().getType().toString().contains("BED")) {
-                    beds.put(loc, loc.getBlock().getState().getData());
-                    break;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (ITeam team : arena.getTeams()) {
+                    if (team.isBedDestroyed()) {
+                        continue;
+                    }
+
+                    Block bed_block = team.getBed().getBlock();
+                    Location bed_loc = bed_block.getLocation();
+
+                    Location[] directions = {
+                            bed_loc.clone().add(1, 0, 0),  // East
+                            bed_loc.clone().add(-1, 0, 0), // West
+                            bed_loc.clone().add(0, 0, 1),  // South
+                            bed_loc.clone().add(0, 0, -1), // North
+                    };
+                    for (Location loc : directions) {
+                        Block ano_bed = loc.getBlock();
+                        if (isBedBlock(ano_bed)) {
+                            if (isModernApi()) {
+                                Object[] captured = captureModernBed(bed_block);
+                                if (captured != null) {
+                                    // MODERN - ["MODERN", footLoc, facingName, material]
+                                    beds.put(team, Arrays.asList("MODERN", captured[0], captured[1], captured[2]));
+                                    break;
+                                }
+                            } else {
+                                // LEGACY - [footData, otherLoc, otherData]
+                                beds.put(team, Arrays.asList(
+                                        bed_loc.getBlock().getState().getData(),
+                                        loc,
+                                        loc.getBlock().getState().getData()
+                                ));
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-        }
+        }.runTask(_233BedWars.getInstance());
     }
+
 
     public static void resetArena(IArena arena) {
         for (ITeam team : arena.getTeams()) {
             limit_use_map.remove(team);
-            Location bed_loc = team.getBed();
-            Location[] directions = {
-                    bed_loc.clone().add(1, 0, 0),  // East
-                    bed_loc.clone().add(-1, 0, 0), // West
-                    bed_loc.clone().add(0, 0, 1),  // South
-                    bed_loc.clone().add(0, 0, -1)  // North
-            };
-            beds.remove(bed_loc);
-            for (Location loc : directions) {
-                beds.remove(loc);
-            }
+            beds.remove(team);
         }
     }
 
@@ -191,6 +211,7 @@ public class RecoverBed {
                 String[] _sound = settings_recover_bed_recover_sound.split(":");
                 ProviderUtil.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
                 placeBed(team);
+                removeArmorStands(team);
                 ShopItemAddon.consumeItem(player, item, 1);
                 ShopItemAddon.setCooling(player, "recover_bed");
                 team.setBedDestroyed(false);
@@ -208,27 +229,161 @@ public class RecoverBed {
         return false;
     }
 
-    private static void placeBed(ITeam team) {
+    private static void removeArmorStands(ITeam team) {
         Location bed_loc = team.getBed();
-        Location[] directions = {
-                bed_loc.clone().add(1, 0, 0),  // East
-                bed_loc.clone().add(-1, 0, 0), // West
-                bed_loc.clone().add(0, 0, 1),  // South
-                bed_loc.clone().add(0, 0, -1)  // North
-        };
+        for (Entity entity : bed_loc.getWorld().getNearbyEntities(bed_loc, 1, 2, 1)) {
+            if (entity instanceof ArmorStand) {
+                entity.remove();
+            }
+        }
+    }
+
+    private static void placeBed(ITeam team) {
+        List<Object> bed_data = beds.get(team);
+        if (bed_data == null || bed_data.isEmpty()) return;
+
+        // MODERN - ["MODERN", Location footLoc, String facingName, String materialName]
+        if (bed_data.get(0) instanceof String && "MODERN".equals(bed_data.get(0))) {
+            try {
+                Location footLoc = (Location) bed_data.get(1);
+                BlockFace facing = BlockFace.valueOf((String) bed_data.get(2));
+                Material material = (Material) bed_data.get(3);
+
+                Block foot = footLoc.getBlock();
+                Block head = foot.getRelative(facing);
+
+                setTypeCompat(foot, material, false);
+                setTypeCompat(head, material, false);
+
+                setModernBedData(foot, "FOOT", facing, false);
+                setModernBedData(head, "HEAD", facing, true);
+            } catch (Throwable t) {
+                LogUtil.consoleLog("&9233BedWars &3&l> &e[ShopItemAddon#RecoverBed] &c设置床属性失败！");
+                t.printStackTrace();
+            }
+            return;
+        }
+
+        // LEGACY - [MaterialData footData, Location otherLoc, MaterialData otherData]
+        Location bed_loc = team.getBed();
         Block bed_1 = bed_loc.getBlock();
         bed_1.setType(Material.BED_BLOCK);
         BlockState bed_state_1 = bed_1.getState();
-        bed_state_1.setData(beds.get(bed_loc));
-        bed_state_1.update();
-        for (Location loc : directions) {
-            if (beds.containsKey(loc)) {
-                Block bed_2 = loc.getBlock();
-                bed_2.setType(Material.BED_BLOCK);
-                BlockState bed_state_2 = bed_2.getState();
-                bed_state_2.setData(beds.get(loc));
-                bed_state_2.update();
-                break;
+        bed_state_1.setData((MaterialData) bed_data.get(0));
+        bed_state_1.update(true, false);
+
+        Block bed_2 = ((Location) bed_data.get(1)).getBlock();
+        bed_2.setType(Material.BED_BLOCK);
+        BlockState bed_state_2 = bed_2.getState();
+        bed_state_2.setData((MaterialData) bed_data.get(2));
+        bed_state_2.update(true, false);
+    }
+
+
+    private static boolean isModernApi() {
+        try {
+            Class.forName("org.bukkit.block.data.type.Bed");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static boolean hasSetTypeWithPhysics() {
+        try {
+            Block.class.getMethod("setType", Material.class, boolean.class);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
+    private static void setTypeCompat(Block b, Material m, boolean applyPhysics) {
+        try {
+            if (hasSetTypeWithPhysics()) {
+                Block.class.getMethod("setType", Material.class, boolean.class).invoke(b, m, applyPhysics);
+            } else {
+                // 旧服只有 setType(Material)
+                b.setType(m);
+            }
+        } catch (Exception ex) {
+            // 回退
+            b.setType(m);
+        }
+    }
+
+    private static boolean isBedBlock(Block block) {
+        String name = block.toString();
+        return name.contains("BED"); // 1.8: BED_BLOCK/BED; 新版: RED_BED 等
+    }
+
+    private static Object[] captureModernBed(Block anyBedBlock) {
+        try {
+            Object blockData = Block.class.getMethod("getBlockData").invoke(anyBedBlock);
+            Class<?> bedIntf = Class.forName("org.bukkit.block.data.type.Bed");
+            if (!bedIntf.isInstance(blockData)) return null;
+
+            BlockFace facing = (BlockFace) bedIntf.getMethod("getFacing").invoke(blockData);
+            Object partEnum = bedIntf.getMethod("getPart").invoke(blockData); // Bed.Part
+            String partName = String.valueOf(partEnum); // "HEAD" or "FOOT"
+
+            Block footBlock = partName.equals("HEAD")
+                    ? anyBedBlock.getRelative(facing.getOppositeFace())
+                    : anyBedBlock;
+
+            Material material = getModernBedMaterial(anyBedBlock); // 例如 "RED_BED"
+            return new Object[]{footBlock.getLocation(), facing.name(), material};
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void setModernBedData(Block target, String part /*FOOT/HEAD*/, BlockFace facing, boolean applyPhysics) throws Exception {
+        Object data = Block.class.getMethod("getBlockData").invoke(target);
+        Class<?> bedIntf = Class.forName("org.bukkit.block.data.type.Bed");
+        Class<?> partEnum = Class.forName("org.bukkit.block.data.type.Bed$Part");
+        Class<?> blockDataIntf = Class.forName("org.bukkit.block.data.BlockData");
+        if (!bedIntf.isInstance(data)) {
+            // 某些服务端需要先用 Bukkit.createBlockData(material) 来拿到正确类型
+            try {
+                Material mat = target.getType();
+                Object newData = Class.forName("org.bukkit.Bukkit")
+                        .getMethod("createBlockData", Material.class)
+                        .invoke(null, mat);
+                data = newData;
+            } catch (Throwable ignored) {
+            }
+        }
+        // data.setFacing(facing)
+        bedIntf.getMethod("setFacing", BlockFace.class).invoke(data, facing);
+        // data.setPart(Bed.Part.valueOf(part))
+        Object enumPart = Enum.valueOf((Class<Enum>) partEnum, part);
+        bedIntf.getMethod("setPart", partEnum).invoke(data, enumPart);
+        // block.setBlockData(data, applyPhysics)
+        Block.class.getMethod("setBlockData", blockDataIntf, boolean.class).invoke(target, data, applyPhysics);
+    }
+
+    private static Material getModernBedMaterial(Block block) {
+        try {
+            Object bd = Block.class.getMethod("getBlockData").invoke(block);
+            try {
+                Class<?> bdIntf = Class.forName("org.bukkit.block.data.BlockData");
+                Object mat = bdIntf.getMethod("getMaterial").invoke(bd);
+                if (mat instanceof Material) return (Material) mat;
+            } catch (Throwable ignored) {
+            }
+            Class<?> bdIntf = Class.forName("org.bukkit.block.data.BlockData");
+            String as = (String) bdIntf.getMethod("getAsString").invoke(bd);
+            String key = as.split("\\[", 2)[0];
+            int colon = key.indexOf(':');
+            String matName = (colon >= 0 ? key.substring(colon + 1) : key).toUpperCase();
+            return Material.valueOf(matName);
+        } catch (Throwable t) {
+            try {
+                return Material.valueOf("WHITE_BED");
+            } catch (Throwable ignored) {
+                return Material.BED;
             }
         }
     }

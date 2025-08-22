@@ -381,6 +381,7 @@ public class GeneratorEditor {
                         }
 
                         if (!UPGRADE_STAGE_FIELD.canAccess(generator)) {
+                            UPGRADE_STAGE_FIELD.setAccessible(true);
                             return;
                         }
 
