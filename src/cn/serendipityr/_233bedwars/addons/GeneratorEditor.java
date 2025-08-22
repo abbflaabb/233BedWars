@@ -378,6 +378,7 @@ public class GeneratorEditor {
                         if (UPGRADE_STAGE_FIELD == null) {
                             UPGRADE_STAGE_FIELD = IGENERATOR_CLASS.getDeclaredField("upgradeStage");
                             UPGRADE_STAGE_FIELD.setAccessible(true);
+                            return;
                         }
 
                         if (!UPGRADE_STAGE_FIELD.canAccess(generator)) {
