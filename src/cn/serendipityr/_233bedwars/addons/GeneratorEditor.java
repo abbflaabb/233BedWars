@@ -312,11 +312,21 @@ public class GeneratorEditor {
 
         Object nmsArmorStand = NMSUtil.getNMSArmorStand(item);
         Object teleportPacket;
-        if (NMSUtil.getServerVersion().equals("v1_8_R3") && !disable_nms_packet) {
-            if (move_yaw >= 256.0) {
-                move_yaw -= 256.0;
+        if (!disable_nms_packet) {
+            if (NMSUtil.getServerVersion().equals("v1_8_R3")) {
+                if (move_yaw >= 256.0) {
+                    move_yaw -= 256.0;
+                }
+                teleportPacket = NMSUtil.getEntityTeleportPacket(item.getEntityId(), (int) (location.getX() * 32.0D), (int) (move_y * 32.0D), (int) (location.getZ() * 32.0D), (byte) move_yaw, (byte) (location.getPitch() * 256.0f / 360.0f), true);
+            } else {
+                teleportPacket = NMSUtil.getEntityTeleportPacket(nmsArmorStand);
             }
-            teleportPacket = NMSUtil.getEntityTeleportPacket(item.getEntityId(), (int) (location.getX() * 32.0D), (int) (move_y * 32.0D), (int) (location.getZ() * 32.0D), (byte) move_yaw, (byte) (location.getPitch() * 256.0f / 360.0f), true);
+
+            for (Player p : location.getWorld().getPlayers()) {
+                Object nmsPlayer = NMSUtil.getNMSPlayer(p);
+                Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
+                NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
+            }
         } else {
             if (move_yaw >= 360.0) {
                 move_yaw -= 360.0;
@@ -324,15 +334,6 @@ public class GeneratorEditor {
             location.setY(move_y);
             location.setYaw((float) move_yaw);
             item.teleport(location);
-            teleportPacket = NMSUtil.getEntityTeleportPacket(nmsArmorStand);
-        }
-
-        if (!disable_nms_packet) {
-            for (Player p : location.getWorld().getPlayers()) {
-                Object nmsPlayer = NMSUtil.getNMSPlayer(p);
-                Object nmsPlayerConnection = NMSUtil.getNMSPlayerConnection(nmsPlayer);
-                NMSUtil.sendPacket(nmsPlayerConnection, teleportPacket);
-            }
         }
 
         yaw_angle_map.put(item, move_yaw);
