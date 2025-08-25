@@ -188,6 +188,10 @@ public class ShopItemAddon {
                 return true;
             }
         }
+        // 修复剑购买问题 (1.21+)
+        if (ProviderUtil.bw.getVersionSupport().isSword(content.getContentTiers().get(0).getBuyItemsList().get(0).getItemStack())) {
+            player.getInventory().remove(Material.WOOD_SWORD);
+        }
         if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleShopBuy(player, arena, content)) {
             return true;
         } else if (SuicideBomber.settings_suicide_bomber_enable && handleShopBuy(player, content, "suicide_bomber", SuicideBomber.suicide_bomber_section)) {
