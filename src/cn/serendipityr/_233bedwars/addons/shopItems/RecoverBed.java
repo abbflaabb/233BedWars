@@ -18,8 +18,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -175,7 +173,7 @@ public class RecoverBed {
                     }
                 }
             }
-        }.runTask(_233BedWars.getInstance());
+        }.runTaskLater(_233BedWars.getInstance(), 20L);
     }
 
 
@@ -211,7 +209,7 @@ public class RecoverBed {
                 String[] _sound = settings_recover_bed_recover_sound.split(":");
                 ProviderUtil.playTeamSound(team, Sound.valueOf(_sound[0]), Float.parseFloat(_sound[1]), Float.parseFloat(_sound[2]));
                 placeBed(team);
-                removeArmorStands(team);
+                team.getArena().getPlayers().forEach(p -> team.destroyBedHolo(p));
                 ShopItemAddon.consumeItem(player, item, 1);
                 ShopItemAddon.setCooling(player, "recover_bed");
                 team.setBedDestroyed(false);
@@ -227,15 +225,6 @@ public class RecoverBed {
             }
         }
         return false;
-    }
-
-    private static void removeArmorStands(ITeam team) {
-        Location bed_loc = team.getBed();
-        for (Entity entity : bed_loc.getWorld().getNearbyEntities(bed_loc, 1, 2, 1)) {
-            if (entity instanceof ArmorStand) {
-                entity.remove();
-            }
-        }
     }
 
     private static void placeBed(ITeam team) {
