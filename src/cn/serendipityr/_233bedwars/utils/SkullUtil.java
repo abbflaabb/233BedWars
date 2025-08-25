@@ -21,40 +21,40 @@ public class SkullUtil {
         }
         UUID uuid = UUID.randomUUID();
         Property prop = new Property("textures", texture);
-        // Legacy API
+        // Modern API (1.21+)
         try {
-            GameProfile profile = new GameProfile(uuid, "");
-            profile.getProperties().put("textures", prop);
-            if (GAME_PROFILE_FIELD == null) {
-                GAME_PROFILE_FIELD = skullMeta.getClass().getDeclaredField("profile");
-                GAME_PROFILE_FIELD.setAccessible(true);
+            if (CREATE_PLAYER_PROFILE_METHOD == null) {
+                CREATE_PLAYER_PROFILE_METHOD = Bukkit.class.getMethod("createProfile", UUID.class, String.class);
             }
-            GAME_PROFILE_FIELD.set(skullMeta, profile);
-        } catch (Exception e1) {
-            // Modern API (1.21+)
-            try {
-                if (CREATE_PLAYER_PROFILE_METHOD == null) {
-                    CREATE_PLAYER_PROFILE_METHOD = Bukkit.class.getMethod("createProfile", UUID.class, String.class);
-                }
-                Object playerProfile = CREATE_PLAYER_PROFILE_METHOD.invoke(null, uuid, "");
-                if (SET_PLAYER_PROFILE_PROPERTY_METHOD == null) {
-                    SET_PLAYER_PROFILE_PROPERTY_METHOD = playerProfile.getClass().getMethod("setProperty", String.class, prop.getClass());
-                }
-                SET_PLAYER_PROFILE_PROPERTY_METHOD.invoke(playerProfile, "textures", prop);
-                if (SET_PLAYER_PROFILE_METHOD == null) {
-                    for (Method m : skullMeta.getClass().getMethods()) {
-                        if (m.getName().equals("setPlayerProfile") && m.getParameterCount() == 1) {
-                            SET_PLAYER_PROFILE_METHOD = m;
-                            SET_PLAYER_PROFILE_METHOD.setAccessible(true);
-                            break;
-                        }
+            Object playerProfile = CREATE_PLAYER_PROFILE_METHOD.invoke(null, uuid, "");
+            if (SET_PLAYER_PROFILE_PROPERTY_METHOD == null) {
+                SET_PLAYER_PROFILE_PROPERTY_METHOD = playerProfile.getClass().getMethod("setProperty", String.class, prop.getClass());
+            }
+            SET_PLAYER_PROFILE_PROPERTY_METHOD.invoke(playerProfile, "textures", prop);
+            if (SET_PLAYER_PROFILE_METHOD == null) {
+                for (Method m : skullMeta.getClass().getMethods()) {
+                    if (m.getName().equals("setPlayerProfile") && m.getParameterCount() == 1) {
+                        SET_PLAYER_PROFILE_METHOD = m;
+                        SET_PLAYER_PROFILE_METHOD.setAccessible(true);
+                        break;
                     }
                 }
-                if (SET_PLAYER_PROFILE_METHOD == null) {
-                    LogUtil.consoleLog("&9233BedWars &3&l> &e[BedWarsShopUtil] &c头颅材质设置失败: SET_PLAYER_PROFILE_METHOD");
-                    return;
+            }
+            if (SET_PLAYER_PROFILE_METHOD == null) {
+                LogUtil.consoleLog("&9233BedWars &3&l> &e[BedWarsShopUtil] &c头颅材质设置失败: SET_PLAYER_PROFILE_METHOD");
+                return;
+            }
+            SET_PLAYER_PROFILE_METHOD.invoke(skullMeta, playerProfile);
+        } catch (Exception e1) {
+            // Legacy API
+            try {
+                GameProfile profile = new GameProfile(uuid, "");
+                profile.getProperties().put("textures", prop);
+                if (GAME_PROFILE_FIELD == null) {
+                    GAME_PROFILE_FIELD = skullMeta.getClass().getDeclaredField("profile");
+                    GAME_PROFILE_FIELD.setAccessible(true);
                 }
-                SET_PLAYER_PROFILE_METHOD.invoke(skullMeta, playerProfile);
+                GAME_PROFILE_FIELD.set(skullMeta, profile);
             } catch (Exception e2) {
                 LogUtil.consoleLog("&9233BedWars &3&l> &e[BedWarsShopUtil] &c头颅材质设置失败！");
                 e2.printStackTrace();

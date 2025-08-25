@@ -57,10 +57,31 @@ public class BedWarsShopUtil {
     }
 
     public static void handleShopOpen(Player player, Inventory shopInv, String title) {
+        UUID uuid = player.getUniqueId();
         if (!XpResMode.isExpMode(player)) {
+            if (isQuickBuy(player, title)) {
+                PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(uuid);
+                if (quickBuyCache == null) {
+                    return;
+                }
+                for (QuickBuyElement element : quickBuyCache.getElements()) {
+                    CategoryContent content = element.getCategoryContent();
+                    int slot = element.getSlot();
+                    fixContentInventory(content, shopInv, slot);
+                }
+            } else {
+                ShopCategory category = getCategoryFromInventory(player, title);
+                if (category == null) {
+                    return;
+                }
+                // 处理其他分类
+                for (CategoryContent content : category.getCategoryContentList()) {
+                    int slot = content.getSlot();
+                    fixContentInventory(content, shopInv, slot);
+                }
+            }
             return;
         }
-        UUID uuid = player.getUniqueId();
         if (isQuickBuy(player, title)) {
             // 处理快速购买
             PlayerQuickBuyCache quickBuyCache = PlayerQuickBuyCache.getQuickBuyCache(uuid);
@@ -419,6 +440,23 @@ public class BedWarsShopUtil {
 
     private static String getCategoryName(Player player, String category) {
         return ProviderUtil.bw.getPlayerLanguage(player).m("shop-items-messages." + category + ".inventory-name");
+    }
+
+    private static void fixContentInventory(CategoryContent content, Inventory shopInv, int slot) {
+        ItemStack itemStack = shopInv.getItem(slot);
+        if (itemStack == null) {
+            return;
+        }
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (ConfigManager.addon_shopItemAddon) {
+            if (itemStack.getType().toString().contains("SKULL")) {
+                String texture = ShopItemAddon.getSkullTexture(content.getIdentifier().split("\\.")[2]);
+                SkullMeta skullMeta = (SkullMeta) itemMeta;
+                SkullUtil.setSkullTexture(skullMeta, texture);
+            }
+        }
+        itemStack.setItemMeta(itemMeta);
+        shopInv.setItem(slot, itemStack);
     }
 
     private static void setContentInventory(Player player, CategoryContent content, ShopCache shopCache, Inventory shopInv, String title, int slot, int price, boolean isQuickBuy) {
