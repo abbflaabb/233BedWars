@@ -5,6 +5,7 @@ import cn.serendipityr._233bedwars.addons.shopItems.*;
 import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
+import cn.serendipityr._233bedwars.utils.SkullUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
@@ -20,7 +21,6 @@ import com.andrei1058.bedwars.shop.main.ShopCategory;
 import com.andrei1058.bedwars.shop.main.ShopIndex;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -310,19 +310,8 @@ public class ShopItemAddon {
                     itemMeta.setDisplayName(Language.getMsg(player, section + "-name").replace("{color}", "§e"));
                     if (itemStack.getType().toString().contains("SKULL")) {
                         String texture = ShopItemAddon.getSkullTexture(identity);
-                        if (!texture.trim().isEmpty()) {
-                            SkullMeta skullMeta = (SkullMeta) itemMeta;
-                            GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-                            profile.getProperties().put("textures", new Property("textures", texture));
-                            try {
-                                Field profileField = skullMeta.getClass().getDeclaredField("profile");
-                                profileField.setAccessible(true);
-                                profileField.set(skullMeta, profile);
-                            } catch (NoSuchFieldException | IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                            itemStack.setItemMeta(skullMeta);
-                        }
+                        SkullMeta skullMeta = (SkullMeta) itemMeta;
+                        SkullUtil.setSkullTexture(skullMeta, texture);
                     }
                     itemStack.setItemMeta(itemMeta);
                     buyItem.setItemStack(itemStack);
@@ -378,6 +367,24 @@ public class ShopItemAddon {
         return texture == null ? "" : texture;
     }
 
+    static boolean disableFallback = false;
+    public static Boolean compareSkullTexture(ItemStack skullItem, String texture) {
+        if (skullItem == null) {
+            return false;
+        }
+        boolean simpleCompare = skullItem.toString().contains(texture);
+        if (!disableFallback) {
+            String skullTexture = getSkullTextureFromItemStack(skullItem);
+            if (!skullTexture.trim().isEmpty()) {
+                return skullTexture.equals(texture);
+            }
+            if (simpleCompare) {
+                disableFallback = true;
+            }
+        }
+        return simpleCompare;
+    }
+
     public static String getSkullTextureFromItemStack(ItemStack skullItem) {
         if (!skullItem.getType().toString().contains("SKULL")) {
             return "";
@@ -394,7 +401,7 @@ public class ShopItemAddon {
                     return property.getValue();
                 }
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable e1) {
             try {
                 Field profileField = skullMeta.getClass().getDeclaredField("profile");
                 profileField.setAccessible(true);
@@ -406,12 +413,8 @@ public class ShopItemAddon {
                         return method.invoke(property).toString();
                     }
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
-                LogUtil.consoleLog("&9233BedWars &3&l> &e[ShopItemAddon] &c发生致命错误！(无法获取头颅材质)");
-            }
+            } catch (Throwable ignored) {}
         }
-
         return "";
     }
 
@@ -503,7 +506,7 @@ public class ShopItemAddon {
                 ToxicBall.init(enable, material, secLoc);
                 break;
             case "obsidian_breaker":
-               ObsidianBreaker.init(enable, material, secLoc);
+                ObsidianBreaker.init(enable, material, secLoc);
                 break;
             case "portal_scroll":
                 PortalScroll.init(enable, material, secLoc);

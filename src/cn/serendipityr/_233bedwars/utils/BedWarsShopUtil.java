@@ -37,6 +37,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class BedWarsShopUtil {
@@ -201,7 +202,8 @@ public class BedWarsShopUtil {
                 player.openInventory(inv);
                 UpgradesManager.setWatchingUpgrades(player.getUniqueId());
                 updateCategoryMenu(menuContentBySlot, player.getOpenInventory().getTopInventory(), player, team);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         if (mc instanceof MenuBaseTrap) {
             MenuBaseTrap mbt = (MenuBaseTrap) mc;
@@ -229,7 +231,7 @@ public class BedWarsShopUtil {
                         Sounds.playSound("shop-bought", player);
                         team.getActiveTraps().add(mbt);
                         for (Player p : team.getArena().getPlayers()) {
-                            if (!team.isMember(p) && !team.getArena().isReSpawning(p) && p.getLocation().distance(team.getBed()) <= (double)team.getArena().getIslandRadius()) {
+                            if (!team.isMember(p) && !team.getArena().isReSpawning(p) && p.getLocation().distance(team.getBed()) <= (double) team.getArena().getIslandRadius()) {
                                 team.getActiveTraps().remove(0).trigger(team, p);
                                 break;
                             }
@@ -324,14 +326,14 @@ public class BedWarsShopUtil {
                 }
                 im.setDisplayName(Language.getMsg(player, Messages.UPGRADES_UPGRADE_TIER_ITEM_NAME.replace("{name}", name.replace("upgrade-", "")).replace("{tier}", ut.getName())).replace("{color}", color));
                 List<String> lore = new ArrayList<>();
-                for (String s : Language.getList(player, Messages.UPGRADES_UPGRADE_TIER_ITEM_LORE.replace("{name}", name.replace("upgrade-", "")))){
-                    if (s.contains("{tier_")){
+                for (String s : Language.getList(player, Messages.UPGRADES_UPGRADE_TIER_ITEM_LORE.replace("{name}", name.replace("upgrade-", "")))) {
+                    if (s.contains("{tier_")) {
                         String result = s.replaceAll(".*_([0-9]+)_.*", "$1");
                         String tierColor = Messages.FORMAT_UPGRADE_TIER_LOCKED;
-                        if (Integer.parseInt(result)-1 <= team.getTeamUpgradeTiers().getOrDefault(name, -1)) {
+                        if (Integer.parseInt(result) - 1 <= team.getTeamUpgradeTiers().getOrDefault(name, -1)) {
                             tierColor = Messages.FORMAT_UPGRADE_TIER_UNLOCKED;
                         }
-                        UpgradeTier upgradeTier = tiers.get(Integer.parseInt(result)-1);
+                        UpgradeTier upgradeTier = tiers.get(Integer.parseInt(result) - 1);
                         lore.add(s.replace("{tier_" + result + "_cost}", String.valueOf(XpResMode.calcExpLevel(upgradeTier.getCurrency(), upgradeTier.getCost(), true, null)))
                                 .replace("{tier_" + result + "_currency}", currencyMsg)
                                 .replace("{tier_" + result + "_color}", Language.getMsg(player, tierColor)));
@@ -340,9 +342,9 @@ public class BedWarsShopUtil {
                         lore.add(s.replace("{color}", color));
                     }
                 }
-                if (highest){
+                if (highest) {
                     lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_UNLOCKED).replace("{color}", color));
-                } else if (afford){
+                } else if (afford) {
                     lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_CLICK_TO_BUY).replace("{color}", color));
                 } else {
                     lore.add(Language.getMsg(player, Messages.UPGRADES_LORE_REPLACEMENT_INSUFFICIENT_MONEY).replace("{currency}", currencyMsg).replace("{color}", color));
@@ -446,19 +448,8 @@ public class BedWarsShopUtil {
         if (ConfigManager.addon_shopItemAddon) {
             if (itemStack.getType().toString().contains("SKULL")) {
                 String texture = ShopItemAddon.getSkullTexture(content.getIdentifier().split("\\.")[2]);
-                if (!texture.trim().isEmpty()) {
-                    SkullMeta skullMeta = (SkullMeta) itemMeta;
-                    GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-                    profile.getProperties().put("textures", new Property("textures", texture));
-                    try {
-                        Field profileField = skullMeta.getClass().getDeclaredField("profile");
-                        profileField.setAccessible(true);
-                        profileField.set(skullMeta, profile);
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                    itemStack.setItemMeta(skullMeta);
-                }
+                SkullMeta skullMeta = (SkullMeta) itemMeta;
+                SkullUtil.setSkullTexture(skullMeta, texture);
             }
         }
         itemStack.setItemMeta(itemMeta);
