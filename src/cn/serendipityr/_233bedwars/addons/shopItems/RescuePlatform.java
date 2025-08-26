@@ -22,11 +22,13 @@ public class RescuePlatform {
     public static Integer settings_rescue_platform_remove_delay;
     public static Integer settings_rescue_platform_y_offset;
     public static String settings_rescue_platform_platform_material;
+    public static String messages_rescue_platform_space_inadequate;
 
     public static void loadConfig(YamlConfiguration cfg) {
         settings_rescue_platform_remove_delay = cfg.getInt("settings.rescue_platform.remove_delay");
         settings_rescue_platform_y_offset = cfg.getInt("settings.rescue_platform.y_offset");
         settings_rescue_platform_platform_material = cfg.getString("settings.rescue_platform.platform_material");
+        messages_rescue_platform_space_inadequate = cfg.getString("messages.rescue_platform_space_inadequate").replace("&", "§");
     }
 
     public static void init(boolean enable, String material, String section) {
@@ -39,7 +41,10 @@ public class RescuePlatform {
         if (isRescuePlatform(player, item)) {
             if (!ShopItemAddon.checkCooling(player, "rescue_platform")) {
                 IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player);
-                generatePlatform(player, arena);
+                if (!generatePlatform(player, arena)) {
+                    player.sendMessage(messages_rescue_platform_space_inadequate);
+                    return false;
+                }
                 ShopItemAddon.consumeItem(player, item, 1);
                 ShopItemAddon.setCooling(player, "rescue_platform");
             }
@@ -52,8 +57,11 @@ public class RescuePlatform {
         return (item.getType().toString().equals(rescue_platform_material) || item.getType().toString().equals(rescue_platform_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, rescue_platform_section);
     }
 
-    private static void generatePlatform(Player player, IArena arena) {
+    private static boolean generatePlatform(Player player, IArena arena) {
         Location center = player.getLocation().clone().add(0, settings_rescue_platform_y_offset, 0);
+        if (center.getBlock().getState().getData().getItemType() != Material.AIR) {
+            return false;
+        }
         Material platformMat = Material.getMaterial(settings_rescue_platform_platform_material);
         int[][] platform = new int[][]{
                 {}, {-1, 2}, {}, {1, 2}, {},
@@ -76,6 +84,7 @@ public class RescuePlatform {
             block.getState().update();
             placed.add(block);
         }
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -86,5 +95,6 @@ public class RescuePlatform {
                 placed.clear();
             }
         }.runTaskLater(_233BedWars.getInstance(), settings_rescue_platform_remove_delay * 20L);
+        return true;
     }
 }

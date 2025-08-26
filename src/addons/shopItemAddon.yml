@@ -164,6 +164,7 @@ messages:
   portal_scroll_use_subtitle: "{portal_progress}"
   portal_scroll_success: "&e回城！"
   portal_scroll_failed: "&c已移动，取消回城！"
+  rescue_platform_space_inadequate: "&c你所在的位置空间不足！"
 
 items:
   recover_bed:
