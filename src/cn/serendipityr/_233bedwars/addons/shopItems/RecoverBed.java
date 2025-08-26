@@ -125,7 +125,8 @@ public class RecoverBed {
     }
 
     private static boolean isRecoverBed(Player player, ItemStack item) {
-        return (item.getType().toString().equals(recover_bed_material) || item.getType().toString().equals(recover_bed_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, recover_bed_section);
+        // ...高版本下红色床会识别成BED_BLOCK
+        return (item.getType().toString().equals(recover_bed_material) || item.getType().toString().replace("_BLOCK", "").equals(recover_bed_material.replace("LEGACY_", ""))) && ShopItemAddon.compareAddonItem(player, item, recover_bed_section);
     }
 
     static HashMap<ITeam, Integer> limit_use_map = new HashMap<>();
