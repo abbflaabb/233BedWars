@@ -24,8 +24,6 @@ import com.andrei1058.bedwars.shop.quickbuy.QuickBuyElement;
 import com.andrei1058.bedwars.upgrades.UpgradesManager;
 import com.andrei1058.bedwars.upgrades.menu.*;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,7 +35,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class BedWarsShopUtil {
@@ -469,7 +466,11 @@ public class BedWarsShopUtil {
         ItemMeta itemMeta = itemStack.getItemMeta();
 
         boolean affordable = isAffordable(player, price);
-        String tier = intToRoman(getContentTier(shopCache, content));
+        int tier_index = getContentTier(shopCache, content);
+        if (tier_index >= content.getContentTiers().size()) {
+            tier_index = content.getContentTiers().size() - 1;
+        }
+        String tier = intToRoman(tier_index + 1);
         lores.replaceAll(s -> s
                 .replace("{buy_status}", getBuyStatus(player, content, shopCache, affordable))
                 .replace("{quick_buy}", getQuickBuyTips(player, isQuickBuy))
@@ -519,6 +520,10 @@ public class BedWarsShopUtil {
     }
 
     private static Integer getContentTier(ShopCache shopCache, CategoryContent content) {
+        // ?当商店缓存物品不存在时默认返回的是1
+        if (!shopCache.hasCachedItem(content)) {
+            return 0;
+        }
         return shopCache.getContentTier(content.getIdentifier());
     }
 
@@ -527,8 +532,11 @@ public class BedWarsShopUtil {
     }
 
     private static Integer getCategoryContentPrice(ShopCache shopCache, CategoryContent content) {
-        int tier = shopCache.getContentTier(content.getIdentifier());
-        IContentTier contentTier = content.getContentTiers().get(tier - 1);
+        int tier = getContentTier(shopCache, content);
+        if (tier >= content.getContentTiers().size()) {
+            tier = content.getContentTiers().size() - 1;
+        }
+        IContentTier contentTier = content.getContentTiers().get(tier);
         return XpResMode.calcExpLevel(contentTier.getCurrency(), contentTier.getPrice(), true, content);
     }
 
@@ -605,13 +613,9 @@ public class BedWarsShopUtil {
                     Sounds.playSound("shop-insufficient-money", player);
                     return;
                 }
-                contentTier = content.getContentTiers().get(tier - 1);
+                contentTier = content.getContentTiers().get(content.getContentTiers().size() - 1);
             } else {
-                if (!shopCache.hasCachedItem(content)) {
-                    contentTier = content.getContentTiers().get(0);
-                } else {
-                    contentTier = content.getContentTiers().get(tier);
-                }
+                contentTier = content.getContentTiers().get(tier);
             }
 
             ShopBuyEvent event;
