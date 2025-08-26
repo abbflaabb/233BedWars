@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -46,6 +47,9 @@ public class InteractEventHandler implements Listener {
             int slot = event.getSlot();
             if (handleClick(player, event.getCurrentItem())) {
                 event.setCancelled(true);
+            }
+            if (inventory.getType() == InventoryType.PLAYER) {
+                return;
             }
             if (!event.getClick().isShiftClick() && BedWarsShopUtil.handleShopClick(player, inventory, title, slot)) {
                 event.setCancelled(true);
