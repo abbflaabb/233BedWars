@@ -87,6 +87,7 @@ public class ShopItemAddon {
         ObsidianBreaker.loadConfig(cfg);
         PortalScroll.loadConfig(cfg);
         MagicalWool.loadConfig(cfg);
+        RescuePlatform.loadConfig(cfg);
     }
 
     public static void init() {
@@ -220,6 +221,8 @@ public class ShopItemAddon {
             return true;
         } else if (MagicalWool.settings_magical_wool_enable && handleShopBuy(player, content, "magical_wool", MagicalWool.magical_wool_section)) {
             return true;
+        } else if (RescuePlatform.settings_rescue_platform_enable && handleShopBuy(player, content, "rescue_platform", RescuePlatform.rescue_platform_section)) {
+            return true;
         }
 
         return false;
@@ -248,6 +251,8 @@ public class ShopItemAddon {
         } else if (ToxicBall.settings_toxic_ball_enable && ToxicBall.handleItemInteract(player, item)) {
             return true;
         } else if (PortalScroll.settings_portal_scroll_enable && PortalScroll.handleItemInteract(player, item)) {
+            return true;
+        } else if (RescuePlatform.settings_rescue_platform_enable && RescuePlatform.handleItemInteract(player, item)) {
             return true;
         }
 
@@ -372,6 +377,7 @@ public class ShopItemAddon {
     }
 
     static boolean disableFallback = false;
+
     public static Boolean compareSkullTexture(ItemStack skullItem, String texture) {
         if (skullItem == null) {
             return false;
@@ -417,7 +423,8 @@ public class ShopItemAddon {
                         return method.invoke(property).toString();
                     }
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
         return "";
     }
@@ -517,6 +524,9 @@ public class ShopItemAddon {
                 break;
             case "magical_wool":
                 MagicalWool.init(enable, material, secLoc);
+                break;
+            case "rescue_platform":
+                RescuePlatform.init(enable, material, secLoc);
                 break;
         }
     }

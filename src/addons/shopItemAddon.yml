@@ -23,6 +23,7 @@ settings:
       - "light_landmine:5"
       - "flight_firework:5"
       - "lucky_block:5"
+      - "rescue_platform:20"
     progress:
       length: 30
       unit: "|"
@@ -123,6 +124,11 @@ settings:
     expand_length: 5
     expand_delay: 3
     place_sound: "DIG_WOOL:1:1"
+  rescue_platform:
+    enable: true
+    remove_delay: 10
+    y_offset: -2
+    platform_material: "SLIME_BLOCK"
 
 messages:
   cooling_actionbar: "&e&l{item} {progress} &f{cooling_time} &e秒"
@@ -234,3 +240,8 @@ items:
     enchanted: true
     amount: 4
     cost: "iron:4"
+  rescue_platform:
+    category: "utility-category"
+    slot: 49
+    material: BLAZE_ROD
+    cost: "iron:100"
