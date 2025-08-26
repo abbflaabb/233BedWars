@@ -44,7 +44,7 @@ public class Pillar {
     private static void pillar(Block block, IArena arena) {
         for (int i = 0; i < settings_pillar_build_height - 1; i++) {
             Block b = block.getLocation().add(0, 1 + i, 0).getBlock();
-            if (!b.getType().equals(Material.AIR) || arena.isProtected(b.getLocation())) {
+            if (b.getState().getData().getItemType() != Material.AIR || arena.isProtected(b.getLocation())) {
                 break;
             }
             b.setType(Material.getMaterial(pillar_material));

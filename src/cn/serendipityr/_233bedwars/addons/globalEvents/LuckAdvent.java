@@ -92,6 +92,9 @@ public class LuckAdvent {
                         return;
                     }
                     Block block = addBlocks.get(index);
+                    if (block.getState().getData().getItemType() != Material.AIR) {
+                        continue;
+                    }
                     block.setType(Material.getMaterial(LuckyBlock.lucky_block_material));
                     arena.addPlacedBlock(block);
                     LuckyBlock.getPlacedLuckyBlocks().add(block);

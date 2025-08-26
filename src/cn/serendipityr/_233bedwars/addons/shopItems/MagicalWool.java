@@ -68,7 +68,7 @@ public class MagicalWool {
                 ProviderUtil.bw.getVersionSupport().setBlockTeamColor(replace, teamColor);
                 continue;
             }
-            if (replace.getType() != Material.AIR || isProtect) {
+            if (replace.getState().getData().getItemType() != Material.AIR || isProtect) {
                 break;
             }
             // 防止玩家卡在方块中间

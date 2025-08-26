@@ -101,7 +101,7 @@ public class BridgeCat {
 
     private static void placeBridgeBlock(Location location, IArena arena, Player player) {
         Block b = location.getBlock();
-        if (b.getType() != Material.AIR) {
+        if (b.getState().getData().getItemType() != Material.AIR) {
             return;
         }
         b.setType(ProviderUtil.bw.getVersionSupport().woolMaterial());
