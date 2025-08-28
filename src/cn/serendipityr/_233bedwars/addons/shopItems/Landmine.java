@@ -105,15 +105,22 @@ public class Landmine {
         return false;
     }
 
-    public static void onBlockInteract(Player player, Block block) {
+    public static boolean onBlockInteract(Player player, Block block) {
         if (landmineMap.containsKey(block)) {
             ITeam team = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(player).getTeam(player);
+            if (team == null) {
+                return true;
+            }
             if (!team.equals(landmineTeamMap.get(block))) {
+                if (!team.getArena().isPlayer(player)) {
+                    return true;
+                }
                 Player placer = landmineMap.get(block);
                 placer.sendMessage(messages_landmine_fuse);
                 fuse(block);
             }
         }
+        return false;
     }
 
     public static void onBlockRedstone(Block block, int old_state, int new_state) {
@@ -124,7 +131,7 @@ public class Landmine {
                         Player player = (Player) entity;
                         Player placer = landmineMap.get(block);
                         IArena arena = ProviderUtil.bw.getArenaUtil().getArenaByPlayer(placer);
-                        if (arena.getTeam(placer) == arena.getTeam(player)) {
+                        if (arena.getTeam(placer) == arena.getTeam(player) || !arena.isPlayer(player)) {
                             continue;
                         }
                         placer.sendMessage(messages_landmine_fuse);

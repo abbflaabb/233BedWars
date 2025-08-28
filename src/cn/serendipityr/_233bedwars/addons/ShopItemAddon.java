@@ -153,12 +153,10 @@ public class ShopItemAddon {
     }
 
     public static boolean handleBlockInteract(Player player, Block block) {
-        if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
-            return false;
-        }
-
         if (Landmine.settings_light_landmine_enable || Landmine.settings_landmine_enable) {
-            Landmine.onBlockInteract(player, block);
+            if (Landmine.onBlockInteract(player, block)) {
+                return true;
+            }
         }
 
         return false;
