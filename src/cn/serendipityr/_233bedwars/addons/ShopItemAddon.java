@@ -6,7 +6,9 @@ import cn.serendipityr._233bedwars.utils.ActionBarUtil;
 import cn.serendipityr._233bedwars.utils.LogUtil;
 import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import cn.serendipityr._233bedwars.utils.SkullUtil;
+import com.andrei1058.bedwars.api.BedWars;
 import com.andrei1058.bedwars.api.arena.IArena;
+import com.andrei1058.bedwars.api.arena.generator.IGenerator;
 import com.andrei1058.bedwars.api.arena.shop.IBuyItem;
 import com.andrei1058.bedwars.api.arena.shop.ICategoryContent;
 import com.andrei1058.bedwars.api.arena.shop.IContentTier;
@@ -14,6 +16,7 @@ import com.andrei1058.bedwars.api.arena.team.ITeam;
 import com.andrei1058.bedwars.api.configuration.ConfigPath;
 import com.andrei1058.bedwars.api.language.Language;
 import com.andrei1058.bedwars.api.language.Messages;
+import com.andrei1058.bedwars.api.region.Region;
 import com.andrei1058.bedwars.shop.ShopManager;
 import com.andrei1058.bedwars.shop.main.CategoryContent;
 import com.andrei1058.bedwars.shop.main.QuickBuyButton;
@@ -110,7 +113,10 @@ public class ShopItemAddon {
     }
 
     public static boolean handleBlockPlace(Player player, Block block, Block against, ItemStack item) {
-        if (!ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+        BedWars.ArenaUtil bwArenaUtil = ProviderUtil.bw.getArenaUtil();
+        if (!bwArenaUtil.isPlaying(player)) {
+            return false;
+        } else if (isProtectedLocation(bwArenaUtil.getArenaByPlayer(player), block.getLocation())) {
             return false;
         } else if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
             return true;
@@ -560,5 +566,14 @@ public class ShopItemAddon {
         if (content.isLoaded()) {
             shopCategory.getCategoryContentList().add(content);
         }
+    }
+
+    private static boolean isProtectedLocation(IArena a, Location location) {
+        for (Region r : a.getRegionsList()) {
+            if (r.isInRegion(location) && r.isProtected()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

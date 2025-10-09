@@ -1,6 +1,7 @@
 package cn.serendipityr._233bedwars.addons;
 
 import cn.serendipityr._233bedwars.utils.PlaceholderUtil;
+import cn.serendipityr._233bedwars.utils.ProviderUtil;
 import cn.serendipityr._233bedwars.utils.ScoreBoardUtil;
 import com.andrei1058.bedwars.api.arena.IArena;
 import com.andrei1058.bedwars.api.arena.team.ITeam;
@@ -49,17 +50,27 @@ public class ScoreboardEditor {
                 List<String> in_game_lines = new ArrayList<>(ScoreboardEditor.in_game_lines);
                 replaceElementWithElements(in_game_lines, "{allTeams}", getAllTeamsInfo(arena));
                 ITeam exTeam = arena.getExTeam(player.getUniqueId());
-                if (arena.isSpectator(player) && exTeam != null) {
-                    in_game_lines.replaceAll(s -> s
-                            .replace("{tHeart}", PlaceholderUtil.getTeamHeart(exTeam))
-                            .replace("{tColor}", PlaceholderUtil.getTeamColor(exTeam))
-                            .replace("{tName}", PlaceholderUtil.getTeamName(exTeam, player))
-                            .replace("{tDanger}", PlaceholderUtil.getTeamDanger(exTeam))
-                            .replace("{tDangerF}", PlaceholderUtil.getTeamDangerFull(exTeam))
-                            .replace("{tAlive}", String.valueOf(PlaceholderUtil.getTeamAlive(exTeam)))
-                            .replace("{tDistance}", String.valueOf(PlaceholderUtil.getTeamDistance(exTeam, player)))
-                            .replace("{tIndicator}", PlaceholderUtil.getTeamIndicator(exTeam, player))
-                    );
+                if (arena.isSpectator(player)) {
+                    if (exTeam != null) {
+                        in_game_lines.replaceAll(s -> s
+                                .replace("{tHeart}", PlaceholderUtil.getTeamHeart(exTeam))
+                                .replace("{tColor}", PlaceholderUtil.getTeamColor(exTeam))
+                                .replace("{tName}", PlaceholderUtil.getTeamName(exTeam, player))
+                                .replace("{tDanger}", PlaceholderUtil.getTeamDanger(exTeam))
+                                .replace("{tDangerF}", PlaceholderUtil.getTeamDangerFull(exTeam))
+                                .replace("{tAlive}", String.valueOf(PlaceholderUtil.getTeamAlive(exTeam)))
+                                .replace("{tDistance}", String.valueOf(PlaceholderUtil.getTeamDistance(exTeam, player)))
+                                .replace("{tIndicator}", PlaceholderUtil.getTeamIndicator(exTeam, player))
+                        );
+                    }
+                    if (arena.getStatsHolder().get(player).isEmpty()) {
+                        in_game_lines.replaceAll(s -> s
+                                .replace("{kills}", "0")
+                                .replace("{finalKills}", "0")
+                                .replace("{beds}", "0")
+                                .replace("{deaths}", "0")
+                        );
+                    }
                 }
                 ScoreBoardUtil.setScoreBoardContent(player, in_game_title, in_game_lines);
                 break;
