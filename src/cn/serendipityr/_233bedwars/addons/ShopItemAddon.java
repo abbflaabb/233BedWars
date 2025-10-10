@@ -116,7 +116,7 @@ public class ShopItemAddon {
         BedWars.ArenaUtil bwArenaUtil = ProviderUtil.bw.getArenaUtil();
         if (!bwArenaUtil.isPlaying(player)) {
             return false;
-        } else if (isProtectedLocation(bwArenaUtil.getArenaByPlayer(player), block.getLocation())) {
+        } else if (bwArenaUtil.getArenaByPlayer(player).isProtected(block.getLocation())) {
             return false;
         } else if (RecoverBed.settings_recover_bed_enable && RecoverBed.handleBlockPlace(block)) {
             return true;
@@ -566,14 +566,5 @@ public class ShopItemAddon {
         if (content.isLoaded()) {
             shopCategory.getCategoryContentList().add(content);
         }
-    }
-
-    private static boolean isProtectedLocation(IArena a, Location location) {
-        for (Region r : a.getRegionsList()) {
-            if (r.isInRegion(location) && r.isProtected()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
