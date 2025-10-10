@@ -336,7 +336,9 @@ public class BalancedAdjustments {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    player.sendMessage(messages_team_benefit_self_team_benefit_effects_expired.replace("&", "§"));
+                    if (ProviderUtil.bw.getArenaUtil().isPlaying(player)) {
+                        player.sendMessage(messages_team_benefit_self_team_benefit_effects_expired.replace("&", "§"));
+                    }
                 }
             }.runTaskLater(_233BedWars.getInstance(), duration * 20L);
         }
