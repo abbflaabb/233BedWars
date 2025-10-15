@@ -57,15 +57,21 @@ public class ProviderUtil {
             return;
         }
         for (Player teamPlayer : team.getMembers()) {
+            if (!compareTeam(teamPlayer, team)) {
+                continue;
+            }
             teamPlayer.sendMessage(msg);
         }
     }
 
-    public static void sendTeamTitle(ITeam team, String title, String subTitle,int fadeIn, int stay, int fadeOut) {
+    public static void sendTeamTitle(ITeam team, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         if (team == null) {
             return;
         }
         for (Player teamPlayer : team.getMembers()) {
+            if (!compareTeam(teamPlayer, team)) {
+                continue;
+            }
             TitleUtil.send(teamPlayer, title, subTitle, fadeIn, stay, fadeOut);
         }
     }
@@ -75,7 +81,21 @@ public class ProviderUtil {
             return;
         }
         for (Player teamPlayer : team.getMembers()) {
+            if (!compareTeam(teamPlayer, team)) {
+                continue;
+            }
             teamPlayer.playSound(teamPlayer.getLocation(), sound, volume, pitch);
         }
+    }
+
+    public static boolean compareTeam(Player player, ITeam team) {
+        if (bw.getArenaUtil().isPlaying(player)) {
+            return false;
+        }
+        IArena arena = bw.getArenaUtil().getArenaByPlayer(player);
+        if (arena == null) {
+            return false;
+        }
+        return arena.getTeam(player) == team;
     }
 }
